@@ -8,8 +8,10 @@ import { listen } from '@tauri-apps/api/event'
 listen('tauri://file-drop', event => {
   console.log(event)
   let files = (event.payload as string[]);
-  if (files.length > 0)
+  if (files.length > 0) { 
     invoke('load_csv', { invokeMessage: files[0] })
+    invoke('run_sql', { sql: "select * from foo" })
+  }
 })
 
 function App() {
