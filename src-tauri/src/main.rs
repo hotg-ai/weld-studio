@@ -9,7 +9,7 @@ use arrow::datatypes::{Schema};
 // use arrow::util::pretty::print_batches;
 use duckdb::{params, Connection, Result};
 // use serde::*;
-// use serde_json;
+use serde_json;
 use std::path::Path;
 use std::sync::Mutex;
 struct DefragStudioState {
@@ -58,7 +58,7 @@ fn load_csv(invoke_message: String, state: tauri::State<DefragStudioState>) {
 
 #[derive(serde::Serialize, Debug, serde::Deserialize)]
 struct DataResponse {
-    records: Vec<bool>,
+    records: Vec<serde_json::Value>,
 }
 
 #[tauri::command]
