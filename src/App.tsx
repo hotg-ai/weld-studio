@@ -2,6 +2,12 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import { listen } from '@tauri-apps/api/event'
+
+listen('tauri://file-drop', event => {
+  console.log(event)
+})
+
 function App() {
   return (
     <div className="App">
