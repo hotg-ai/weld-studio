@@ -2,10 +2,14 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import { invoke } from '@tauri-apps/api/tauri'
 import { listen } from '@tauri-apps/api/event'
 
 listen('tauri://file-drop', event => {
   console.log(event)
+  let files = (event.payload as string[]);
+  if (files.length > 0)
+    invoke('load_csv', { invokeMessage: files[0] })
 })
 
 function App() {
