@@ -3,23 +3,30 @@
     windows_subsystem = "windows"
 )]
 
-use arrow::csv::reader::infer_schema_from_files;
-use arrow::datatypes::{Schema};
-// use arrow::record_batch::RecordBatch;
+use change_case::snake_case;
+use std::fs::File;
+use std::path::Path;
+use std::sync::Mutex;
+
+use arrow::datatypes::Schema;
+use arrow::json;
+use arrow::record_batch::RecordBatch;
+
 // use arrow::util::pretty::print_batches;
 use duckdb::{params, Connection, Result};
 // use serde::*;
 use serde_json;
-use std::path::Path;
-use std::sync::Mutex;
+
 struct DefragStudioState {
     pub conn: Mutex<Connection>,
+    pub tables: Vec<Schema>,
 }
 
 fn main() {
     let conn = Connection::open_in_memory().unwrap();
     let state = DefragStudioState {
         conn: Mutex::new(conn),
+        tables: Vec::new(),
     };
     tauri::Builder::default()
         .manage(state)
@@ -29,36 +36,45 @@ fn main() {
 }
 
 #[tauri::command]
-fn load_csv(invoke_message: String, state: tauri::State<DefragStudioState>) {
+fn load_csv(
+    invoke_message: String,
+    state: tauri::State<DefragStudioState>,
+) -> Result<String, String> {
     let invoke_message: Vec<String> = vec![invoke_message];
-    let _table_name: &str = Path::new(&invoke_message[0])
+    let table_name: &str = Path::new(&invoke_message[0])
         .file_name()
         .unwrap()
         .to_str()
-        .unwrap();
-    let schema: Schema = infer_schema_from_files(&invoke_message[..], 1, Some(10), true).unwrap();
-    let conn = state.conn.lock().unwrap();
-    match conn.execute("CREATE TABLE foo ( foo boolean );", params![]) {
-        Ok(_) => {
-            for _i in 1..1000 {
-                conn.execute("insert into foo values (true);", params![])
-                    .unwrap();
-            }
-        }
-        Err(_e) => {
-            // for _ in 1..1000 {
-            //     conn.execute("insert into foo values (false);", params![])
-            //         .unwrap();
-            // }
-        }
-    }
+        .unwrap()
+        .split('.')
+        .collect::<Vec<&str>>()[0];
+    let table_name = snake_case(table_name);
 
-    println!("I was invoked from JS, with this message: {:?}", schema);
+    // let file = File::open(&invoke_message[0]).unwrap();
+    // let reader = csv::ReaderBuilder::new().has_header(true).infer_schema(Some(100));
+    // let mut csv = reader.build(file).map_err(|e| e.to_string()).unwrap();
+    // let schema = csv.schema();
+
+    let create_table = format!(
+        "create table \"{}\" as select * from read_csv_auto('{}');",
+        table_name, invoke_message[0]
+    );
+
+    println!("CSV file loaded with schema: {}", &create_table);
+    let conn = state.conn.lock().unwrap();
+    let res = conn
+        .execute(&create_table[..], params![])
+        .map_err(|e| e.to_string())?;
+    println!("{}", res);
+    Ok(format!("{}", table_name))
 }
 
 #[derive(serde::Serialize, Debug, serde::Deserialize)]
+struct Record {}
+
+#[derive(serde::Serialize, Debug, serde::Deserialize)]
 struct DataResponse {
-    records: Vec<serde_json::Value>,
+    records: Vec<serde_json::Map<String, serde_json::Value>>,
 }
 
 #[tauri::command]
@@ -70,13 +86,18 @@ fn run_sql(sql: String, state: tauri::State<DefragStudioState>) -> Result<DataRe
     let mut stmt = conn
         .prepare(&sql[..])
         .map_err(|_e| format!("Could not prepare statement: {}", _e.to_string()))?;
-    let rbs = stmt.query_map([], |row| {
-        let foo: bool = row.get(0)?;
-        Ok(foo)
-    }).map_err(|_e| String::from("Could not query"))?;
-    let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
+    // let rbs = stmt.query_map([], |row| {
+    //     let foo: bool = row.get(0)?;
+    //     Ok(foo)
+    // }).map_err(|_e| String::from("Could not query"))?;
+    // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
+
+    let rbs: Vec<RecordBatch> = stmt.query_arrow([]).map_err(|e| e.to_string())?.collect();
+
+    let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
+        json::writer::record_batches_to_json_rows(&rbs[..]).unwrap();
     println!("I am running {}: {:?}", sql, &rbs.len());
-    let records = DataResponse { records: rbs };
+    let records = DataResponse { records: json_rows };
 
     Ok(records)
 }

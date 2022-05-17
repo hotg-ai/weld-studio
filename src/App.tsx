@@ -9,39 +9,46 @@ import MonacoEditor from 'react-monaco-editor';
 type FileDropEvent = {
   payload: string[]
 }
-
+let handlerRegistered = false; 
 function App() {
   const [data, setData] = React.useState<boolean[]>([]);
   const [tables, setTables] = React.useState<Record<string, boolean>>({});
   const [sql, setSql] = React.useState<string>("");
   const [queryError, setQueryError] = React.useState<string | undefined>(undefined);
-  const handleDrop = React.useCallback(async (event: FileDropEvent) => {
-    console.log(event)
+  const handleDrop = React.useCallback((event: FileDropEvent) => {
+
     let files = (event.payload as string[]);
-
-    if (files.length > 0) {
-      
-      await invoke('load_csv', { invokeMessage: files[0] })
-      setTables({"ok":  true})
+    if (files.length > 0 && !tables[files[0]]) {
+      invoke('load_csv', { invokeMessage: files[0] }).then((result) => {
+        setTables({ ...tables, [files[0]]: true })
+        setQueryError(`${files[0]} loaded as ${result}`);
+      }).catch((e) => {
+        setQueryError(e);
+      });
+      setTables({ "ok": true })
     }
-  }, [])
+  }, [tables])
 
 
-  React.useEffect( () => {
-    setData([])
+  React.useEffect(() => {
+   // setData([])
     setQueryError(undefined)
     invoke('run_sql', { sql }).then((result) => {
-      let result_typed = result as {records: boolean[]};
+      let result_typed = result as { records: boolean[] };
       setData(result_typed.records)
     }).catch(e => {
-      console.log(e);
       setQueryError(e)
     })
   }, [sql])
+
   React.useEffect(() => {
-    console.log("registered", handleDrop)
-    listen('tauri://file-drop', handleDrop)
-  }, []);
+    if (!handlerRegistered) {
+
+      listen('tauri://file-drop', handleDrop)
+      console.log("registered XXXX", handlerRegistered)
+      handlerRegistered = true;
+    }
+  }, [handleDrop]);
 
   const options = {
     selectOnLineNumbers: true
@@ -49,7 +56,7 @@ function App() {
 
   return (
     <div className="App">
-      
+
       <MonacoEditor
         width="100%"
         height="20vh"
@@ -58,20 +65,22 @@ function App() {
         value={sql}
         options={options}
         onChange={(v) => setSql(v)}
-      
-      />
 
-      <div style={{color: "red"}}>{queryError}</div>
-        { data.length > 0 &&<table>
-          <thead><tr><td>Foo</td></tr></thead>
-          <tbody>
-          {
-            data.map((item, index) => {
-              return <tr key={index}><td>{item ? "HI" : "BOO"}</td></tr>
-            })
-          }
-          </tbody>
-        </table>}
+      />
+      <div style={{ color: "red", flex: 1 }}>{queryError}</div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "space-between" }}>
+
+        <div style={{flex: 10, display: "flex", flexDirection: "column", overflowY:"scroll"}}>
+          <div style={{flex: 10, display: "flex", flexDirection: "column"}}>
+            {
+              data.map((item, index) => {
+                return <div key={index} style={{display: "flex", flexDirection:"row"}}><span>{JSON.stringify(item)}</span></div>
+              })
+            }
+          </div>
+        </div>
+        
+      </div>
     </div>
   );
 }
