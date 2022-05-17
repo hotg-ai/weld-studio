@@ -5,7 +5,7 @@ const CodeEditor = () => {
   return (
     <Editor
       height="100%"
-      defaultLanguage="javascript"
+      defaultLanguage="sql"
       defaultValue="// some comment"
     />
   );
