@@ -4,6 +4,9 @@
 )]
 
 use change_case::snake_case;
+use tracing;
+use tracing_subscriber::fmt::format::FmtSpan;
+
 use std::fs::File;
 use std::path::Path;
 use std::sync::Mutex;
@@ -23,11 +26,16 @@ struct DefragStudioState {
 }
 
 fn main() {
+    tracing_subscriber::fmt()
+        .with_env_filter("info")
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        .init();
     let conn = Connection::open_in_memory().unwrap();
     let state = DefragStudioState {
         conn: Mutex::new(conn),
         tables: Vec::new(),
     };
+    tracing::info!("Initializing Defrag Studio");
     tauri::Builder::default()
         .manage(state)
         .invoke_handler(tauri::generate_handler![load_csv, run_sql])
@@ -36,9 +44,10 @@ fn main() {
 }
 
 #[tauri::command]
-fn load_csv(
+#[tracing::instrument(skip(state), err)]
+async fn load_csv(
     invoke_message: String,
-    state: tauri::State<DefragStudioState>,
+    state: tauri::State<'_, DefragStudioState>,
 ) -> Result<String, String> {
     let invoke_message: Vec<String> = vec![invoke_message];
     let table_name: &str = Path::new(&invoke_message[0])
@@ -60,12 +69,12 @@ fn load_csv(
         table_name, invoke_message[0]
     );
 
-    println!("CSV file loaded with schema: {}", &create_table);
+    tracing::info!("CSV file loaded with schema: {}", &create_table);
     let conn = state.conn.lock().unwrap();
     let res = conn
         .execute(&create_table[..], params![])
         .map_err(|e| e.to_string())?;
-    println!("{}", res);
+    tracing::info!("{}", res);
     Ok(format!("{}", table_name))
 }
 
@@ -78,7 +87,13 @@ struct DataResponse {
 }
 
 #[tauri::command]
-fn run_sql(sql: String, state: tauri::State<DefragStudioState>) -> Result<DataResponse, String> {
+#[tracing::instrument(skip(state, window), err)]
+async fn run_sql(
+    sql: String,
+    state: tauri::State<'_, DefragStudioState>,
+    window: tauri::Window,
+) -> Result<(), String> {
+    tracing::info!("Running csv");
     let conn = state
         .conn
         .lock()
@@ -91,13 +106,22 @@ fn run_sql(sql: String, state: tauri::State<DefragStudioState>) -> Result<DataRe
     //     Ok(foo)
     // }).map_err(|_e| String::from("Could not query"))?;
     // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
+    tracing::info!("Loading arrow");
+    let batches = stmt.query_arrow(params![]).map_err(|e| e.to_string())?;
 
-    let rbs: Vec<RecordBatch> = stmt.query_arrow([]).map_err(|e| e.to_string())?.collect();
+    for batch in batches {
+        let _span = tracing::info_span!("batch", size=batch.num_rows()).entered();
 
-    let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
-        json::writer::record_batches_to_json_rows(&rbs[..]).unwrap();
-    println!("I am running {}: {:?}", sql, &rbs.len());
-    let records = DataResponse { records: json_rows };
+        let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
+            json::writer::record_batches_to_json_rows(&vec![batch][..]).unwrap();
+        window
+            .emit("load_arrow_row_batch", json_rows)
+            .map_err(|e| e.to_string())?
+    }
+    // tracing::info!("Serializing arrow");
+    //
+    // tracing::info!("Finished Serializing {}: {:?}", sql, &rbs.len());
+    //let records = DataResponse { records: json_rows };
 
-    Ok(records)
+    Ok(())
 }
