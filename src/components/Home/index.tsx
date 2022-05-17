@@ -56,96 +56,112 @@ const datasets = [
     likes: 150,
     updateTime: "12 hours ago",
     downloads: 1134,
+    id: 1,
   },
   {
     name: "dataset 2",
     likes: 1642,
     updateTime: "24 hours ago",
     downloads: 5025,
+    id: 2,
   },
   {
     name: "dataset 3",
     likes: 5000,
     updateTime: "24 hours ago",
     downloads: 10200,
+    id: 3,
   },
   {
     name: "dataset 4",
     likes: 10000,
     updateTime: "168 hours ago",
     downloads: 1001200,
+    id: 4,
   },
   {
     name: "dataset 5",
     likes: 10002300,
     updateTime: "210 hours ago",
     downloads: 3000600,
+    id: 5,
   },
   {
     name: "dataset 6",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 6,
   },
   {
     name: "dataset 7",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 7,
   },
   {
     name: "dataset 8",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 8,
   },
   {
     name: "dataset 9",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 9,
   },
   {
     name: "dataset 10",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 10,
   },
   {
     name: "dataset 11",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 11,
   },
   {
     name: "dataset 12",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 12,
   },
   {
     name: "dataset 13",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 13,
   },
   {
     name: "dataset 14",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 14,
   },
   {
     name: "dataset 15",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 15,
   },
   {
     name: "dataset 16",
     likes: 900000,
     updateTime: "210 hours ago",
     downloads: 2004758,
+    id: 16,
   },
 ];
 function Home() {
@@ -223,6 +239,7 @@ function Home() {
           {datasets.map((item) => {
             return (
               <DatasetCard
+                id={item.id}
                 name={item.name}
                 likes={item.likes}
                 updateTime={item.updateTime}

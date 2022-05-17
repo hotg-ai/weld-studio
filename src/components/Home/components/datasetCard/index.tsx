@@ -1,10 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./datasetCard.css";
 interface props {
   name: string;
   likes: number;
   updateTime: string;
   downloads: number;
+  id: number;
 }
 function numberFormatter(num: any) {
   if (num >= 1000000000) {
@@ -24,14 +26,17 @@ export const DatasetCard = ({
   likes = 0,
   updateTime,
   downloads = 0,
+  id,
 }: props) => {
   return (
     <div className="dataset__card__container">
       <div className="dataset_title__container">
-        <div className="title">
-          <img src="/assets/dataset.svg" alt="" />
-          <span>{name}</span>
-        </div>
+        <Link to={`/dataset/${id}`}>
+          <div className="title">
+            <img src="/assets/dataset.svg" alt="" />
+            <span>{name}</span>
+          </div>
+        </Link>
 
         <div className="likes">
           <img src="/assets/like.svg" alt="" />
