@@ -22,12 +22,16 @@
   height: 18px;
   margin-right: 1rem;
 }
+.dataset__card__container .dataset_title__container a {
+  text-decoration: none;
+}
 .dataset__card__container .dataset_title__container .title span {
   font-family: "Montserrat";
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
   line-height: 22px;
+  color: #000;
 }
 
 .dataset__card__container .dataset_title__container .likes {
