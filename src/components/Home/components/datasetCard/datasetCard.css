@@ -1,0 +1,70 @@
+.dataset__card__container {
+  background: #f6f6f6;
+  border-radius: 10px;
+  padding: 25px 25px 15px;
+  display: flex;
+  flex-direction: column;
+}
+.dataset__card__container .dataset_title__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+}
+.dataset__card__container .dataset_title__container .title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.dataset__card__container .dataset_title__container .title img {
+  width: 18px;
+  height: 18px;
+  margin-right: 1rem;
+}
+.dataset__card__container .dataset_title__container .title span {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.dataset__card__container .dataset_title__container .likes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dataset__card__container .dataset_title__container .likes img {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.dataset__card__container .dataset_title__container .likes span {
+}
+
+.dataset_details__container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.dataset_details__container .preview_container,
+.dataset_details__container .update_container,
+.dataset_details__container .download_container {
+  margin-right: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #777777;
+}
+
+.dataset_details__container .preview_container img,
+.dataset_details__container .update_container img,
+.dataset_details__container .download_container img {
+  margin-right: 0.3rem;
+}

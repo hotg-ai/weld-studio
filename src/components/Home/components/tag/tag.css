@@ -1,0 +1,26 @@
+.tag__container {
+  padding: 10px 0;
+  width: 100%;
+}
+.tag__container-title {
+  display: block;
+  width: 100%;
+  text-align: left;
+  color: #000;
+  font-weight: bolder;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.tags .tag_item {
+  border-radius: 9px;
+  margin: 4px;
+  padding: 5px 7px;
+  cursor: pointer;
+  font-size: 12px;
+}
