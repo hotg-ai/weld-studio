@@ -47,7 +47,7 @@ const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any)
                 return (
                   <DropdownOption key={idx}>
                     <div className="dropdownOption__Content">
-                      <span>{item}</span>
+                      <span>{item}: {table.column_types[idx]}</span>
                       {/* <ProgressBar percent={item.percent} /> */}
                     </div>
                   </DropdownOption>

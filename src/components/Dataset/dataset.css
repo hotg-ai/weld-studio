@@ -179,6 +179,8 @@
   height: 40%;
   margin: 2rem 0 0 0;
   overflow-y: scroll;
+
+  overflow-x: scroll;
 }
 .dataset__sidebar__container.right {
   background: #faf8ff;
