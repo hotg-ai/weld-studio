@@ -129,7 +129,7 @@ const Dataset = () => {
           <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
         </div>
         <div className="table__container">
-          <Table />
+          <Table data={data}/>
         </div>
       </div>
 

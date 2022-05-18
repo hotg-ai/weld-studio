@@ -1,14 +1,17 @@
 import React from "react";
 import "./table.css";
 
-const Table = () => {
+const Table = ({data}: {data: any[]}) => {
   return (
     <table>
-      <tr>
-        <th>Column 1</th>
-        <th>Column 2</th>
-        <th>Column 3</th>
-      </tr>
+      <thead>
+        <tr>
+          <th>Column 1</th>
+          <th>Column 2</th>
+          <th>Column 3</th>
+        </tr>
+      </thead>
+      <tbody>
       <tr>
         <td className="null">null</td>
         <td className="null">null</td>
@@ -39,6 +42,7 @@ const Table = () => {
         <td className="null">null</td>
         <td className="null">null</td>
       </tr>
+      </tbody>
     </table>
   );
 };
