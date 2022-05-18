@@ -22,7 +22,7 @@ function numberFormatter(num: any) {
   return num;
 }
 
-export const DatasetCard = ({
+const DatasetCard = ({
   name,
   likes = 0,
   updateTime,
@@ -78,3 +78,5 @@ export const DatasetCard = ({
     </div>
   );
 };
+
+export default React.memo(DatasetCard);

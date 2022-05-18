@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DatasetCard } from "./components/datasetCard";
+import DatasetCard from "./components/datasetCard";
 import Tag from "./components/tag";
 import "./home.css";
 
@@ -163,8 +163,8 @@ type datasets = {
 
 function Home() {
   const [searchValue, setSearchValue] = useState("");
-  const [sortValue, setSortValue] = useState("Latest");
-  const [uploadValue, setUploadValue] = useState<any>();
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [rawDatasets, setRawDatasets] = useState<datasets>();
   const [datasets, setDatasets] = useState<datasets>();
   const [categories, setCategories] = useState<any>({
     title: "Task Categories",
@@ -184,38 +184,70 @@ function Home() {
         return response.json();
       })
       .then(function (myJson: datasets) {
-        console.log(myJson);
         setDatasets(myJson);
+        setRawDatasets(myJson);
 
-        const categoriesArray = myJson
-          .map((item) => {
-            return item["tags"];
-          })
-          .flat(1);
-
+        const categoriesArray = [
+          //@ts-ignore
+          ...new Set(
+            myJson
+              .map((item) => {
+                return item["tags"];
+              })
+              .flat(1)
+          ),
+        ];
+        console.log(categoriesArray);
         setCategories((prev: any) => ({ ...prev, tags: categoriesArray }));
       });
   }, []);
 
-  console.log(datasets);
+  //filter by search
+  const serachOnChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    setSelectedCategory("");
+    const searchedValue = e.target.value.toLowerCase();
+    if (searchedValue === "") {
+      setDatasets(rawDatasets);
+    } else {
+      const filteredData = rawDatasets?.filter((dataset) =>
+        dataset.title.toLowerCase().includes(searchedValue)
+      );
+      setDatasets(filteredData);
+    }
+  };
 
-  const submitHandler = (e: any) => {
-    e.preventDefault();
+  //filter by category selection
+  const categoryOnClickHandler = (value: string) => {
+    setSelectedCategory(value);
+    setSearchValue("");
+
+    if (selectedCategory === value) {
+      setSelectedCategory("");
+      setDatasets(rawDatasets);
+    } else {
+      const filteredData = rawDatasets?.filter((dataset) =>
+        dataset.tags.some((item) => item === value)
+      );
+      setDatasets(filteredData);
+    }
   };
 
   return (
     <div className="home__container">
       <div className="home_sidebar">
         <Tag
-          key={categories.title}
+          selected={selectedCategory}
+          onCategoryClicked={categoryOnClickHandler}
+          key={categories.title + "23453344453"}
           title={categories.title}
           tags={categories.tags}
           tagBackground={categories.tagBackground}
           tagColor={categories.tagColor}
         />
-        {tags.map((item) => (
+        {tags.map((item, index) => (
           <Tag
-            key={item.title}
+            key={item.title + index}
             title={item.title}
             tags={item.tags}
             tagBackground={item.tagBackground}
@@ -227,15 +259,15 @@ function Home() {
         <div className="home_content-header">
           <div className="dataset_amount_container">
             <h5>Datasets</h5>
-            <span className="amount">5,500</span>
+            <span className="amount">{datasets && datasets.length}</span>
           </div>
 
-          <form className="search_container" onSubmit={submitHandler}>
+          <form className="search_container">
             <input
               type="text"
               placeholder="Search"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={serachOnChangeHandler}
             />
             <div className="search-icon__container">
               <img src="/assets/searchIcon.svg" alt="" />
@@ -248,7 +280,7 @@ function Home() {
             datasets.map((item: any, index: any) => {
               return (
                 <DatasetCard
-                  key={item.title}
+                  key={item.title + index}
                   id={index}
                   name={item.title}
                   description={item.description}
