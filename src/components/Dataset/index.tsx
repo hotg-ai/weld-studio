@@ -26,7 +26,7 @@ const sampleDatabase = [
 let handlerRegistered = false;
 const Dataset = () => {
 
-  const [data, setData] = React.useState<boolean[]>([]);
+  const [data, setData] = React.useState<any[]>([]);
   const [tables, setTables] = React.useState<Record<string, boolean>>({});
   const [sql, setSql] = React.useState<string | undefined>(undefined);
   const [queryError, setQueryError] = React.useState<string | undefined>(undefined);
@@ -64,14 +64,34 @@ const Dataset = () => {
   React.useEffect(() => {
     // setData([])
     setQueryError(undefined)
-    invoke('run_sql', { sql }).then((result) => {
-      //let result_typed = result as { records: boolean[] };
-      //setData(result_typed.records)
-    }).catch(e => {
-      setQueryError(e)
-    })
+    if (sql && sql.length > 0) {
+      invoke('run_sql', { sql }).then((result) => {
+        //let result_typed = result as { records: boolean[] };
+        //setData(result_typed.records)
+      }).catch(e => {
+        setQueryError(e)
+      })
+    }
   }, [sql])
 
+  const handleLoadArrowRowBatch = React.useCallback((chunk: any[]) => {
+    //setData[]
+    setData([...data, ...chunk]);
+
+  }, [])
+
+
+  React.useEffect(() => {
+    // setData([])
+    // listen to the `click` event and get a function to remove the event listener
+    // there's also a `once` function that subscribes to an event and automatically unsubscribes the listener on the first event
+    (async () => {
+
+      const unlisten = await listen('load_arrow_row_batch', ({ payload }: { payload: any[] }) => handleLoadArrowRowBatch(payload))
+    })()
+
+
+  }, [data])
 
 
   return (
@@ -128,9 +148,9 @@ const Dataset = () => {
           </div>
           <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
         </div>
-        <div className="table__container">
-          <Table data={data}/>
-        </div>
+        {queryError ? <div className="table_container">{queryError}</div> :
+          data.length > 0 ? <div className="table__container">
+            <Table data={data} /></div> : <div className="table_container">No data</div>}
       </div>
 
       <div className="dataset__sidebar__container right">
