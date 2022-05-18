@@ -5,10 +5,10 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Dataset from "./components/Dataset";
 
-import { invoke } from '@tauri-apps/api/tauri'
-import { listen, UnlistenFn } from '@tauri-apps/api/event'
+import { invoke } from "@tauri-apps/api/tauri";
+import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
-import { TableData, FileDropEvent } from './types'
+import { TableData, FileDropEvent } from "./types";
 
 import ClipLoader from "react-spinners/ClipLoader";
 

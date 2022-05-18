@@ -1,18 +1,30 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+
+import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "./components/dropdown";
 import CodeEditor from "./components/editor";
-import ProgressBar from "./components/progressBar";
+// import ProgressBar from "./components/progressBar";
 import Table from "./components/table";
 import "./dataset.css";
 import { TableData } from "../../types";
 
-import ClipLoader from "react-spinners/ClipLoader";
-
-
+import Modal from "./components/modal";
 
 const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const linkInputRef = useRef<any>();
 
+  const copyLinkToClipboard = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        alert("The link has been copied successfully: " + text);
+      })
+      .catch(() => {
+        alert("something went wrong, Please copy the link again!");
+      });
+  };
 
   return (
     <div className="dataset__container">
@@ -28,20 +40,21 @@ const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any)
             <img src="/assets/table.svg" alt="" />
             <span>Tables</span>
           </div>
-          
-          {tables.map((table: TableData, tidx: number) => <Dropdown key={tidx} title={table.table_name}>
-            {table.column_names.map((item, idx) => {
-              return (
-                <DropdownOption key={idx}>
-                  <div className="dropdownOption__Content">
-                    <span>{item}</span>
-                    {/* <ProgressBar percent={item.percent} /> */}
-                  </div>
-                </DropdownOption>
-              );
-            })}
-          </Dropdown>)}
 
+          {tables.map((table: TableData, tidx: number) => (
+            <Dropdown key={tidx} title={table.table_name}>
+              {table.column_names.map((item, idx) => {
+                return (
+                  <DropdownOption key={idx}>
+                    <div className="dropdownOption__Content">
+                      <span>{item}</span>
+                      {/* <ProgressBar percent={item.percent} /> */}
+                    </div>
+                  </DropdownOption>
+                );
+              })}
+            </Dropdown>
+          ))}
         </div>
         {/* <div className="models__container">
           <div className="title">
@@ -70,21 +83,31 @@ const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any)
           </div>
           <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
         </div>
-        {queryError ? <div className="table_container">{queryError}</div> :
-          data.length > 0 ? <div className="table__container">
-            <Table data={data} /></div> : <div className="table_container">No data</div>}
+        {queryError ? (
+          <div className="table_container">{queryError}</div>
+        ) : data.length > 0 ? (
+          <div className="table__container">
+            <Table data={data} />
+          </div>
+        ) : (
+          <div className="table_container">No data</div>
+        )}
       </div>
 
       <div className="dataset__sidebar__container right">
         <div className="share__container">
-          <button>
+          <button onClick={() => setModalVisible(true)}>
             <img src="/assets/share.svg" alt="" />
             <span>Share</span>
           </button>
           <div>
-            { data.length > 0 ?
-            <h5>{data.length} Rows, {Object.keys(data[0]).length} Columns</h5>
-            :<></>}
+            {data.length > 0 ? (
+              <h5>
+                {data.length} Rows, {Object.keys(data[0]).length} Columns
+              </h5>
+            ) : (
+              <></>
+            )}
             {/* <span>No changes in row count</span> */}
           </div>
         </div>
@@ -98,23 +121,58 @@ const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any)
         </div> */}
 
         <div className="selectedColumns__container">
-          {data.length > 0 ? 
-          <Dropdown title="Query Result">
-          {Object.keys(data[0]).map((item, idx) => {
-              return (
-                <DropdownOption key={idx}>
-                  <div className="dropdownOption__Content">
-                    <span>{item}</span>
-                    {/* <ProgressBar percent={item.percent} /> */}
-                  </div>
-                </DropdownOption>
-              );
-            })}
-          </Dropdown>
-            :<></>}
+          {data.length > 0 ? (
+            <Dropdown title="Query Result">
+              {Object.keys(data[0]).map((item, idx) => {
+                return (
+                  <DropdownOption key={idx}>
+                    <div className="dropdownOption__Content">
+                      <span>{item}</span>
+                      {/* <ProgressBar percent={item.percent} /> */}
+                    </div>
+                  </DropdownOption>
+                );
+              })}
+            </Dropdown>
+          ) : (
+            <></>
+          )}
         </div>
-
       </div>
+
+      {modalVisible && (
+        <Modal
+          className="share_modal__container"
+          title="download Rune"
+          setModalVisible={setModalVisible}
+        >
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius,
+            repellat! Hic maxime distinctio reprehenderit amet veritatis
+            voluptate magni voluptatum consequatur!
+          </p>
+          <div className="link__container">
+            <input
+              type="text"
+              value="This is the link"
+              id="LinkInput"
+              ref={linkInputRef}
+            />
+            <button
+              onClick={() => {
+                var copyText = linkInputRef.current as HTMLInputElement;
+
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                copyLinkToClipboard(copyText.value);
+              }}
+            >
+              <span>Copy the Link </span>
+              <img src="/assets/copy.svg" alt="" />
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
