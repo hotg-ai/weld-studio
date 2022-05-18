@@ -6,6 +6,15 @@ import ProgressBar from "./components/progressBar";
 import Table from "./components/table";
 import "./dataset.css";
 
+
+import { invoke } from '@tauri-apps/api/tauri'
+import { listen, UnlistenFn } from '@tauri-apps/api/event'
+
+
+type FileDropEvent = {
+  payload: string[]
+}
+
 const sampleDatabase = [
   { name: "data-row1", percent: "95%" },
   { name: "data-row2", percent: "58%" },
@@ -13,7 +22,58 @@ const sampleDatabase = [
   { name: "data-row4", percent: "75%" },
   { name: "data-row5", percent: "2%" },
 ];
+
+let handlerRegistered = false;
 const Dataset = () => {
+
+  const [data, setData] = React.useState<boolean[]>([]);
+  const [tables, setTables] = React.useState<Record<string, boolean>>({});
+  const [sql, setSql] = React.useState<string | undefined>(undefined);
+  const [queryError, setQueryError] = React.useState<string | undefined>(undefined);
+  const handleDrop = React.useCallback((event: FileDropEvent) => {
+
+    let files = (event.payload as string[]);
+    if (files.length > 0 && !tables[files[0]]) {
+      invoke('load_csv', { invokeMessage: files[0] }).then((result) => {
+        setTables({ ...tables, [files[0]]: true })
+        setQueryError(`${files[0]} loaded as ${result}`);
+      }).catch((e) => {
+        setQueryError(e);
+      });
+      setTables({ "ok": true })
+    }
+  }, [tables])
+
+  React.useEffect(() => {
+
+    if (!handlerRegistered) {
+      let unsubscribe: UnlistenFn | undefined = undefined;
+      listen('tauri://file-drop', handleDrop).then((u) => unsubscribe = u);
+      handlerRegistered = true;
+      return () => {
+        // Do unmounting stuff here
+        if (unsubscribe)
+          unsubscribe();
+      };
+    }
+
+
+  }, [handleDrop]);
+
+
+  React.useEffect(() => {
+    // setData([])
+    setQueryError(undefined)
+    invoke('run_sql', { sql }).then((result) => {
+      //let result_typed = result as { records: boolean[] };
+      //setData(result_typed.records)
+    }).catch(e => {
+      setQueryError(e)
+    })
+  }, [sql])
+
+
+
   return (
     <div className="dataset__container">
       <div className="dataset__sidebar__container left">
@@ -66,7 +126,7 @@ const Dataset = () => {
             </div>
             <button>Run SQL</button>
           </div>
-          <CodeEditor />
+          <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
         </div>
         <div className="table__container">
           <Table />
