@@ -207,32 +207,6 @@ function Home() {
               <img src="/assets/searchIcon.svg" alt="" />
             </div>
           </form>
-
-          <div className="sort__container">
-            <label>
-              Sort by:
-              <select
-                value={sortValue}
-                onChange={(e) => setSortValue(e.target.value)}
-              >
-                <option value="Latest">Latest</option>
-                <option value="In a week">In a week</option>
-                <option value="In a month">In a month</option>
-                <option value="In a year">In a year</option>
-              </select>
-            </label>
-          </div>
-
-          <div className="upload__container">
-            <button onClick={() => document.getElementById("getFile")!.click()}>
-              Add Dataset
-            </button>
-            <input
-              type="file"
-              id="getFile"
-              onChange={(e) => setUploadValue(e.target.value)}
-            />
-          </div>
         </div>
 
         <div className="datasets__container">

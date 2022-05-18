@@ -8,7 +8,6 @@
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-
 }
 .dropdown.disabled {
   background: #57575717;
@@ -32,10 +31,9 @@
 .dropdown-content {
   display: none;
   background-color: transparent;
-  width: 100%;
   padding: 16px;
   max-height: 200px;
-  overflow-y:scroll;  
+  overflow-y: scroll;
 }
 
 .show {
@@ -43,5 +41,5 @@
 }
 .dropdown_item {
   width: 100%;
-  padding: 0 16px 10px 0px;
+  padding: 0 0 10px 0px;
 }
