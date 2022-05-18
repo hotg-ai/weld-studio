@@ -1,26 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DatasetCard } from "./components/datasetCard";
 import Tag from "./components/tag";
 import "./home.css";
 
 const tags = [
   {
-    title: "Task Categories",
-    tags: [
-      "Text-classification",
-      "Question-answering",
-      "Translation",
-      "Fill-mask",
-      "Text-generating",
-    ],
-    tagBackground: "#0066FF1A",
-    tagColor: "#0066FF",
-  },
-  {
     title: "Tasks",
     tags: [
-      "Lorem-ipsum",
-      "Dolor-sit",
       "Language-modeling",
       "Extract-qv",
       "Masked-language-modeling",
@@ -50,138 +36,186 @@ const tags = [
   },
 ];
 
-const datasets = [
-  {
-    name: "dataset 1",
-    likes: 150,
-    updateTime: "12 hours ago",
-    downloads: 1134,
-    id: 1,
-  },
-  {
-    name: "dataset 2",
-    likes: 1642,
-    updateTime: "24 hours ago",
-    downloads: 5025,
-    id: 2,
-  },
-  {
-    name: "dataset 3",
-    likes: 5000,
-    updateTime: "24 hours ago",
-    downloads: 10200,
-    id: 3,
-  },
-  {
-    name: "dataset 4",
-    likes: 10000,
-    updateTime: "168 hours ago",
-    downloads: 1001200,
-    id: 4,
-  },
-  {
-    name: "dataset 5",
-    likes: 10002300,
-    updateTime: "210 hours ago",
-    downloads: 3000600,
-    id: 5,
-  },
-  {
-    name: "dataset 6",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 6,
-  },
-  {
-    name: "dataset 7",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 7,
-  },
-  {
-    name: "dataset 8",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 8,
-  },
-  {
-    name: "dataset 9",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 9,
-  },
-  {
-    name: "dataset 10",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 10,
-  },
-  {
-    name: "dataset 11",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 11,
-  },
-  {
-    name: "dataset 12",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 12,
-  },
-  {
-    name: "dataset 13",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 13,
-  },
-  {
-    name: "dataset 14",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 14,
-  },
-  {
-    name: "dataset 15",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 15,
-  },
-  {
-    name: "dataset 16",
-    likes: 900000,
-    updateTime: "210 hours ago",
-    downloads: 2004758,
-    id: 16,
-  },
-];
+// const datasets = [
+//   {
+//     name: "dataset 1",
+//     likes: 150,
+//     updateTime: "12 hours ago",
+//     downloads: 1134,
+//     id: 1,
+//   },
+//   {
+//     name: "dataset 2",
+//     likes: 1642,
+//     updateTime: "24 hours ago",
+//     downloads: 5025,
+//     id: 2,
+//   },
+//   {
+//     name: "dataset 3",
+//     likes: 5000,
+//     updateTime: "24 hours ago",
+//     downloads: 10200,
+//     id: 3,
+//   },
+//   {
+//     name: "dataset 4",
+//     likes: 10000,
+//     updateTime: "168 hours ago",
+//     downloads: 1001200,
+//     id: 4,
+//   },
+//   {
+//     name: "dataset 5",
+//     likes: 10002300,
+//     updateTime: "210 hours ago",
+//     downloads: 3000600,
+//     id: 5,
+//   },
+//   {
+//     name: "dataset 6",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 6,
+//   },
+//   {
+//     name: "dataset 7",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 7,
+//   },
+//   {
+//     name: "dataset 8",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 8,
+//   },
+//   {
+//     name: "dataset 9",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 9,
+//   },
+//   {
+//     name: "dataset 10",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 10,
+//   },
+//   {
+//     name: "dataset 11",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 11,
+//   },
+//   {
+//     name: "dataset 12",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 12,
+//   },
+//   {
+//     name: "dataset 13",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 13,
+//   },
+//   {
+//     name: "dataset 14",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 14,
+//   },
+//   {
+//     name: "dataset 15",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 15,
+//   },
+//   {
+//     name: "dataset 16",
+//     likes: 900000,
+//     updateTime: "210 hours ago",
+//     downloads: 2004758,
+//     id: 16,
+//   },
+// ];
+
+type datasets = {
+  title: string;
+  description: string;
+  tags: string[];
+  url: string;
+  likes: number;
+  downloads: number;
+  updateTime: string;
+}[];
+
 function Home() {
   const [searchValue, setSearchValue] = useState("");
   const [sortValue, setSortValue] = useState("Latest");
   const [uploadValue, setUploadValue] = useState<any>();
+  const [datasets, setDatasets] = useState<datasets>();
+  const [categories, setCategories] = useState<any>({
+    title: "Task Categories",
+    tags: [],
+    tagBackground: "#0066FF1A",
+    tagColor: "#0066FF",
+  });
+
+  useEffect(() => {
+    fetch("datasets.json", {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (myJson: datasets) {
+        console.log(myJson);
+        setDatasets(myJson);
+
+        const categoriesArray = myJson
+          .map((item) => {
+            return item["tags"];
+          })
+          .flat(1);
+
+        setCategories((prev: any) => ({ ...prev, tags: categoriesArray }));
+      });
+  }, []);
+
+  console.log(datasets);
 
   const submitHandler = (e: any) => {
     e.preventDefault();
-    console.log(searchValue);
   };
-
-  console.log(uploadValue);
-  console.log(sortValue);
 
   return (
     <div className="home__container">
       <div className="home_sidebar">
+        <Tag
+          key={categories.title}
+          title={categories.title}
+          tags={categories.tags}
+          tagBackground={categories.tagBackground}
+          tagColor={categories.tagColor}
+        />
         {tags.map((item) => (
           <Tag
+            key={item.title}
             title={item.title}
             tags={item.tags}
             tagBackground={item.tagBackground}
@@ -210,17 +244,20 @@ function Home() {
         </div>
 
         <div className="datasets__container">
-          {datasets.map((item) => {
-            return (
-              <DatasetCard
-                id={item.id}
-                name={item.name}
-                likes={item.likes}
-                updateTime={item.updateTime}
-                downloads={item.downloads}
-              />
-            );
-          })}
+          {datasets &&
+            datasets.map((item: any, index: any) => {
+              return (
+                <DatasetCard
+                  key={item.title}
+                  id={index}
+                  name={item.title}
+                  description={item.description}
+                  likes={item.likes}
+                  updateTime={item.updateTime}
+                  downloads={item.downloads}
+                />
+              );
+            })}
         </div>
       </div>
     </div>

@@ -147,9 +147,9 @@ const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any)
           setModalVisible={setModalVisible}
         >
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius,
-            repellat! Hic maxime distinctio reprehenderit amet veritatis
-            voluptate magni voluptatum consequatur!
+            You can download the entire package and share it with anyone as a
+            file or link. They can download the DeFrag app and import it to run
+            the same analytics you have created.
           </p>
           <div className="link__container">
             <input

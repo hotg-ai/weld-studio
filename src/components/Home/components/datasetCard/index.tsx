@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./datasetCard.css";
 interface props {
   name: string;
   likes: number;
-  updateTime: string;
+  updateTime: number;
   downloads: number;
   id: number;
+  description: string;
 }
 function numberFormatter(num: any) {
   if (num >= 1000000000) {
@@ -27,36 +28,53 @@ export const DatasetCard = ({
   updateTime,
   downloads = 0,
   id,
+  description,
 }: props) => {
+  const [showDescription, setShowDescription] = useState<boolean>(false);
+  const [liked, setLiked] = useState<boolean>(false);
+
   return (
     <div className="dataset__card__container">
       <div className="dataset_title__container">
         <Link to={`/dataset/${id}`}>
           <div className="title">
             <img src="/assets/dataset.svg" alt="" />
-            <span>{name}</span>
+            <span title={name}>{name}</span>
           </div>
         </Link>
 
         <div className="likes">
-          <img src="/assets/like.svg" alt="" />
-          <span>{numberFormatter(likes)}</span>
+          <img
+            src={liked ? "/assets/likeFilled.svg" : "/assets/like.svg"}
+            alt=""
+            onClick={() => setLiked(!liked)}
+          />
+          <span>{numberFormatter(Math.round(Math.random() * likes))}</span>
         </div>
       </div>
       <div className="dataset_details__container">
-        <div className="preview_container">
+        <div
+          className="preview_container"
+          onClick={() => setShowDescription(!showDescription)}
+        >
           <img src="/assets/previewIcon.svg" alt="" />
           <span>Preview</span>
         </div>
         <div className="update_container">
           <img src="/assets/updateIcon.svg" alt="" />
-          <span>{updateTime}</span>
+          <span>{Math.round(Math.random() * updateTime)} hours ago</span>
         </div>
         <div className="download_container">
           <img src="/assets/downloadIcon.svg" alt="" />
-          <span>{numberFormatter(downloads)}</span>
+          <span>{numberFormatter(Math.round(Math.random() * downloads))}</span>
         </div>
       </div>
+      {showDescription && (
+        <p>
+          {description.slice(0, 200)}
+          {description.length > 200 && "..."}
+        </p>
+      )}
     </div>
   );
 };
