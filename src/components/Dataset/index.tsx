@@ -1,14 +1,17 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+
+import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "./components/dropdown";
 import CodeEditor from "./components/editor";
 // import ProgressBar from "./components/progressBar";
 import Table from "./components/table";
 import "./dataset.css";
 import { TableData } from "../../types";
+
 import Modal from "./components/modal";
 
-const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
+const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
 
@@ -76,7 +79,7 @@ const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
               <img src="/assets/codeIcon.svg" alt="" />
               {/* <span>Sample.SQL</span> */}
             </div>
-            {/* <button>Run SQL</button> */}
+            <ClipLoader color="purple" loading={isQueryLoading} size={25} />
           </div>
           <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
         </div>

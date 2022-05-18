@@ -163,9 +163,14 @@ async fn run_sql(
     // }).map_err(|_e| String::from("Could not query"))?;
     // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
     tracing::info!("Loading arrow");
+    window
+                .emit("query_started", "")
+                .map_err(|e| e.to_string())?;
+
     let batches = stmt.query_arrow(params![]).map_err(|e| e.to_string())?;
     cancel.0.store(false, Ordering::Relaxed);
     running.0.store(true, Ordering::Relaxed);
+    let mut sum: i64 = 0;
     for batch in batches {
         let cancelled: bool = cancel.0.load(Ordering::Relaxed);
         tracing::info!("Cancelled: {}", cancelled);
@@ -175,15 +180,21 @@ async fn run_sql(
             let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
                 json::writer::record_batches_to_json_rows(&vec![batch][..])
                     .map_err(|e| e.to_string())?;
+            sum = sum + json_rows.len() as i64;
             window
                 .emit("load_arrow_row_batch", json_rows)
                 .map_err(|e| e.to_string())?
+            
         } else {
             cancel.0.store(false, Ordering::Relaxed);
             break;
         }
     }
     running.0.store(false, Ordering::Relaxed);
+
+    window
+                .emit("query_ended", sum)
+                .map_err(|e| e.to_string())?;
     // tracing::info!("Serializing arrow");
     //
     // tracing::info!("Finished Serializing {}: {:?}", sql, &rbs.len());
