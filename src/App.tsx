@@ -72,7 +72,7 @@ function App() {
 
 
   React.useEffect(() => {
-    // setData([])
+    setData([])
     setQueryError(undefined)
     if (sql && sql.length > 0) {
       invoke('run_sql', { sql }).then((result) => {
@@ -94,10 +94,6 @@ function App() {
 
 
   React.useEffect(() => {
-    // setData([])
-    // listen to the `click` event and get a function to remove the event listener
-    // there's also a `once` function that subscribes to an event and automatically unsubscribes the listener on the first event
-
 
     listen('load_arrow_row_batch', ({ payload }: { payload: any[] }) => handleLoadArrowRowBatch(payload)).then((unsubscribe) => handlerRegistered2 = unsubscribe)
 
@@ -109,7 +105,7 @@ function App() {
 
     }
 
-  })
+  }, [data, handleLoadArrowRowBatch])
 
   const handleFetchTableUpdate = React.useCallback((chunk: any[]) => {
     //setData[]
