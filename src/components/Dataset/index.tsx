@@ -96,6 +96,7 @@ const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
         </div> */}
 
         <div className="selectedColumns__container">
+          {data.length > 0 ? 
           <Dropdown title="Query Result">
           {Object.keys(data[0]).map((item, idx) => {
               return (
@@ -108,7 +109,9 @@ const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
               );
             })}
           </Dropdown>
+            :<></>}
         </div>
+
       </div>
     </div>
   );

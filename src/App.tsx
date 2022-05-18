@@ -8,13 +8,13 @@ import Dataset from "./components/Dataset";
 import { invoke } from '@tauri-apps/api/tauri'
 import { listen, UnlistenFn } from '@tauri-apps/api/event'
 
-import {TableData, FileDropEvent} from './types'
+import { TableData, FileDropEvent } from './types'
 
 import ClipLoader from "react-spinners/ClipLoader";
 
 
 let handlerRegistered = false;
-let handlerRegistered2 = false;
+let handlerRegistered2: UnlistenFn | null = null;
 let handlerRegistered3 = false;
 
 function App() {
@@ -47,7 +47,7 @@ function App() {
         setQueryError(`${files[0]} loaded as ${result}`);
       }).catch((e) => {
         setIsLoadingTable(false);
-       setQueryError(e);
+        setQueryError(e);
       });
 
     }
@@ -58,7 +58,7 @@ function App() {
     if (!handlerRegistered) {
       let unsubscribe: UnlistenFn | undefined = undefined;
       listen('tauri://file-drop', handleDrop).then((u) => unsubscribe = u);
-     
+
       handlerRegistered = true;
       return () => {
         // Do unmounting stuff here
@@ -86,7 +86,9 @@ function App() {
 
   const handleLoadArrowRowBatch = React.useCallback((chunk: any[]) => {
     //setData[]
-    setData([...data, ...chunk]);
+    console.log("DATAxxx is ", data.length)
+    const newData = [...data, ...chunk]
+    setData(newData)
 
   }, [data])
 
@@ -96,14 +98,18 @@ function App() {
     // listen to the `click` event and get a function to remove the event listener
     // there's also a `once` function that subscribes to an event and automatically unsubscribes the listener on the first event
 
-    if (!handlerRegistered2) {
-      listen('load_arrow_row_batch', ({ payload }: { payload: any[] }) => handleLoadArrowRowBatch(payload))
-      handlerRegistered2 = true;
+
+    listen('load_arrow_row_batch', ({ payload }: { payload: any[] }) => handleLoadArrowRowBatch(payload)).then((unsubscribe) => handlerRegistered2 = unsubscribe)
+
+    return () => {
+      if (handlerRegistered2) {
+        console.log("UNSUB")
+        handlerRegistered2();
+      }
+
     }
 
-
-
-  }, [handleLoadArrowRowBatch])
+  })
 
   const handleFetchTableUpdate = React.useCallback((chunk: any[]) => {
     //setData[]
@@ -136,12 +142,12 @@ function App() {
 
   return (
     <div className="App">
-        <div className="spinner__container" style={{display: isLoadingTable ? "flex" : "none"}}>
+      <div className="spinner__container" style={{ display: isLoadingTable ? "flex" : "none" }}>
 
         <div className="spinner__body">
-            <ClipLoader color="purple"  size={25} /> <p style={{paddingLeft: "20px"}}>Loading table ...</p>
+          <ClipLoader color="purple" size={25} /> <p style={{ paddingLeft: "20px" }}>Loading table ...</p>
         </div>
-        </div>
+      </div>
       <Header />
       <div className="dashboard__container">
         <Router>

@@ -112,6 +112,8 @@ async fn get_tables(state: tauri::State<'_, DefragStudioState>) -> Result<Vec<se
         .lock()
         .map_err(|_e| String::from("Could not lock connection"))?;
 
+ 
+
     let mut stmt = conn.prepare("show").map_err(|e| e.to_string())?;
 
     tracing::info!("querying");
