@@ -82,6 +82,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   executeQuery(sql: string) {
+    this.setState({data: []})
     if (this.state.isQueryLoading) return
 
     this.setState({isQueryLoading: true})
