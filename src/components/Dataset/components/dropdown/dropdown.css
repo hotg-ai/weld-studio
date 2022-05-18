@@ -8,6 +8,7 @@
   align-items: center;
   justify-content: flex-start;
   width: 100%;
+
 }
 .dropdown.disabled {
   background: #57575717;
@@ -25,6 +26,7 @@
 .dropdown {
   position: relative;
   display: inline-block;
+  width: 100%;
 }
 
 .dropdown-content {
@@ -32,6 +34,8 @@
   background-color: transparent;
   width: 100%;
   padding: 16px;
+  max-height: 200px;
+  overflow-y:scroll;  
 }
 
 .show {

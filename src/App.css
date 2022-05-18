@@ -8,3 +8,29 @@
   padding-top: 4.5rem;
   height: 100%;
 }
+
+.spinner__container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.spinner__body {
+  border-radius: 10px;
+  width: 20vw;
+  height: 5vh;
+  display: flex;
+  padding: 10px;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: rgb(255, 255, 255, 0.6);
+
+}
