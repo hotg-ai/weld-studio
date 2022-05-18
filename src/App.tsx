@@ -4,8 +4,8 @@ import Header from "./components/Header";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Dataset from "./components/Dataset";
-// import { invoke } from "@tauri-apps/api/tauri";
-// import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/tauri";
+import { listen } from "@tauri-apps/api/event";
 
 // import MonacoEditor from "react-monaco-editor";
 
@@ -20,71 +20,51 @@ function App() {
   const [data, setData] = React.useState<boolean[]>([]);
   const [tables, setTables] = React.useState<Record<string, boolean>>({});
   const [sql, setSql] = React.useState<string>("");
-  const [queryError, setQueryError] = React.useState<string | undefined>(undefined);
-  const handleDrop = React.useCallback((event: FileDropEvent) => {
-
-    let files = (event.payload as string[]);
-    if (files.length > 0 && !tables[files[0]]) {
-      invoke('load_csv', { invokeMessage: files[0] }).then((result) => {
-        setTables({ ...tables, [files[0]]: true })
-        setQueryError(`${files[0]} loaded as ${result}`);
-      }).catch((e) => {
-        setQueryError(e);
-      });
-      setTables({ "ok": true })
-    }
-  }, [tables])
-
-
-
-
-
-  React.useEffect(() => {
-   // setData([])
-    setQueryError(undefined)
-    invoke('run_sql', { sql }).then((result) => {
-      //let result_typed = result as { records: boolean[] };
-      //setData(result_typed.records)
-    }).catch(e => {
-      setQueryError(e)
-    })
-  }, [sql])
-
-
-
-  const handleLoadArrowRowBatch = React.useCallback((chunk: any) => {
-    //setData[]
-    setData([...data, ...chunk]);
-
-  }, [])
-
+  const [queryError, setQueryError] = React.useState<string | undefined>(
+    undefined
+  );
+  const handleDrop = React.useCallback(
+    (event: FileDropEvent) => {
+      let files = event.payload as string[];
+      if (files.length > 0 && !tables[files[0]]) {
+        invoke("load_csv", { invokeMessage: files[0] })
+          .then((result) => {
+            setTables({ ...tables, [files[0]]: true });
+            setQueryError(`${files[0]} loaded as ${result}`);
+          })
+          .catch((e) => {
+            setQueryError(e);
+          });
+        setTables({ ok: true });
+      }
+    },
+    [tables]
+  );
 
   React.useEffect(() => {
     // setData([])
-     // listen to the `click` event and get a function to remove the event listener
-    // there's also a `once` function that subscribes to an event and automatically unsubscribes the listener on the first event
-   (async () => {
-    
-    const unlisten = await listen('load_arrow_row_batch', (e) => handleLoadArrowRowBatch(e.payload))
-    })()
-
-    
-   }, [sql])
+    setQueryError(undefined);
+    invoke("run_sql", { sql })
+      .then((result) => {
+        let result_typed = result as { records: boolean[] };
+        setData(result_typed.records);
+      })
+      .catch((e) => {
+        setQueryError(e);
+      });
+  }, [sql]);
 
   React.useEffect(() => {
     if (!handlerRegistered) {
+      listen("tauri://file-drop", handleDrop);
+      console.log("registered XXXX", handlerRegistered);
+      handlerRegistered = true;
+    }
+  }, [handleDrop]);
 
-  // React.useEffect(() => {
-  //   if (!handlerRegistered) {
-  //     listen("tauri://file-drop", handleDrop);
-  //     console.log("registered XXXX", handlerRegistered);
-  //     handlerRegistered = true;
-  //   }
-  // }, [handleDrop]);
-
-  // const options = {
-  //   selectOnLineNumbers: true,
-  // };
+  const options = {
+    selectOnLineNumbers: true,
+  };
 
   return (
     <div className="App">
