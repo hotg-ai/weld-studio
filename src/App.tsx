@@ -47,7 +47,7 @@ function App() {
         setQueryError(`${files[0]} loaded as ${result}`);
       }).catch((e) => {
         setIsLoadingTable(false);
-        setQueryError(e);
+       setQueryError(e);
       });
 
     }
@@ -88,7 +88,7 @@ function App() {
     //setData[]
     setData([...data, ...chunk]);
 
-  }, [])
+  }, [data])
 
 
   React.useEffect(() => {
@@ -103,7 +103,7 @@ function App() {
 
 
 
-  }, [data])
+  }, [handleLoadArrowRowBatch])
 
   const handleFetchTableUpdate = React.useCallback((chunk: any[]) => {
     //setData[]
@@ -131,7 +131,7 @@ function App() {
 
 
 
-  }, [data])
+  }, [handleFetchTableUpdate])
 
 
   return (

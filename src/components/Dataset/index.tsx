@@ -27,7 +27,7 @@ const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
             <span>Tables</span>
           </div>
           
-          {tables.map((table: TableData) => <Dropdown title={table.table_name}>
+          {tables.map((table: TableData, tidx: number) => <Dropdown key={tidx} title={table.table_name}>
             {table.column_names.map((item, idx) => {
               return (
                 <DropdownOption key={idx}>
@@ -80,31 +80,33 @@ const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
             <span>Share</span>
           </button>
           <div>
-            <h5>140,000 Rows , 10 Columns</h5>
-            <span>No changes in row count</span>
+            { data.length > 0 ?
+            <h5>{data.length} Rows, {Object.keys(data[0]).length} Columns</h5>
+            :<></>}
+            {/* <span>No changes in row count</span> */}
           </div>
         </div>
 
-        <div className="Sources__container">
+        {/* <div className="Sources__container">
           <span>Sources Tables</span>
           <div>
             <span>insurance_database_2022_05 </span>
             <span>140,000 Rows</span>
           </div>
-        </div>
+        </div> */}
 
         <div className="selectedColumns__container">
           <Dropdown title="Query Result">
-            {/* {sampleDatabase.map((item) => {
+          {Object.keys(data[0]).map((item, idx) => {
               return (
-                <DropdownOption key={item.name}>
+                <DropdownOption key={idx}>
                   <div className="dropdownOption__Content">
-                    <span>{item.name}</span>
-                    <ProgressBar percent={item.percent} />
+                    <span>{item}</span>
+                    {/* <ProgressBar percent={item.percent} /> */}
                   </div>
                 </DropdownOption>
               );
-            })} */}
+            })}
           </Dropdown>
         </div>
       </div>
