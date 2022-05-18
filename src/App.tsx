@@ -14,7 +14,6 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 
 let handlerRegistered = false;
-let handlerRegistered2: UnlistenFn | null = null;
 let handlerRegistered3 = false;
 
 function App() {
@@ -93,19 +92,20 @@ function App() {
   }, [data])
 
 
-  React.useEffect(() => {
+    React.useEffect(() => {
 
-    listen('load_arrow_row_batch', ({ payload }: { payload: any[] }) => handleLoadArrowRowBatch(payload)).then((unsubscribe) => handlerRegistered2 = unsubscribe)
+      let handlerRegistered2: UnlistenFn | null = null;
+      listen('load_arrow_row_batch', ({ payload }: { payload: any[] }) => handleLoadArrowRowBatch(payload)).then((unsubscribe) => handlerRegistered2 = unsubscribe)
 
-    return () => {
-      if (handlerRegistered2) {
-        console.log("UNSUB")
-        handlerRegistered2();
+      return () => {
+        if (handlerRegistered2) {
+          console.log("UNSUB")
+          handlerRegistered2();
+        }
+
       }
 
-    }
-
-  }, [data, handleLoadArrowRowBatch])
+    }, [data, handleLoadArrowRowBatch])
 
   const handleFetchTableUpdate = React.useCallback((chunk: any[]) => {
     //setData[]
