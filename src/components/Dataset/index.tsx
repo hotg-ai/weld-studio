@@ -7,9 +7,11 @@ import Table from "./components/table";
 import "./dataset.css";
 import { TableData } from "../../types";
 
+import ClipLoader from "react-spinners/ClipLoader";
 
 
-const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
+
+const Dataset = ({ setSql, sql, data, queryError, tables, isQueryLoading }: any) => {
 
 
   return (
@@ -64,7 +66,7 @@ const Dataset = ({ setSql, sql, data, queryError, tables }: any) => {
               <img src="/assets/codeIcon.svg" alt="" />
               {/* <span>Sample.SQL</span> */}
             </div>
-            {/* <button>Run SQL</button> */}
+            <ClipLoader color="purple" loading={isQueryLoading} size={25} />
           </div>
           <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
         </div>
