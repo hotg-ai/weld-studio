@@ -1,0 +1,43 @@
+.dropbtn {
+  color: #000;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+.dropdown.disabled {
+  background: #57575717;
+  cursor: not-allowed;
+}
+.dropdown.disabled * {
+  color: #333;
+}
+.dropbtn img {
+  margin-right: 1rem;
+  width: 16px;
+  height: 16px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  background-color: transparent;
+  width: 100%;
+  padding: 16px;
+}
+
+.show {
+  display: block;
+}
+.dropdown_item {
+  width: 100%;
+  padding: 0 16px 10px 0px;
+}
