@@ -6,7 +6,7 @@ const Header = () => {
       <img src="/assets/DeSilo.svg" height="35px" alt="DeSilo" className="header-logo" />
       <div>
         <span>Powered by</span>
-        <a href="www.google.com">
+        <a href="https://hotg.ai">
           <img src="/assets/hotg.svg" alt="Hotg" />
         </a>
       </div>
