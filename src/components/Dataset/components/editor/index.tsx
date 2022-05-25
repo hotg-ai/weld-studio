@@ -1,7 +1,13 @@
 import React from "react";
 import Editor from "@monaco-editor/react";
 
-const CodeEditor = ({setSql, sql} : {setSql: (v: string | undefined) => void, sql: string | undefined}) => {
+const CodeEditor = ({
+  setSql,
+  sql,
+}: {
+  setSql: (v: string | undefined) => void;
+  sql: string | undefined;
+}) => {
   return (
     <Editor
       height="100%"
@@ -9,7 +15,7 @@ const CodeEditor = ({setSql, sql} : {setSql: (v: string | undefined) => void, sq
       defaultValue="-- Type your SQL query here"
       value={sql}
       onChange={(v) => setSql(v)}
-  />
+    />
   );
 };
 
