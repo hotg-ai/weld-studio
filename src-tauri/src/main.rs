@@ -7,6 +7,8 @@ use change_case::snake_case;
 use tracing;
 use tracing_subscriber::fmt::format::FmtSpan;
 
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
+
 use std::path::Path;
 
 use arrow::json;
@@ -33,6 +35,22 @@ struct DefragStudioState {
 }
 
 fn main() {
+
+    let submenu = Submenu::new(
+        "Edit",
+        Menu::new()
+            .add_native_item(MenuItem::Copy)
+            .add_native_item(MenuItem::Paste)
+            .add_native_item(MenuItem::Cut)
+            .add_native_item(MenuItem::SelectAll)
+            .add_native_item(MenuItem::Undo)
+            .add_native_item(MenuItem::Redo)
+            .add_native_item(MenuItem::Quit)
+    );
+    let menu = Menu::new()
+        .add_item(CustomMenuItem::new("hide", "Hide"))
+        .add_submenu(submenu);
+
     tracing_subscriber::fmt()
         .with_env_filter("info")
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
@@ -47,6 +65,16 @@ fn main() {
         .manage(Running(AtomicBool::new(false)))
         .manage(Cancelled(AtomicBool::new(false)))
         .invoke_handler(tauri::generate_handler![load_csv, run_sql, get_tables])
+        .menu(menu)
+        .on_menu_event(|event| match event.menu_item_id() {
+            "quit" => {
+                std::process::exit(0);
+            }
+            "close" => {
+                event.window().close().unwrap();
+            }
+            _ => {}
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -106,19 +134,22 @@ struct TableData {
 
 #[tauri::command]
 #[tracing::instrument(skip(state), err)]
-async fn get_tables(state: tauri::State<'_, DefragStudioState>) -> Result<Vec<serde_json::Map<String, serde_json::Value>>, String> {
+async fn get_tables(
+    state: tauri::State<'_, DefragStudioState>,
+) -> Result<Vec<serde_json::Map<String, serde_json::Value>>, String> {
     let conn = state
         .conn
         .lock()
         .map_err(|_e| String::from("Could not lock connection"))?;
 
- 
-
     let mut stmt = conn.prepare("show").map_err(|e| e.to_string())?;
 
     tracing::info!("querying");
 
-    let batches: Vec<RecordBatch> = stmt.query_arrow(params![]).map_err(|e| e.to_string())?.collect();
+    let batches: Vec<RecordBatch> = stmt
+        .query_arrow(params![])
+        .map_err(|e| e.to_string())?
+        .collect();
 
     let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
         json::writer::record_batches_to_json_rows(&batches[..]).map_err(|e| e.to_string())?;
@@ -164,8 +195,8 @@ async fn run_sql(
     // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
     tracing::info!("Loading arrow");
     window
-                .emit("query_started", "")
-                .map_err(|e| e.to_string())?;
+        .emit("query_started", "")
+        .map_err(|e| e.to_string())?;
 
     let batches = stmt.query_arrow(params![]).map_err(|e| e.to_string())?;
     cancel.0.store(false, Ordering::Relaxed);
@@ -184,7 +215,6 @@ async fn run_sql(
             window
                 .emit("load_arrow_row_batch", json_rows)
                 .map_err(|e| e.to_string())?
-            
         } else {
             cancel.0.store(false, Ordering::Relaxed);
             break;
@@ -192,9 +222,7 @@ async fn run_sql(
     }
     running.0.store(false, Ordering::Relaxed);
 
-    window
-                .emit("query_ended", sum)
-                .map_err(|e| e.to_string())?;
+    window.emit("query_ended", sum).map_err(|e| e.to_string())?;
     // tracing::info!("Serializing arrow");
     //
     // tracing::info!("Finished Serializing {}: {:?}", sql, &rbs.len());
