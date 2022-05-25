@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "defrag-studio",
+    "productName": "weld-studio",
     "version": "0.1.0"
   },
   "tauri": {
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.hotg.defrag",
+      "identifier": "com.hotg.weld",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -56,9 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
+        "maximized": true,
         "height": 768,
         "resizable": true,
-        "title": "Defrag Studio",
+        "title": "Weld Studio",
         "width": 1024
       }
     ]

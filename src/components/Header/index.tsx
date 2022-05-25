@@ -3,7 +3,7 @@ import "./header.css";
 const Header = () => {
   return (
     <div className="header__container">
-      <img src="/assets/DeSilo.svg" alt="DeSilo" className="header-logo" />
+      <img src="/assets/DeSilo.svg" height="35px" alt="DeSilo" className="header-logo" />
       <div>
         <span>Powered by</span>
         <a href="www.google.com">
