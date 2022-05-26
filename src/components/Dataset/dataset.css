@@ -1,10 +1,43 @@
+.dataset_page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+}
+.table__container {
+  width: 100%;
+  height: 35%;
+  padding: 1rem 0 3rem;
+  background: #faf8ff;
+  overflow-y: scroll;
+  display: flex;
+  justify-content: center;
+}
+.table__container > .error,
+.table__container > .message {
+  width: 100%;
+  padding: 2rem 0;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+}
+.table__container > .error {
+  color: #df3636;
+}
+.table__container table {
+  width: 95%;
+}
 .dataset__container {
   width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
-  height: 100%;
+  height: 65%;
   position: relative;
+  overflow: hidden;
+  padding-bottom: 2rem;
 }
 
 .dataset__sidebar__container.left {
@@ -14,6 +47,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
 }
 .dataset__sidebar__container.left .back-link__container {
   width: 100%;
@@ -112,9 +146,10 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
 }
 .dataset__sidebar__container.center .code__container {
-  height: 55%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   margin-bottom: 2rem;
@@ -175,13 +210,7 @@
   line-height: 24px;
   color: #000;
 }
-.dataset__sidebar__container.center .table__container {
-  height: 40%;
-  margin: 2rem 0 0 0;
-  overflow-y: scroll;
 
-  overflow-x: scroll;
-}
 .dataset__sidebar__container.right {
   background: #faf8ff;
   width: 25%;
@@ -189,6 +218,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
 }
 
 .dataset__sidebar__container.right .share__container {

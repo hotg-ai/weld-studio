@@ -2,7 +2,7 @@
   width: 100%;
   position: relative;
   min-height: 100vh;
-  height: 120vh;
+  height: 100vh;
 }
 .dashboard__container {
   padding-top: 4.5rem;
@@ -32,5 +32,4 @@
   justify-content: flex-start;
   align-items: center;
   background-color: rgb(255, 255, 255, 0.6);
-
 }
