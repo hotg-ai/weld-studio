@@ -1,0 +1,7 @@
+<svg id="facebook-icon" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <g id="shadow" fill="none" stroke="#690f71" stroke-width="2">
+    <rect width="50" height="50" rx="25" stroke="none"/>
+    <rect x="1" y="1" width="48" height="48" rx="24" fill="none"/>
+  </g>
+  <path id="facebook" d="M13.671.181V4.153H11.308A2.211,2.211,0,0,0,9.563,4.7a2.493,2.493,0,0,0-.451,1.625V9.164H13.52l-.587,4.454H9.112V25.039h-4.6V13.617H.671V9.163H4.508V5.883A5.821,5.821,0,0,1,6.073,1.542,5.676,5.676,0,0,1,10.24,0,24.862,24.862,0,0,1,13.671.181Z" transform="translate(17.329 13)" fill="#fff"/>
+</svg>
