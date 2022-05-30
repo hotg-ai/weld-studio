@@ -84,6 +84,10 @@ class App extends React.Component<{}, AppState> {
       .then(console.log)
       .catch(console.error);
 
+    // FIXME: This is a hack to make sure the backend can search WAPM for all
+    // proc-blocks
+    invoke("known_proc_blocks").then(console.log).catch(console.error);
+
     this.setState({ data: [] });
     if (this.state.isQueryLoading) return;
 

@@ -4,12 +4,13 @@
 )]
 
 pub mod compiler;
+pub mod wapm;
 
 use anyhow::{Context, Error};
 use change_case::snake_case;
 use hotg_rune_compiler::{BuildConfig, FeatureFlags};
 use tracing;
-use tracing_subscriber::fmt::format::FmtSpan;
+use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
 use std::{path::Path, sync::Arc};
 
@@ -25,7 +26,10 @@ use std::sync::{
 use arrow::record_batch::RecordBatch;
 use duckdb::{params, Connection, Result};
 
-use crate::compiler::{compile, Cache, CachingStrategy};
+use crate::{
+    compiler::{compile, Cache, CachingStrategy},
+    wapm::known_proc_blocks,
+};
 // use serde::*;
 
 #[derive(Debug)]
@@ -39,8 +43,15 @@ struct DefragStudioState {
 }
 
 fn main() -> Result<(), Error> {
+    if std::env::var_os("RUST_LOG").is_none() {
+        std::env::set_var(
+            "RUST_LOG",
+            "info,app=debug,hotg_rune_compiler=debug,salsa=warn",
+        );
+    }
+
     tracing_subscriber::fmt()
-        .with_env_filter("info")
+        .with_env_filter(EnvFilter::from_default_env())
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         .init();
     let conn = Connection::open_in_memory().unwrap();
@@ -48,17 +59,23 @@ fn main() -> Result<(), Error> {
         conn: Mutex::new(conn),
     };
     tracing::info!("Initializing Defrag Studio");
+
     tauri::Builder::default()
         .manage(state)
         .manage(Running(AtomicBool::new(false)))
         .manage(Cancelled(AtomicBool::new(false)))
         .manage(Arc::new(Cache::with_strategy(CachingStrategy::Url)))
+        .manage(reqwest::Client::new())
         .manage(BuildConfig {
             current_directory: std::env::current_dir()?,
             features: FeatureFlags::stable(),
         })
         .invoke_handler(tauri::generate_handler![
-            load_csv, run_sql, get_tables, compile
+            load_csv,
+            run_sql,
+            get_tables,
+            compile,
+            known_proc_blocks
         ])
         .run(tauri::generate_context!())
         .context("error while running tauri application")
