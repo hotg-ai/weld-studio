@@ -1,8 +1,14 @@
-use std::{collections::HashMap, sync::RwLock};
+use std::{
+    collections::HashMap,
+    fmt::Display,
+    path::PathBuf,
+    sync::{Arc, RwLock},
+};
 
 use anyhow::Context;
 use hotg_rune_compiler::{im::Vector, ReadError, Text};
 use reqwest::{blocking::Client, StatusCode};
+use serde::Deserialize;
 use uriparse::{Scheme, URI};
 
 #[derive(Debug)]
@@ -19,6 +25,33 @@ impl Cache {
             client: Client::new(),
             strategy,
         }
+    }
+
+    #[tracing::instrument]
+    fn wapm_file(&self, uri: &URI<'_>) -> Result<Vector<u8>, ReadError> {
+        let (namespace, package_name) = match uri.path().segments() {
+            [ns, pkg] => (ns.as_str(), pkg.as_str()),
+            _ => {
+                return Err(ReadError::other(MalformedPackagePath {
+                    path: uri.path().clone().into_owned(),
+                }))
+            }
+        };
+
+        // https://registry-cdn.wapm.io/contents/hotg-ai/softmax/0.12.0/softmax.wasm
+        let query = uri.query().map(|q| q.as_str()).unwrap_or_default();
+        let query = queryst::parse(query).map_err(|e| ReadError::msg(e.message))?;
+        let query_params: QueryParams =
+            QueryParams::deserialize(&query).map_err(ReadError::other)?;
+        let version = query_params
+            .version
+            .ok_or_else(|| ReadError::msg("No version specified"))?;
+
+        let wapm_url = format!("https://registry-cdn.wapm.io/contents/{namespace}/{package_name}/{version}/{package_name}.wasm");
+
+        self.http_file(&wapm_url)
+            .map_err(<Box<dyn std::error::Error + Send + Sync>>::from)
+            .map_err(|e| ReadError::Other(Arc::from(e)))
     }
 
     fn http_file(&self, url: &str) -> Result<Vector<u8>, anyhow::Error> {
@@ -57,6 +90,22 @@ impl Cache {
         }
 
         Ok(body)
+    }
+
+    fn read_file(&self, path: &uriparse::Path<'_>) -> Result<Vector<u8>, ReadError> {
+        let mut full_path = PathBuf::new();
+
+        if path.is_absolute() {
+            full_path.push(std::path::Component::RootDir.as_os_str());
+        }
+
+        for segment in path.segments() {
+            full_path.push(segment.as_str());
+        }
+
+        std::fs::read(&full_path)
+            .map(Vector::from)
+            .map_err(|e| ReadError::Other(Arc::new(e) as Arc<_>))
     }
 
     #[tracing::instrument(level = "debug", skip_all)]
@@ -103,8 +152,11 @@ impl hotg_rune_compiler::FileSystem for Cache {
                     .map_err(|e| Box::<dyn std::error::Error + Send + Sync>::from(e))
                     .map_err(|e| ReadError::Other(e.into()))
             }
-            scheme => Err(ReadError::UnsupportedScheme {
-                scheme: scheme.to_string().into(),
+            Scheme::Unregistered(u) if u.as_str().is_empty() => self.read_file(path.path()),
+            Scheme::File => self.read_file(path.path()),
+            Scheme::Unregistered(u) if u.as_str() == "wapm" => self.wapm_file(path),
+            other => Err(ReadError::UnsupportedScheme {
+                scheme: other.to_string().into(),
             }),
         }
     }
@@ -126,4 +178,22 @@ pub enum CachingStrategy {
     Url,
     /// Cached values are always stale.
     Never,
+}
+
+#[derive(Debug)]
+struct MalformedPackagePath {
+    path: uriparse::Path<'static>,
+}
+
+impl Display for MalformedPackagePath {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Unable to determine the package name and namespace from \"{}\". Expected something like <namespace>/<name>", self.path)
+    }
+}
+
+impl std::error::Error for MalformedPackagePath {}
+
+#[derive(Debug, serde::Deserialize)]
+struct QueryParams {
+    version: Option<String>,
 }

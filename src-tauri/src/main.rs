@@ -5,7 +5,9 @@
 
 pub mod compiler;
 
+use anyhow::{Context, Error};
 use change_case::snake_case;
+use hotg_rune_compiler::{BuildConfig, FeatureFlags};
 use tracing;
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -36,7 +38,7 @@ struct DefragStudioState {
     pub conn: Mutex<Connection>,
 }
 
-fn main() {
+fn main() -> Result<(), Error> {
     tracing_subscriber::fmt()
         .with_env_filter("info")
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
@@ -51,11 +53,15 @@ fn main() {
         .manage(Running(AtomicBool::new(false)))
         .manage(Cancelled(AtomicBool::new(false)))
         .manage(Arc::new(Cache::with_strategy(CachingStrategy::Url)))
+        .manage(BuildConfig {
+            current_directory: std::env::current_dir()?,
+            features: FeatureFlags::stable(),
+        })
         .invoke_handler(tauri::generate_handler![
             load_csv, run_sql, get_tables, compile
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .context("error while running tauri application")
 }
 
 #[tauri::command]

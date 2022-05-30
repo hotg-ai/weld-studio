@@ -3,7 +3,7 @@ mod database;
 
 use std::sync::Arc;
 
-use hotg_rune_compiler::{codegen::Codegen, im::Vector, parse::Frontend};
+use hotg_rune_compiler::{codegen::Codegen, im::Vector, parse::Frontend, BuildConfig, Environment};
 
 pub use self::{
     cache::{Cache, CachingStrategy},
@@ -15,12 +15,15 @@ pub use self::{
 pub async fn compile(
     runefile: String,
     cache: tauri::State<'_, Arc<Cache>>,
+    cfg: tauri::State<'_, BuildConfig>,
 ) -> Result<Vector<u8>, String> {
     let cache = Arc::clone(&cache);
+    let cfg = BuildConfig::clone(&cfg);
 
     let result = tokio::task::spawn_blocking(move || {
         let mut db = Database::with_cache(cache);
         db.set_src(runefile.into());
+        db.set_config(cfg);
         db.rune_archive()
     })
     .await;

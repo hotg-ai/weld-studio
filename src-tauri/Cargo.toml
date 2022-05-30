@@ -29,6 +29,7 @@ reqwest = { version = "0.11.10", features = ["blocking"] }
 strum = { version = "0.24.0", features = ["derive"] }
 uriparse = "0.6.4"
 salsa = "0.16.1"
+queryst = "2.1.0"
 
 [dependencies.duckdb]
 version = "0.3.4"
