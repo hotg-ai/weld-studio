@@ -1,0 +1,19 @@
+query GetNamespace($name: String!) {
+  getNamespace(name: $name) {
+    packages {
+      edges {
+        node {
+          name
+          lastVersion {
+            version
+            description
+            modules {
+              source
+              publicUrl
+            }
+          }
+        }
+      }
+    }
+  }
+}
