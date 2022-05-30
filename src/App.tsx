@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Dataset from "./components/Dataset";
+import Anaysis from "./components/Analysis";
 
 import { invoke } from "@tauri-apps/api/tauri";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
@@ -80,9 +81,7 @@ class App extends React.Component<{}, AppState> {
 
   executeQuery(sql: string) {
     // FIXME: This is a hack so we can test the Rune compiler
-    invoke("compile", { runefile: sql })
-      .then(console.log)
-      .catch(console.error);
+    invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
 
     // FIXME: This is a hack to make sure the backend can search WAPM for all
     // proc-blocks
@@ -163,6 +162,7 @@ class App extends React.Component<{}, AppState> {
                   />
                 }
               />
+              <Route path="/analysis/:id" element={<Anaysis />} />
               <Route path="/" element={<Home />} />
             </Routes>
           </Router>
