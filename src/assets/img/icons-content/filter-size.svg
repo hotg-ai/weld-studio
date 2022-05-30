@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <g id="pie-chart" transform="translate(0 0)">
+    <g id="Group_1033" data-name="Group 1033" transform="translate(6.306 3.403)">
+      <path id="Path_17530" data-name="Path 17530" d="M166.825,103.7a8.231,8.231,0,0,1-4.924-1.618l-.471-.348,4.81-6.52V87.106h.586a8.3,8.3,0,0,1,0,16.6Zm-3.743-2.232A7.128,7.128,0,1,0,167.411,88.3v7.3Z" transform="translate(-161.43 -87.106)" fill="#fff"/>
+    </g>
+    <g id="Group_1034" data-name="Group 1034" transform="translate(0 4.636)">
+      <path id="Path_17531" data-name="Path 17531" d="M3.846,131.581l-.472-.348a8.3,8.3,0,0,1-1.363-12.1l.383-.444,6.7,5.777Zm-1.311-11.22a7.127,7.127,0,0,0,1.079,9.562L7.5,124.647Z" transform="translate(0 -118.692)" fill="#fff"/>
+    </g>
+    <g id="Group_1035" data-name="Group 1035" transform="translate(3.148 0)">
+      <path id="Path_17532" data-name="Path 17532" d="M86.783,8.195l-6.2-5.351.383-.444A6.908,6.908,0,0,1,86.2,0h.586ZM82.254,2.741l3.357,2.9V1.2A5.735,5.735,0,0,0,82.254,2.741Z" transform="translate(-80.579 0)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

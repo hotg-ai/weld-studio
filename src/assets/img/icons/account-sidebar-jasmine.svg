@@ -1,0 +1,8 @@
+<svg id="icon-user" xmlns="http://www.w3.org/2000/svg" width="20" height="25.99" viewBox="0 0 20 25.99">
+  <g id="Group_28" data-name="Group 28" transform="translate(0 15.736)">
+    <path id="Path_432" data-name="Path 432" d="M77.985,320.254a1.015,1.015,0,0,1-1.015-1.015,7.216,7.216,0,0,0-7.208-7.208H68.239a7.216,7.216,0,0,0-7.208,7.208,1.015,1.015,0,0,1-2.03,0A9.249,9.249,0,0,1,68.239,310h1.523A9.249,9.249,0,0,1,79,319.239,1.015,1.015,0,0,1,77.985,320.254Z" transform="translate(-59 -310)" fill="#bbade3"/>
+  </g>
+  <g id="Group_29" data-name="Group 29" transform="translate(3.046)">
+    <path id="Path_433" data-name="Path 433" d="M125.853,13.706a6.853,6.853,0,1,1,6.853-6.853A6.861,6.861,0,0,1,125.853,13.706Zm0-11.675a4.822,4.822,0,1,0,4.822,4.822A4.828,4.828,0,0,0,125.853,2.03Z" transform="translate(-119 0)" fill="#bbade3"/>
+  </g>
+</svg>
