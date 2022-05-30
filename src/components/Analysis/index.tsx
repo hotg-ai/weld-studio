@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Dropdown, DropdownOption } from "../common/dropdown";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
@@ -18,6 +18,8 @@ function Anaysis() {
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
 
+  const { id } = useParams();
+
   const fileInput = document.querySelector(".input-file") as HTMLInputElement,
     the_return = document.querySelector(".file-return")!;
 
@@ -25,9 +27,9 @@ function Anaysis() {
     <div className="analysis_page">
       <div className="sidebar_left">
         <div className="back-link__container">
-          <Link to="/">
+          <Link to={`/dataset/${id}`}>
             <img src="/assets/backArrow.svg" alt="<" />
-            <span>Back to Datasets</span>
+            <span>Back</span>
           </Link>
         </div>
 
@@ -61,7 +63,7 @@ function Anaysis() {
             </DropdownOption>
           </Dropdown>
         </div>
-        <button onClick={() => setCustomModalVisible(true)}>
+        <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
         </button>
       </div>
@@ -72,7 +74,7 @@ function Anaysis() {
             <h5>Drop Here</h5>
           </div>
           <div className="sidebar_right">
-            <button onClick={() => setSaveModalVisible(true)}>
+            <button onClick={() => setCustomModalVisible(true)}>
               <img src="/assets/share.svg" alt="<" />
               <span>Save and Share</span>
             </button>

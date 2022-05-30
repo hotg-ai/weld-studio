@@ -11,6 +11,15 @@
   background: #e6e6e6;
   padding: 20px 30px;
 }
+.sidebar_left > button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: #6034b6;
+  text-decoration: underline;
+  font-weight: bold;
+}
 
 .sidebar_left .back-link__container {
   width: 100%;
