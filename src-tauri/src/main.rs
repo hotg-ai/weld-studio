@@ -3,11 +3,13 @@
     windows_subsystem = "windows"
 )]
 
+pub mod compiler;
+
 use change_case::snake_case;
 use tracing;
 use tracing_subscriber::fmt::format::FmtSpan;
 
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 
 use arrow::json;
 use serde_json;
@@ -20,6 +22,8 @@ use std::sync::{
 // use arrow::util::pretty::print_batches;
 use arrow::record_batch::RecordBatch;
 use duckdb::{params, Connection, Result};
+
+use crate::compiler::{compile, Cache, CachingStrategy};
 // use serde::*;
 
 #[derive(Debug)]
@@ -46,7 +50,10 @@ fn main() {
         .manage(state)
         .manage(Running(AtomicBool::new(false)))
         .manage(Cancelled(AtomicBool::new(false)))
-        .invoke_handler(tauri::generate_handler![load_csv, run_sql, get_tables])
+        .manage(Arc::new(Cache::with_strategy(CachingStrategy::Url)))
+        .invoke_handler(tauri::generate_handler![
+            load_csv, run_sql, get_tables, compile
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -106,19 +113,22 @@ struct TableData {
 
 #[tauri::command]
 #[tracing::instrument(skip(state), err)]
-async fn get_tables(state: tauri::State<'_, DefragStudioState>) -> Result<Vec<serde_json::Map<String, serde_json::Value>>, String> {
+async fn get_tables(
+    state: tauri::State<'_, DefragStudioState>,
+) -> Result<Vec<serde_json::Map<String, serde_json::Value>>, String> {
     let conn = state
         .conn
         .lock()
         .map_err(|_e| String::from("Could not lock connection"))?;
 
- 
-
     let mut stmt = conn.prepare("show").map_err(|e| e.to_string())?;
 
     tracing::info!("querying");
 
-    let batches: Vec<RecordBatch> = stmt.query_arrow(params![]).map_err(|e| e.to_string())?.collect();
+    let batches: Vec<RecordBatch> = stmt
+        .query_arrow(params![])
+        .map_err(|e| e.to_string())?
+        .collect();
 
     let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
         json::writer::record_batches_to_json_rows(&batches[..]).map_err(|e| e.to_string())?;
@@ -164,8 +174,8 @@ async fn run_sql(
     // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
     tracing::info!("Loading arrow");
     window
-                .emit("query_started", "")
-                .map_err(|e| e.to_string())?;
+        .emit("query_started", "")
+        .map_err(|e| e.to_string())?;
 
     let batches = stmt.query_arrow(params![]).map_err(|e| e.to_string())?;
     cancel.0.store(false, Ordering::Relaxed);
@@ -184,7 +194,6 @@ async fn run_sql(
             window
                 .emit("load_arrow_row_batch", json_rows)
                 .map_err(|e| e.to_string())?
-            
         } else {
             cancel.0.store(false, Ordering::Relaxed);
             break;
@@ -192,9 +201,7 @@ async fn run_sql(
     }
     running.0.store(false, Ordering::Relaxed);
 
-    window
-                .emit("query_ended", sum)
-                .map_err(|e| e.to_string())?;
+    window.emit("query_ended", sum).map_err(|e| e.to_string())?;
     // tracing::info!("Serializing arrow");
     //
     // tracing::info!("Finished Serializing {}: {:?}", sql, &rbs.len());
