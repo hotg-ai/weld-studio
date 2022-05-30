@@ -80,7 +80,9 @@ class App extends React.Component<{}, AppState> {
 
   executeQuery(sql: string) {
     // FIXME: This is a hack so we can test the Rune compiler
-    invoke("compile", { runefile: sql });
+    invoke("compile", { runefile: sql })
+      .then(console.log)
+      .catch(console.error);
 
     this.setState({ data: [] });
     if (this.state.isQueryLoading) return;
