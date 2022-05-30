@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="18.281" viewBox="0 0 24 18.281">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" y1="1" x2="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fd9cf3"/>
+      <stop offset="0" stop-color="#de72d3"/>
+      <stop offset="1" stop-color="#a070ef"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.5" y1="1" x2="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#f8aef1"/>
+      <stop offset="1" stop-color="#ede2ff"/>
+    </linearGradient>
+  </defs>
+  <g id="video-player" transform="translate(0 -61)">
+    <g id="Group_376" data-name="Group 376" transform="translate(1.406 61)">
+      <g id="Group_375" data-name="Group 375">
+        <path id="Path_14450" data-name="Path 14450" d="M50.484,61H30.7a.7.7,0,0,0-.7.7V77.172a.7.7,0,0,0,.7.7H50.484a.7.7,0,0,0,.7-.7V61.7A.7.7,0,0,0,50.484,61Z" transform="translate(-30 -61)" fill="url(#linear-gradient)"/>
+      </g>
+    </g>
+    <g id="Group_378" data-name="Group 378" transform="translate(0 65.219)">
+      <g id="Group_377" data-name="Group 377">
+        <path id="Path_14451" data-name="Path 14451" d="M10.262,157.948a.7.7,0,0,0,.722-.035L15.2,155.1a.7.7,0,0,0,0-1.17l-4.219-2.812a.7.7,0,0,0-1.093.585v5.625A.7.7,0,0,0,10.262,157.948Zm13.035,4.3H.7a.7.7,0,0,0-.7.7,2.109,2.109,0,0,0,2.109,2.109H21.891A2.109,2.109,0,0,0,24,162.953.7.7,0,0,0,23.3,162.25Z" transform="translate(0 -151)" fill="url(#linear-gradient-2)"/>
+      </g>
+    </g>
+  </g>
+</svg>

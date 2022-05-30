@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <g id="info" transform="translate(-3 -3)">
+    <path id="Path_18632" data-name="Path 18632" d="M16.5,15.97a1,1,0,0,1,2,0v6a1,1,0,1,1-2,0Z" transform="translate(-4.5 -3.99)" fill="#e0d7fc"/>
+    <path id="Path_18633" data-name="Path 18633" d="M17.5,9.076a1,1,0,1,0,1,1A1,1,0,0,0,17.5,9.076Z" transform="translate(-4.5 -2.025)" fill="#e0d7fc"/>
+    <path id="Path_18634" data-name="Path 18634" d="M13,3A10,10,0,1,0,23,13,10,10,0,0,0,13,3ZM5,13a8,8,0,1,0,8-8,8,8,0,0,0-8,8Z" fill="#e0d7fc" fill-rule="evenodd"/>
+  </g>
+</svg>
