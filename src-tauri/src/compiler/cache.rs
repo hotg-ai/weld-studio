@@ -11,7 +11,6 @@ use reqwest::{blocking::Client, StatusCode};
 use serde::Deserialize;
 use uriparse::{Scheme, URI};
 
-#[derive(Debug)]
 pub struct Cache {
     cache: RwLock<HashMap<String, Bucket>>,
     client: Client,
@@ -27,7 +26,7 @@ impl Cache {
         }
     }
 
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all)]
     fn wapm_file(&self, uri: &URI<'_>) -> Result<Vector<u8>, ReadError> {
         let (namespace, package_name) = match uri.path().segments() {
             [ns, pkg] => (ns.as_str(), pkg.as_str()),
@@ -54,6 +53,7 @@ impl Cache {
             .map_err(|e| ReadError::Other(Arc::from(e)))
     }
 
+    #[tracing::instrument(skip_all)]
     fn http_file(&self, url: &str) -> Result<Vector<u8>, anyhow::Error> {
         if let Some(cached) = self.get_cached(url) {
             tracing::info!("Cache hit!");
@@ -92,6 +92,7 @@ impl Cache {
         Ok(body)
     }
 
+    #[tracing::instrument(skip_all)]
     fn read_file(&self, path: &uriparse::Path<'_>) -> Result<Vector<u8>, ReadError> {
         let mut full_path = PathBuf::new();
 
@@ -117,6 +118,16 @@ impl Cache {
             CachingStrategy::Url => Some(bucket.data),
             CachingStrategy::Never => None,
         }
+    }
+}
+
+impl std::fmt::Debug for Cache {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Cache")
+            .field("cache", &"...")
+            .field("client", &self.client)
+            .field("strategy", &self.strategy)
+            .finish()
     }
 }
 
