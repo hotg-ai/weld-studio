@@ -3,13 +3,17 @@
     windows_subsystem = "windows"
 )]
 
+pub mod compiler;
+pub mod wapm;
+
+use anyhow::{Context, Error};
 use change_case::snake_case;
+use hotg_rune_compiler::{BuildConfig, FeatureFlags};
 use tracing;
-use tracing_subscriber::fmt::format::FmtSpan;
+use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
-
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 
 use arrow::json;
 use serde_json;
@@ -22,6 +26,11 @@ use std::sync::{
 // use arrow::util::pretty::print_batches;
 use arrow::record_batch::RecordBatch;
 use duckdb::{params, Connection, Result};
+
+use crate::{
+    compiler::{compile, Cache, CachingStrategy},
+    wapm::known_proc_blocks,
+};
 // use serde::*;
 
 #[derive(Debug)]
@@ -34,7 +43,25 @@ struct DefragStudioState {
     pub conn: Mutex<Connection>,
 }
 
-fn main() {
+
+fn main() -> Result<(), Error> {
+    if std::env::var_os("RUST_LOG").is_none() {
+        std::env::set_var(
+            "RUST_LOG",
+            "info,app=debug,hotg_rune_compiler=debug,salsa=warn",
+        );
+    }
+
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        .init();
+    let conn = Connection::open_in_memory().unwrap();
+    let state = DefragStudioState {
+        conn: Mutex::new(conn),
+    };
+    tracing::info!("Initializing Defrag Studio");
+
 
     let submenu = Submenu::new(
         "Edit",
@@ -51,20 +78,10 @@ fn main() {
         .add_item(CustomMenuItem::new("hide", "Hide"))
         .add_submenu(submenu);
 
-    tracing_subscriber::fmt()
-        .with_env_filter("info")
-        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
-        .init();
-    let conn = Connection::open_in_memory().unwrap();
-    let state = DefragStudioState {
-        conn: Mutex::new(conn),
-    };
-    tracing::info!("Initializing Defrag Studio");
     tauri::Builder::default()
         .manage(state)
         .manage(Running(AtomicBool::new(false)))
         .manage(Cancelled(AtomicBool::new(false)))
-        .invoke_handler(tauri::generate_handler![load_csv, run_sql, get_tables])
         .menu(menu)
         .on_menu_event(|event| match event.menu_item_id() {
             "quit" => {
@@ -75,8 +92,21 @@ fn main() {
             }
             _ => {}
         })
+        .manage(Arc::new(Cache::with_strategy(CachingStrategy::Url)))
+        .manage(reqwest::Client::new())
+        .manage(BuildConfig {
+            current_directory: std::env::current_dir()?,
+            features: FeatureFlags::stable(),
+        })
+        .invoke_handler(tauri::generate_handler![
+            load_csv,
+            run_sql,
+            get_tables,
+            compile,
+            known_proc_blocks
+        ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .context("error while running tauri application")
 }
 
 #[tauri::command]

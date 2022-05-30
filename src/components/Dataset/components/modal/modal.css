@@ -12,18 +12,16 @@
 }
 .modal__container .modal {
   width: 40%;
-  height: 50%;
+  min-height: 50%;
   background: #fff;
   border-radius: 14px;
   box-shadow: 1px 1px 10px #0000009f;
 }
 .modal__container .modal .modal__header {
   padding: 10px 15px;
-  border-bottom: 1px solid #a1a1a1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 1px 0px 16px #26262630;
 }
 .modal__container .modal .modal__header span {
   font-family: "Montserrat";

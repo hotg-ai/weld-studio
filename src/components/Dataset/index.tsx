@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import ClipLoader from "react-spinners/ClipLoader";
-import { Dropdown, DropdownOption } from "./components/dropdown";
+import { Dropdown, DropdownOption } from "../common/dropdown";
 import CodeEditor from "./components/editor";
 // import ProgressBar from "./components/progressBar";
 import Table from "./components/table";
@@ -21,7 +21,7 @@ const Dataset = ({
 }: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
-
+  const { id } = useParams();
   const copyLinkToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)
@@ -97,10 +97,15 @@ const Dataset = ({
 
         <div className="dataset__sidebar__container right">
           <div className="share__container">
-            <button onClick={() => setModalVisible(true)}>
+            {/* <button onClick={() => setModalVisible(true)}>
               <img src="/assets/share.svg" alt="" />
               <span>Share</span>
-            </button>
+            </button> */}
+            <Link to={`/analysis/${id}`}>
+              <button>
+                <span> Add Analysis</span>
+              </button>
+            </Link>
             <div>
               {data.length > 0 ? (
                 <h5>
@@ -141,7 +146,7 @@ const Dataset = ({
           </div>
         </div>
 
-        {modalVisible && (
+        {/* {modalVisible && (
           <Modal
             className="share_modal__container"
             title="download Rune"
@@ -173,7 +178,7 @@ const Dataset = ({
               </button>
             </div>
           </Modal>
-        )}
+        )} */}
       </div>
       <div className="table__container">
         {queryError ? (
