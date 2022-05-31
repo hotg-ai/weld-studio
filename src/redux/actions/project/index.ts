@@ -1,7 +1,7 @@
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import { AppDispatch, AppStoreState } from "../../../redux/store";
-import { ProcBlockMetadata } from "src/screens/Studio/model/metadata";
-import { RuneCanvas } from "src/screens/Studio/utils/FlowUtils";
+import { ProcBlockMetadata } from "../../../components/Analysis/model/metadata";
+import { RuneCanvas } from "../../../components/Analysis/utils/FlowUtils";
 import { BuildInfo, BuildStatus } from "../build";
 
 type NotLoaded = {

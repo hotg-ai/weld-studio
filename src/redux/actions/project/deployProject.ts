@@ -1,10 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { storm2rune } from "src/canvas2rune";
+import { storm2rune } from "../../../canvas2rune";
 import { ErrorMessage } from "../../../redux/builderSlice";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import { AppStoreState } from "../../../redux/store";
-import { diagramToRuneCanvas } from "src/screens/Studio/utils/FlowUtils";
-import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
+import { diagramToRuneCanvas } from "../../../utils/FlowUtils";
+import { SerializedFlowDiagram } from "../../../canvas2rune/serialized";
 import { FlowElements } from "../../../redux/reactFlowSlice";
 
 export type RuneCompilerResponse = {

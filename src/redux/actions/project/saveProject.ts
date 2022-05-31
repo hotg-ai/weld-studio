@@ -1,11 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { storm2rune } from "src/canvas2rune";
-import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
+import { storm2rune } from "../../../canvas2rune";
+import { SerializedFlowDiagram } from "../../../canvas2rune/serialized";
 import { ErrorMessage } from "../../../redux/builderSlice";
 import { FlowElements } from "../../../redux/reactFlowSlice";
 import { AppStoreState } from "../../../redux/store";
-import { execute, getOutputs } from "src/screens/Studio/model/executor";
-import { diagramToRuneCanvas } from "src/screens/Studio/utils/FlowUtils";
+import {
+  execute,
+  getOutputs,
+} from "../../../components/Analysis/model/executor";
+import { diagramToRuneCanvas } from "../../../components/Analysis/utils/FlowUtils";
 
 export type SaveProjectParams = {
   diagram: FlowElements;

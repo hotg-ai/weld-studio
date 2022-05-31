@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ResourceDeclaration } from "../../../components/Analysis/model/Storm";
 import { ThunkApiConfig } from "../project";
-import { base64Encode, fileAlreadyExists } from "./uploadFile";
+import { base64Encode } from "./uploadModel";
 
 export type ResourceComponent = {
   key: string;

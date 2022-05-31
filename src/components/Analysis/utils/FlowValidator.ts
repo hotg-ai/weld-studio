@@ -8,8 +8,8 @@ import {
   getOutgoers,
   Edge,
 } from "react-flow-renderer";
-import { FlowElements } from "src/redux/reactFlowSlice";
-import { detectInvalidNodes, detectInvalidNodesPort } from "src/utils";
+import { FlowElements } from "../../../redux/reactFlowSlice";
+import { detectInvalidNodes, detectInvalidNodesPort } from "../../../utils";
 import { Component } from "../model";
 import capabilities from "../model/capabilities";
 import { FlowNodeData } from "../model/FlowNodeComponent";

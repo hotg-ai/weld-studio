@@ -4,8 +4,11 @@ import moment from "moment";
 import {
   extractMetadata,
   ProcBlockMetadata,
-} from "src/screens/Studio/model/metadata";
-import { RuneCanvas, storm2flow } from "src/screens/Studio/utils/FlowUtils";
+} from "../../../components/Analysis/model/metadata";
+import {
+  RuneCanvas,
+  storm2flow,
+} from "../../../components/Analysis/utils/FlowUtils";
 import {
   LoadedProject,
   loadingFailed,
@@ -17,7 +20,7 @@ import { BuildInfo, BuildStatus } from "../build";
 import { JobSchema } from "@gitbeaker/core/dist/types/types";
 import { v4 as uuid } from "uuid";
 
-import * as projectJson from "./../../../data/base.json";
+import * as projectJson from "../../../data/base.json";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 
 export const loadProject = createAsyncThunk<
