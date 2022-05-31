@@ -1,8 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isMap, isObject, uniqueId } from "lodash";
+import { pino } from "pino";
+const logger = pino();
 import moment from "moment";
 import {
-  extractMetadata,
+  // extractMetadata,
   ProcBlockMetadata,
 } from "../../../components/Analysis/model/metadata";
 import {
@@ -22,6 +24,7 @@ import { v4 as uuid } from "uuid";
 
 import * as projectJson from "../../../data/base.json";
 import { ProjectInfo } from "../../../redux/reducers/builder";
+import { ProcBlock, Metadata } from "@hotg-ai/rune";
 
 export const loadProject = createAsyncThunk<
   LoadedProject,
@@ -216,7 +219,7 @@ export async function loadProcBlocks(
 export async function loadProcBlockMetadata(
   baseURL: string,
   filename: string
-): Promise<ProcBlockMetadata> {
+): Promise<Metadata> {
   const url = `${baseURL}/${filename}`;
   const response = await fetch(url);
   if (!response.ok) {
@@ -224,7 +227,9 @@ export async function loadProcBlockMetadata(
     throw new Error(`Unable to retrieve ${filename}: ${status} ${statusText}`);
   }
   const wasm = await response.arrayBuffer();
-  return await extractMetadata(wasm);
+  // return await extractMetadata(wasm);
+  const pb = await ProcBlock.load(wasm, logger);
+  return pb.metadata();
 }
 
 async function readManifest(baseURL: string): Promise<string[]> {
