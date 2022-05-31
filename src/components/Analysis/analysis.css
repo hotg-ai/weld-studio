@@ -37,9 +37,8 @@
   height: 22px;
 }
 .sidebar_left .back-link__container a span {
-  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 500;
+  font-weight: bold;
   font-size: 16px;
   line-height: 20px;
 }
@@ -57,7 +56,6 @@
   margin-right: 0.5rem;
 }
 .sidebar_left .modules__container .title span {
-  font-family: "Montserrat";
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
@@ -107,10 +105,12 @@
 /* buttons */
 .btn-purple-round {
   background-color: #6034b6;
+  color: #fff;
   padding: 0.6rem 1.5rem;
   border-radius: 15px;
-  color: #ffffff;
+  outline: none;
   border-radius: 25px;
+  border: none;
   -webkit-border-radius: 25px;
   -moz-border-radius: 25px;
   -ms-border-radius: 25px;
@@ -120,6 +120,12 @@
   margin-inline-start: auto;
   display: block;
   width: fit-content;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-purple-round:hover {
+  background-color: #7549cd;
 }
 
 .btn-purpleOutline-round {
@@ -135,6 +141,11 @@
   float: right;
   margin-block-start: 1.5rem;
   border: 1px solid #6034b6;
+  transition: all 0.3s ease;
+}
+.btn-purpleOutline-round:hover {
+  background-color: #6034b6 !important;
+  color: #fff;
 }
 /* buttons */
 
@@ -342,6 +353,11 @@ input:checked + .slider:before {
   width: 100%;
   height: 35vh;
 }
+.studio-table__container table thead tr th:first-child,
+.studio-table__container table thead tr th:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 
 .btn-green-round {
   background-color: #00b594;
@@ -357,6 +373,10 @@ input:checked + .slider:before {
   display: block;
   width: fit-content;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-green-round:hover {
+  background-color: #42d8bc;
 }
 
 .btn-outline {
@@ -366,10 +386,6 @@ input:checked + .slider:before {
 
 .save_modal__container .modal-body-content {
   border-bottom: 0;
-}
-
-.save_modal__container .modal-body-content h4 {
-  margin-block-end: 0;
 }
 
 .save_modal__container .modal-body_title {
@@ -398,13 +414,15 @@ input:checked + .slider:before {
 .save_modal__container .input-file-trigger {
   display: flex;
   font-size: 1em;
-
   transition: all 0.4s;
   cursor: pointer;
   -webkit-transition: all 0.4s;
   -moz-transition: all 0.4s;
   -ms-transition: all 0.4s;
   -o-transition: all 0.4s;
+}
+.save_modal__container .input-file-trigger:hover {
+  background-color: #8159d1 !important;
 }
 
 .save_modal__container .input-file-container.dragFile .input-file-trigger {

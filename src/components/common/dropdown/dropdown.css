@@ -26,6 +26,7 @@
   position: relative;
   display: inline-block;
   width: 100%;
+  margin-bottom: 0.5rem;
 }
 
 .dropdown-content {
@@ -34,6 +35,15 @@
   padding: 16px;
   max-height: 200px;
   overflow-y: scroll;
+}
+.dropdown-content::-webkit-scrollbar {
+  background: transparent;
+  width: 6px;
+}
+.dropdown-content::-webkit-scrollbar-thumb {
+  background: #fff;
+  width: 100%;
+  border-radius: 10px;
 }
 
 .show {

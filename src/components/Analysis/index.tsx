@@ -138,9 +138,7 @@ function Anaysis() {
                 </div>
               </div>
 
-              <a href="" className="btn-purple-round">
-                Save as .SQL
-              </a>
+              <button className="btn-purple-round">Save as .SQL</button>
             </div>
 
             <div className="modal-footer">
