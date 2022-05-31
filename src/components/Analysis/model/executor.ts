@@ -1,4 +1,4 @@
-import { isStringArray } from "src/redux/actions/project/loadProject";
+import { isStringArray } from "../../../redux/actions/project/loadProject";
 import {
   CanvasLink,
   CanvasNode,
@@ -8,7 +8,7 @@ import {
 import { isMap, isObject, uniqueId } from "lodash";
 import { ProcBlockMetadata } from "./metadata";
 import { v4 as uuid } from "uuid";
-import { ProjectInfo } from "src/redux/reducers/builder";
+import { ProjectInfo } from "../../../redux/reducers/builder";
 
 import { load } from "./runtime";
 import * as rt from "./bindings/runtime-v1";

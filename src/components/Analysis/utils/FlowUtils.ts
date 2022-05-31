@@ -1,7 +1,7 @@
 import { Edge, Node, Position } from "react-flow-renderer";
-import { LoadedProject } from "src/redux/actions/project";
-import { FlowElements } from "src/redux/reactFlowSlice";
-import { ProjectInfo } from "src/redux/reducers/builder";
+import { LoadedProject } from "../../../redux/actions/project";
+import { FlowElements } from "../../../redux/reactFlowSlice";
+import { ProjectInfo } from "../../../redux/reducers/builder";
 import { Capability, Component, Model, ProcBlock, Tensor } from "../model";
 import { FlowNodeData } from "../model/FlowNodeComponent";
 import {

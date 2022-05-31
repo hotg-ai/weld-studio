@@ -1,9 +1,18 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 // Removal of the following import creates scary error phantoms in the tests
 import { AppDispatch, AppStoreState } from "../../../redux/store";
-import { ElementType, Model, Tensor } from "src/screens/Studio/model";
+import { ElementType, Model, Tensor } from "../../../components/Analysis/model";
 import { ThunkApiConfig } from "../project";
-import { base64Encode, fileAlreadyExists } from "./uploadFile";
+
+export function base64Encode(buffer: ArrayBuffer): string {
+  const charCodes: string[] = [];
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    charCodes.push(String.fromCharCode(bytes[i]));
+  }
+  return window.btoa(charCodes.join(""));
+}
 
 type ModelComponent = {
   key: string;
@@ -71,7 +80,7 @@ export const uploadModel = createAsyncThunk<
       outputs: outputs.map(toForgeTensor),
     };
     const raw = await fetch(
-      `https://func.hotg.ai/function/sbfs/project/${project.info.name}/${key}`,
+      `https://func.hotg.ai/function/sbfs/project/${displayName}/${key}`,
       {
         method: "POST",
         cache: "no-cache",
