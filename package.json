@@ -5,6 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@gitbeaker/core": "^35.6.0",
+    "@hotg-ai/rune-wit-files": "^0.2.4",
     "@monaco-editor/react": "^4.4.5",
     "@projectstorm/react-diagrams": "^6.6.1",
     "@projectstorm/react-diagrams-core": "^6.6.1",
@@ -15,7 +16,7 @@
     "@testing-library/user-event": "^13.2.1",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
-    "@types/react": "^18.0.0",
+    "@types/react": "^17.0.2",
     "@types/react-dom": "^18.0.0",
     "antd": "^4.20.7",
     "console-feed": "https://github.com/hotg-ai/console-feed.git#pkg",
