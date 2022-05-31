@@ -65,9 +65,8 @@
   height: 22px;
 }
 .dataset__sidebar__container.left .back-link__container a span {
-  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 500;
+  font-weight: bold;
   font-size: 16px;
   line-height: 20px;
 }
