@@ -9,7 +9,9 @@
 import { isArguments } from "lodash";
 import { ProcBlockV1 } from "./bindings/proc-block-v1";
 import * as rt from "./bindings/runtime-v1";
-import { ProcBlockMetadata } from "./metadata";
+import { ProcBlock } from "@hotg-ai/rune";
+
+ProcBlock.load;
 
 export type State = {
   arguments: Record<string, string>;
@@ -21,38 +23,38 @@ export type Evaluate = (
   inputs: Record<string, rt.Tensor>
 ) => Record<string, rt.Tensor>;
 
-export async function load(
-  wasm: Response | Promise<Response>
-): Promise<Evaluate> {
-  const sharedState: State = {
-    arguments: {},
-    inputs: {},
-    outputs: {},
-  };
-  const pb = new ProcBlockV1();
+// export async function load(
+//   wasm: Response | Promise<Response>
+// ): Promise<Evaluate> {
+//   const sharedState: State = {
+//     arguments: {},
+//     inputs: {},
+//     outputs: {},
+//   };
+//   const pb = new ProcBlockV1();
 
-  const imports: Record<string, any> = {};
-  rt.addRuntimeV1ToImports(
-    imports,
-    new Runtime(sharedState),
-    (name) => pb.instance.exports[name]
-  );
-  pb.addToImports(imports);
+//   const imports: Record<string, any> = {};
+//   rt.addRuntimeV1ToImports(
+//     imports,
+//     new Runtime(sharedState),
+//     (name) => pb.instance.exports[name]
+//   );
+//   pb.addToImports(imports);
 
-  await pb.instantiate(wasm, imports);
+//   await pb.instantiate(wasm, imports);
 
-  return (inputs) => {
-    sharedState.inputs = inputs;
-    const result = pb.kernel("");
+//   return (inputs) => {
+//     sharedState.inputs = inputs;
+//     const result = pb.kernel("");
 
-    if (result.tag == "err") {
-      console.error(result.val);
-      throw new Error("An error occurred (╯°□°）╯︵ ┻━┻");
-    }
+//     if (result.tag == "err") {
+//       console.error(result.val);
+//       throw new Error("An error occurred (╯°□°）╯︵ ┻━┻");
+//     }
 
-    return sharedState.outputs;
-  };
-}
+//     return sharedState.outputs;
+//   };
+// }
 
 type ArgumentHint = {};
 
@@ -87,61 +89,61 @@ class ArgumentMetadataWrapper implements rt.ArgumentMetadata {
   }
 }
 
-class ProcBlockMetadataWrapper implements rt.Metadata {
-  metadata: ProcBlockMetadata;
+// class ProcBlockMetadataWrapper implements rt.Metadata {
+//   metadata: rt.Metadata;
 
-  constructor(name: string, version: string) {
-    this.metadata = {
-      name,
-      version,
-      tags: [],
-      arguments: [],
-      inputs: [],
-      outputs: [],
-    };
-  }
+//   constructor(name: string, version: string) {
+//     this.metadata = {
+//       name,
+//       version,
+//       tags: [],
+//       arguments: [],
+//       inputs: [],
+//       outputs: [],
+//     };
+//   }
 
-  setDescription(description: string) {
-    this.metadata.description =
-      description.length > 0 ? description : undefined;
-  }
+//   setDescription(description: string) {
+//     this.metadata.description =
+//       description.length > 0 ? description : undefined;
+//   }
 
-  setRepository(url: string) {
-    this.metadata.repository = url || undefined;
-  }
+//   setRepository(url: string) {
+//     this.metadata.repository = url || undefined;
+//   }
 
-  setHomepage(url: string) {
-    this.metadata.homepage = url || undefined;
-  }
+//   setHomepage(url: string) {
+//     this.metadata.homepage = url || undefined;
+//   }
 
-  addTag(tag: string) {
-    this.metadata.tags.push(tag);
-  }
+//   addTag(tag: string) {
+//     this.metadata.tags.push(tag);
+//   }
 
-  addArgument(arg: rt.ArgumentMetadata) {
-    if (arg instanceof ArgumentMetadataWrapper) {
-      this.metadata.arguments.push(arg.metadata);
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
+//   addArgument(arg: rt.ArgumentMetadata) {
+//     if (arg instanceof ArgumentMetadataWrapper) {
+//       this.metadata.arguments.push(arg.metadata);
+//     } else {
+//       throw new Error("Unreachable");
+//     }
+//   }
 
-  addInput(tensor: rt.TensorMetadata) {
-    if (tensor instanceof TensorMetadataWrapper) {
-      this.metadata.inputs.push(tensor.metadata);
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
+//   addInput(tensor: rt.TensorMetadata) {
+//     if (tensor instanceof TensorMetadataWrapper) {
+//       this.metadata.inputs.push(tensor.metadata);
+//     } else {
+//       throw new Error("Unreachable");
+//     }
+//   }
 
-  addOutput(tensor: rt.TensorMetadata) {
-    if (tensor instanceof TensorMetadataWrapper) {
-      this.metadata.outputs.push(tensor.metadata);
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
-}
+//   addOutput(tensor: rt.TensorMetadata) {
+//     if (tensor instanceof TensorMetadataWrapper) {
+//       this.metadata.outputs.push(tensor.metadata);
+//     } else {
+//       throw new Error("Unreachable");
+//     }
+//   }
+// }
 
 class TensorMetadataWrapper implements rt.TensorMetadata {
   public metadata: {
@@ -163,63 +165,63 @@ class TensorMetadataWrapper implements rt.TensorMetadata {
   }
 }
 
-export class Runtime implements rt.RuntimeV1 {
-  constructor(private state: State) {}
+// export class Runtime implements rt.RuntimeV1 {
+//   constructor(private state: State) {}
 
-  //   metadataNew(name: string, version: string): ProcBlockMetadataWrapper {
-  //     return new ProcBlockMetadataWrapper(name, version);
-  //   }
+//   //   metadataNew(name: string, version: string): ProcBlockMetadataWrapper {
+//   //     return new ProcBlockMetadataWrapper(name, version);
+//   //   }
 
-  kernelContextForNode(nodeId: string): rt.KernelContext | null {
-    return new KernelContext(this.state);
-  }
+//   kernelContextForNode(nodeId: string): rt.KernelContext | null {
+//     return new KernelContext(this.state);
+//   }
 
-  metadataNew(name: string, version: string): rt.Metadata {
-    return new ProcBlockMetadataWrapper(name, version);
-  }
-  argumentMetadataNew(name: string): rt.ArgumentMetadata {
-    throw new Error("Method not implemented.");
-  }
-  tensorMetadataNew(name: string): rt.TensorMetadata {
-    throw new Error("Method not implemented.");
-  }
-  interpretAsImage(): rt.TensorHint {
-    throw new Error("Method not implemented.");
-  }
-  interpretAsAudio(): rt.TensorHint {
-    throw new Error("Method not implemented.");
-  }
-  supportedShapes(
-    supportedElementTypes: rt.ElementType[],
-    dimensions: rt.Dimensions
-  ): rt.TensorHint {
-    throw new Error("Method not implemented.");
-  }
-  interpretAsNumberInRange(min: string, max: string): rt.ArgumentHint {
-    throw new Error("Method not implemented.");
-  }
-  interpretAsStringInEnum(stringEnum: string[]): rt.ArgumentHint {
-    throw new Error("Method not implemented.");
-  }
-  nonNegativeNumber(): rt.ArgumentHint {
-    throw new Error("Method not implemented.");
-  }
-  supportedArgumentType(hint: rt.ArgumentType): rt.ArgumentHint {
-    throw new Error("Method not implemented.");
-  }
-  registerNode(metadata: rt.Metadata): void {
-    throw new Error("Method not implemented.");
-  }
-  graphContextForNode(nodeId: string): rt.GraphContext | null {
-    return new GraphContext(this.state);
-  }
-  isEnabled(metadata: rt.LogMetadata): boolean {
-    throw new Error("Method not implemented.");
-  }
-  log(metadata: rt.LogMetadata, message: string, data: rt.LogValueMap): void {
-    throw new Error("Method not implemented.");
-  }
-}
+//   metadataNew(name: string, version: string): rt.Metadata {
+//     return new ProcBlockMetadataWrapper(name, version);
+//   }
+//   argumentMetadataNew(name: string): rt.ArgumentMetadata {
+//     throw new Error("Method not implemented.");
+//   }
+//   tensorMetadataNew(name: string): rt.TensorMetadata {
+//     throw new Error("Method not implemented.");
+//   }
+//   interpretAsImage(): rt.TensorHint {
+//     throw new Error("Method not implemented.");
+//   }
+//   interpretAsAudio(): rt.TensorHint {
+//     throw new Error("Method not implemented.");
+//   }
+//   supportedShapes(
+//     supportedElementTypes: rt.ElementType[],
+//     dimensions: rt.Dimensions
+//   ): rt.TensorHint {
+//     throw new Error("Method not implemented.");
+//   }
+//   interpretAsNumberInRange(min: string, max: string): rt.ArgumentHint {
+//     throw new Error("Method not implemented.");
+//   }
+//   interpretAsStringInEnum(stringEnum: string[]): rt.ArgumentHint {
+//     throw new Error("Method not implemented.");
+//   }
+//   nonNegativeNumber(): rt.ArgumentHint {
+//     throw new Error("Method not implemented.");
+//   }
+//   supportedArgumentType(hint: rt.ArgumentType): rt.ArgumentHint {
+//     throw new Error("Method not implemented.");
+//   }
+//   registerNode(metadata: rt.Metadata): void {
+//     throw new Error("Method not implemented.");
+//   }
+//   graphContextForNode(nodeId: string): rt.GraphContext | null {
+//     return new GraphContext(this.state);
+//   }
+//   isEnabled(metadata: rt.LogMetadata): boolean {
+//     throw new Error("Method not implemented.");
+//   }
+//   log(metadata: rt.LogMetadata, message: string, data: rt.LogValueMap): void {
+//     throw new Error("Method not implemented.");
+//   }
+// }
 
 class KernelContext implements rt.KernelContext {
   constructor(private state: State) {}
