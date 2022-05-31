@@ -1,13 +1,26 @@
-import * as wit from "@hotg-ai/rune-wit-files";
-
+// import * as wit from "@hotg-ai/rune-wit-files";
 import {
-  ElementType,
-  ElementTypesTensor,
+  Metadata,
+  ArgumentMetadata,
+  TensorHint,
+  ArgumentHint,
+  MediaHint,
+  Runtime,
+  Rune,
+  TensorMetadata,
+  // ProcBlock,
+} from "@hotg-ai/rune";
+import { runtime_v1 } from "@hotg-ai/rune-wit-files";
+import {
   ProcBlock,
+  ElementTypesTensor,
   Property,
   PropertyWithDefaultValue,
   Tensor,
+  KnownType,
+  ElementType,
 } from ".";
+import { ArgumentType } from "./bindings/runtime-v1";
 
 export type ProcBlockMetadata = {
   name: string;
@@ -17,37 +30,31 @@ export type ProcBlockMetadata = {
   homepage?: string;
   tags: string[];
   arguments: ArgumentMetadata[];
-  inputs: TensorMetadata[];
-  outputs: TensorMetadata[];
+  inputs: Metadata[];
+  outputs: Metadata[];
 };
 
-export type TensorMetadata = {
-  name: string;
-  description?: string;
-  hints: TensorHint[];
-};
+// export type ArgumentMetadata = {
+//   name: string;
+//   description?: string;
+//   defaultValue?: string;
+//   typeHint?: wit.TypeHint;
+// };
 
-export type ArgumentMetadata = {
-  name: string;
-  description?: string;
-  defaultValue?: string;
-  typeHint?: wit.TypeHint;
-};
+// export type MediaHint = {
+//   type: "interpret-as";
+//   value: {
+//     media: "audio" | "image";
+//   };
+// };
 
-export type MediaHint = {
-  type: "interpret-as";
-  value: {
-    media: "audio" | "image";
-  };
-};
-
-export type SupportedShapesHint = {
-  type: "supported-shape";
-  value: {
-    accepted_element_types: wit.ElementType[];
-    dimensions: Dimensions;
-  };
-};
+// export type SupportedShapesHint = {
+//   type: "supported-shape";
+//   value: {
+//     accepted_element_types: wit.ElementType[];
+//     dimensions: Dimensions;
+//   };
+// };
 
 export type Dimensions = DimensionsDynamic | DimensionsFixed;
 
@@ -57,7 +64,7 @@ export type DimensionsFixed = {
   value: Array<number | null>;
 };
 
-export type TensorHint = MediaHint | SupportedShapesHint;
+// export type TensorHint = MediaHint | SupportedShapesHint;
 
 export function isTensorHint(item?: any): item is TensorHint {
   return (
@@ -65,42 +72,43 @@ export function isTensorHint(item?: any): item is TensorHint {
   );
 }
 
-export async function extractMetadata(
-  wasm: ArrayBuffer
-): Promise<ProcBlockMetadata> {
-  const rune = new wit.RuneV1();
+// export async function extractMetadata(
+//   wasm: ArrayBuffer
+// ): Promise<ProcBlockMetadata> {
+//   const rune = new Rune();
 
-  // create the imports object that gets passed to our WebAssembly module
-  const imports = {};
+//   // create the imports object that gets passed to our WebAssembly module
+//   const imports = {};
 
-  // Register our implementation of the "Runtime" interface
-  const runtime = new Runtime();
-  wit.addRuntimeV1ToImports(
-    imports,
-    runtime,
-    (name: string) => rune.instance.exports[name]
-  );
+//   // // Register our implementation of the "Runtime" interface
 
-  console.log("Loading WebAssembly module...");
-  // Only now can we finish initializing our Rune
-  await rune.instantiate(wasm, imports);
+//   // wit.addRuntimeV1ToImports(
+//   //   imports,
+//   //   runtime,
+//   //   (name: string) => rune.instance.exports[name]
+//   // );
 
-  try {
-    // ... and tell it to execute the startup code.
-    rune.start();
-  } catch (e) {
-    console.error("Start failed", e);
-    throw e;
-  }
+//   console.log("Loading WebAssembly module...");
+//   // Only now can we finish initializing our Rune
+//   await rune.instantiate(wasm, imports);
 
-  // As part of the proc-block's start() function it should have registered
-  // metadata for a node.
-  if (runtime.metadata) {
-    return runtime.metadata;
-  } else {
-    throw new Error("No metadata was registered");
-  }
-}
+//   await rune.load(wasm);
+//   try {
+//     // ... and tell it to execute the startup code.
+
+//   } catch (e) {
+//     console.error("Start failed", e);
+//     throw e;
+//   }
+
+//   // As part of the proc-block's start() function it should have registered
+//   // metadata for a node.
+//   if (runtime.metadata) {
+//     return runtime.metadata;
+//   } else {
+//     throw new Error("No metadata was registered");
+//   }
+// }
 
 /**
  * Try to convert the proc-block metadata into its corresponding component
@@ -112,7 +120,7 @@ export async function extractMetadata(
  */
 export function metadataToComponent(
   componentName: string,
-  meta: ProcBlockMetadata
+  meta: Metadata
 ): ProcBlock {
   const {
     name,
@@ -136,8 +144,10 @@ export function metadataToComponent(
     helperUrl: homepage || repository,
     acceptedInputElementTypes: convertElementTypesTensors(inputs),
     acceptedOutputElementTypes: convertElementTypesTensors(outputs),
-    exampleInputs: convertTensors(inputs),
-    exampleOutputs: convertTensors(outputs),
+    // exampleInputs: convertTensors(inputs),
+    // exampleOutputs: convertTensors(outputs),
+    exampleInputs: [],
+    exampleOutputs: [],
     properties: convertArguments(args),
     outputs: () => {
       throw new Error();
@@ -165,8 +175,8 @@ function convertElementTypesTensor(tensor: TensorMetadata): ElementTypesTensor {
   const elementTypes: ElementType[] = [];
 
   for (const hint of hints) {
-    if (hint.type == "supported-shape") {
-      const convertedTypes = hint.value.accepted_element_types.map((ty) => {
+    if (hint.type == "supported-shapes") {
+      const convertedTypes = hint.supportedElementTypes.map((ty) => {
         return convertElementType(ty);
       });
       elementTypes.push(...convertedTypes);
@@ -176,7 +186,9 @@ function convertElementTypesTensor(tensor: TensorMetadata): ElementTypesTensor {
   return { elementTypes };
 }
 
-function convertElementType(ty: wit.ElementType): ElementType {
+function convertElementType(
+  ty: ElementType | runtime_v1.ElementType
+): ElementType {
   switch (ty.toString()) {
     case "u8":
       return "u8";
@@ -209,11 +221,8 @@ function convertTensors(inputs: TensorMetadata[]): Tensor[] {
 }
 
 function exampleTensor({ name, description, hints }: TensorMetadata): Tensor {
-  const {
-    dimensions,
-    elementType,
-    dimensionType,
-  } = deriveExampleFromTensorHints(hints);
+  const { dimensions, elementType, dimensionType } =
+    deriveExampleFromTensorHints(hints);
   return {
     displayName: name,
     description,
@@ -230,13 +239,13 @@ function deriveExampleFromTensorHints(
   let elementType: ElementType | undefined;
   let dimensionType = "fixed";
   for (const hint of hints) {
-    if (hint.type == "supported-shape") {
-      elementType = convertElementType(hint.value.accepted_element_types[0]);
-      dimensionType = hint.value.dimensions.type;
-      if (hint.value.dimensions.type == "fixed") {
-        dimensions = [];
+    if (hint.type == "supported-shapes") {
+      elementType = convertElementType(hint.supportedElementTypes[0]);
 
-        hint.value.dimensions.value.forEach((d) => {
+      if (hint.dimensions.tag == "fixed") {
+        dimensions = [];
+        dimensionType = hint.dimensions.tag;
+        hint.dimensions.val.forEach((d) => {
           if (typeof d == "number") {
             dimensions.push(d);
           } else {
@@ -257,11 +266,8 @@ function convertArguments(args: ArgumentMetadata[]): Record<string, Property> {
   const properties: Record<string, Property> = {};
 
   for (const arg of args) {
-    const { typeHint, name, defaultValue, description } = arg;
-    const prop: PropertyWithDefaultValue = convertDefaults(
-      typeHint,
-      defaultValue
-    );
+    const { hints, name, defaultValue, description } = arg;
+    const prop: PropertyWithDefaultValue = convertDefaults(hints, defaultValue);
 
     const property: Property = {
       required: defaultValue ? defaultValue.length > 0 : false,
@@ -276,181 +282,95 @@ function convertArguments(args: ArgumentMetadata[]): Record<string, Property> {
 }
 
 function convertDefaults(
-  typeHint: wit.TypeHint | undefined,
+  typeHint: ArgumentHint[] | undefined,
   defaultValue: string | undefined
-): PropertyWithDefaultValue {
-  switch (typeHint) {
-    case wit.TypeHint.Float:
+): Property {
+  switch (typeHint[0].type) {
+    case "string-enum":
+      let enumValues: KnownType[] = [];
+      typeHint[0].possibleValues.forEach((value) =>
+        enumValues.push({
+          name: value,
+          value: parseFloat(value),
+        })
+      );
       return {
-        type: "float",
-        defaultValue: defaultValue ? parseFloat(defaultValue) : 0,
+        type: "string-enum",
+        enumValues,
+        defaultValue: enumValues[0].name,
+        required: true,
       };
-    case wit.TypeHint.Integer:
-      return {
-        type: "integer",
-        defaultValue: defaultValue ? parseInt(defaultValue) : 0,
-      };
-    case wit.TypeHint.OnelineString:
-      return { type: "string", defaultValue: defaultValue || "" };
-    case wit.TypeHint.MultilineString:
-      return { type: "longstring", defaultValue: defaultValue || "" };
-    case undefined:
-      return { type: "string", defaultValue: "" };
+    // case "number-in-range":
+    //   return {
+    //     valueConstraint: {
+    //       type: "range",
+    //     },
+    //     type: "integer",
+    //     defaultValue: defaultValue ? parseInt(defaultValue) : 0,
+    //   };
+    // case "non-negative-number":
+    //   return { type: "integer", defaultValue: defaultValue || "" };
+    // case "supported-argument-type":
+    //   return { type: "longstring", defaultValue: defaultValue || "" };
   }
 }
 
-class ArgumentMetadataWrapper implements wit.ArgumentMetadata {
-  metadata: ArgumentMetadata;
+// class Runtime implements wit.RuntimeV1 {
+//   metadata?: ProcBlockMetadata;
 
-  constructor(name: string) {
-    this.metadata = { name };
-  }
+//   metadataNew(name: string, version: string): ProcBlockMetadataWrapper {
+//     return new ProcBlockMetadataWrapper(name, version);
+//   }
 
-  setDescription(description: string) {
-    this.metadata.description = description;
-  }
+//   argumentMetadataNew(name: string): ArgumentMetadataWrapper {
+//     return new ArgumentMetadataWrapper(name);
+//   }
 
-  setDefaultValue(defaultValue: string) {
-    this.metadata.defaultValue = defaultValue;
-  }
+//   tensorMetadataNew(name: string): TensorMetadataWrapper {
+//     return new TensorMetadataWrapper(name);
+//   }
 
-  setTypeHint(hint: wit.TypeHint) {
-    this.metadata.typeHint = hint;
-  }
-}
+//   interpretAsImage(): TensorHint {
+//     return { type: "interpret-as", value: { media: "image" } };
+//   }
 
-class TensorMetadataWrapper implements wit.TensorMetadata {
-  metadata: TensorMetadata;
+//   interpretAsAudio(): TensorHint {
+//     return { type: "interpret-as", value: { media: "audio" } };
+//   }
 
-  constructor(name: string) {
-    this.metadata = { name, hints: [] };
-  }
+//   // supportedShapes(
+//   //   supportedElementTypes: wit.ElementType[],
+//   //   dimensions: wit.Dimensions
+//   // ): TensorHint {
+//   //   let dims: Dimensions;
 
-  setDescription(description: string) {
-    this.metadata.description = description;
-  }
+//   //   switch (dimensions.tag) {
+//   //     case "dynamic":
+//   //       dims = { type: "dynamic" };
+//   //       break;
+//   //     case "fixed":
+//   //       const dimensionLengths = [...dimensions.val];
+//   //       dims = {
+//   //         type: "fixed",
+//   //         value: dimensionLengths.map((d) => (d == 0 ? null : d)),
+//   //       };
+//   //       break;
+//   //   }
 
-  addHint(hint: wit.TensorHint) {
-    if (isTensorHint(hint)) {
-      this.metadata.hints.push(hint);
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
-}
+//   //   return {
+//   //     type: "supported-shape",
+//   //     value: {
+//   //       accepted_element_types: supportedElementTypes,
+//   //       dimensions: dims,
+//   //     },
+//   //   };
+//   // }
 
-class ProcBlockMetadataWrapper implements wit.Metadata {
-  metadata: ProcBlockMetadata;
-
-  constructor(name: string, version: string) {
-    this.metadata = {
-      name,
-      version,
-      tags: [],
-      arguments: [],
-      inputs: [],
-      outputs: [],
-    };
-  }
-
-  setDescription(description: string) {
-    this.metadata.description =
-      description.length > 0 ? description : undefined;
-  }
-
-  setRepository(url: string) {
-    this.metadata.repository = url || undefined;
-  }
-
-  setHomepage(url: string) {
-    this.metadata.homepage = url || undefined;
-  }
-
-  addTag(tag: string) {
-    this.metadata.tags.push(tag);
-  }
-
-  addArgument(arg: wit.ArgumentMetadata) {
-    if (arg instanceof ArgumentMetadataWrapper) {
-      this.metadata.arguments.push(arg.metadata);
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
-
-  addInput(tensor: wit.TensorMetadata) {
-    if (tensor instanceof TensorMetadataWrapper) {
-      this.metadata.inputs.push(tensor.metadata);
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
-
-  addOutput(tensor: wit.TensorMetadata) {
-    if (tensor instanceof TensorMetadataWrapper) {
-      this.metadata.outputs.push(tensor.metadata);
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
-}
-
-class Runtime implements wit.RuntimeV1 {
-  metadata?: ProcBlockMetadata;
-
-  metadataNew(name: string, version: string): ProcBlockMetadataWrapper {
-    return new ProcBlockMetadataWrapper(name, version);
-  }
-
-  argumentMetadataNew(name: string): ArgumentMetadataWrapper {
-    return new ArgumentMetadataWrapper(name);
-  }
-
-  tensorMetadataNew(name: string): TensorMetadataWrapper {
-    return new TensorMetadataWrapper(name);
-  }
-
-  interpretAsImage(): TensorHint {
-    return { type: "interpret-as", value: { media: "image" } };
-  }
-
-  interpretAsAudio(): TensorHint {
-    return { type: "interpret-as", value: { media: "audio" } };
-  }
-
-  supportedShapes(
-    supportedElementTypes: wit.ElementType[],
-    dimensions: wit.Dimensions
-  ): TensorHint {
-    let dims: Dimensions;
-
-    switch (dimensions.tag) {
-      case "dynamic":
-        dims = { type: "dynamic" };
-        break;
-      case "fixed":
-        const dimensionLengths = [...dimensions.val];
-        dims = {
-          type: "fixed",
-          value: dimensionLengths.map((d) => (d == 0 ? null : d)),
-        };
-        break;
-    }
-
-    return {
-      type: "supported-shape",
-      value: {
-        accepted_element_types: supportedElementTypes,
-        dimensions: dims,
-      },
-    };
-  }
-
-  registerNode(m: wit.Metadata) {
-    if (m instanceof ProcBlockMetadataWrapper) {
-      this.metadata = m.metadata;
-    } else {
-      throw new Error("Unreachable");
-    }
-  }
-}
+//   // registerNode(m: wit.Metadata) {
+//   //   if (m instanceof ProcBlockMetadataWrapper) {
+//   //     this.metadata = m.metadata;
+//   //   } else {
+//   //     throw new Error("Unreachable");
+//   //   }
+//   // }
+// }

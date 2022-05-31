@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Dropdown, DropdownOption } from "../common/dropdown";
 import Modal from "../Dataset/components/modal";
@@ -179,7 +179,7 @@ function Anaysis() {
                     htmlFor="my-file"
                     className="input-file-trigger"
                     onKeyDown={function (event: any) {
-                      if (event.keyCode == 13 || event.keyCode == 32) {
+                      if (event.keyCode === 13 || event.keyCode === 32) {
                         fileInput.focus();
                       }
                     }}

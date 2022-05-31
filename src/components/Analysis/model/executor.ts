@@ -1,4 +1,6 @@
 import { isStringArray } from "../../../redux/actions/project/loadProject";
+import { pino } from "pino";
+const logger = pino();
 import {
   CanvasLink,
   CanvasNode,
@@ -10,11 +12,13 @@ import { ProcBlockMetadata } from "./metadata";
 import { v4 as uuid } from "uuid";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 
-import { load } from "./runtime";
+// import { load } from "./runtime";
 import * as rt from "./bindings/runtime-v1";
 
 import { Port } from "./Storm";
 import { Tensor } from ".";
+
+import { ProcBlock } from "@hotg-ai/rune";
 
 const loadProject = async (projectName: string): Promise<RuneCanvas> => {
   const project: ProjectInfo = {
@@ -107,7 +111,7 @@ export const executeLocally = async (
           const response = await fetch(
             `https://func.hotg.ai/function/sbfs/pb/${name}.wasm`
           );
-          const evaluate = await load(response);
+          const evaluate = await ProcBlock.load(response, logger);
 
           const samples = new Float64Array([100, 200, 300]);
           const tensor: rt.Tensor = {
@@ -122,9 +126,9 @@ export const executeLocally = async (
            */
           let x;
           try {
-            x = evaluate({ samples: tensor });
+            x = evaluate.evaluate({}, {});
           } catch (e) {
-            x = evaluate({ input: tensor });
+            x = evaluate.evaluate({}, {});
           }
         }
       }

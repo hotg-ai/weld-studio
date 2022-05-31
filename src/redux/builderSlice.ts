@@ -192,17 +192,17 @@ export const builderSlice = createSlice({
           if (action.payload.diagram?.resources)
             state.resources = action.payload.diagram?.resources;
 
-          const procBlocks = Object.entries(state.project.procBlocks).map(
-            ([name, meta]) =>
-              [
-                `proc-block/${_.camelCase(name)}`,
-                metadataToComponent(name, meta),
-              ] as const
-          );
+          // const procBlocks = Object.entries(state.project.procBlocks).map(
+          //   ([name, meta]) =>
+          //     [
+          //       `proc-block/${_.camelCase(name)}`,
+          //       metadataToComponent(name, meta),
+          //     ] as const
+          // );
 
           state.components = {
             ...builtinComponents(),
-            ...Object.fromEntries(procBlocks),
+            // ...Object.fromEntries(procBlocks),
             ...action.payload.diagram?.components,
           };
           if (action.payload.buildLogs)
