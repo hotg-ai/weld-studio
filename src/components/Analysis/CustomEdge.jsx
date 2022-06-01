@@ -4,11 +4,11 @@ import {
   getEdgeCenter,
   getMarkerEnd,
 } from "react-flow-renderer";
-import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
-import { ClearSelectedNode } from "src/redux/builderSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { ClearSelectedNode } from "../../redux/builderSlice";
 
-import "./styles.scss";
-import deleteSvg from "./img/icons/delete.svg";
+// import "./styles.scss";
+import deleteSvg from "./icons/delete.svg";
 
 const foreignObjectSize = 40;
 

@@ -9,7 +9,7 @@ import {
   ColorFromComponentTypeHex,
   ColorFromComponentTypeString,
 } from "../utils/ForgeNodeUtils";
-import deleteBlackSvg from "../img/icons/deleteBlack.svg";
+import deleteBlackSvg from "../icons/deleteBlack.svg";
 
 import { Port, PortErrorComponent } from "./Storm";
 
