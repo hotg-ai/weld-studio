@@ -2,7 +2,7 @@ import capabilities from "./capabilities";
 import models from "./models";
 import outputs from "./outputs";
 
-function prefixKeys(
+export function prefixKeys(
   items: Record<string, Component>
 ): Record<string, Component> {
   const properties = Object.entries(items).map(

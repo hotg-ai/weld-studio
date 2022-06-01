@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { result } from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
 import {
   Upload,
@@ -17,13 +17,17 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import { QuestionMark, WebWhite } from "../../assets/index";
 
-import { Component } from "./model";
+import { Capability, Component, prefixKeys } from "./model";
 import { ColorFromComponentTypeString } from "./utils/ForgeNodeUtils";
 import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
 import { uploadModel } from "../../redux/actions/studio/uploadModel";
 import Modal from "antd/lib/modal/Modal";
 import TextArea from "antd/lib/input/TextArea";
+import { useLocation } from "react-router-dom";
+import capabilities from "./model/capabilities";
+import { DatasetTypes } from "../Dataset";
+import { stringify } from "querystring";
 export type ComponentListItemProps = {
   id: string;
   component: Component;
@@ -70,7 +74,7 @@ const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
     <div
       style={{ cursor: "pointer" }}
       draggable
-      className={`StudioBody--left__card StudioBody--left__card${color}`}
+      className={`dropdownOption__Content ${color}`}
       onDragStart={(event) => {
         event.dataTransfer.setData("forge-node-dragged", id);
         onDragStart(event, component.type);
@@ -230,7 +234,7 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                       onClick={() => toggleActiveCollapseKeys(type)}
                       className="itemCollapseName"
                     >
-                      {type}
+                      {type === "input" ? "Data Columns" : type}
                       {type === "input" && (
                         <button
                           onClick={(e) => {
@@ -290,14 +294,84 @@ function filter<V>(
   return Object.fromEntries(retained);
 }
 
+const generateCapabilities = (
+  dataColumns: string[],
+  dataTypes: DatasetTypes
+): Record<string, Capability> => {
+  let result: Record<string, Capability> = {};
+  Object.values(dataTypes).forEach((v) => {
+    Object.entries(v).forEach(([column, value]) => {
+      console.log(value, dataColumns);
+      if (dataColumns.filter((col) => col === column).length >= 0) {
+        column = column.replaceAll('"', "");
+        result[column] = {
+          type: "capability",
+          displayName: column,
+          identifier: column,
+          source: "builtin",
+          properties: {
+            // n: {
+            //   type: "integer",
+            //   description: "The number of samples",
+            //   required: true,
+            //   defaultValue: 1000,
+            // },
+            // source: {
+            //   type: "integer",
+            //   required: true,
+            //   defaultValue: 0,
+            //   description:
+            //     "Specify which input to use when multiple inputs are provided",
+            // },
+          },
+          description: "",
+          acceptedOutputElementTypes: [{ elementTypes: ["f32"] }],
+          outputs: (p) => {
+            const { n } = p;
+            if (typeof n !== "number") {
+              throw new Error();
+            }
+            return [
+              {
+                elementType: "f32",
+                defaultElementType: ["f32"],
+                dimensions: [1, n, 3, 1],
+                displayName: "Data Column",
+                description: "",
+                dimensionType: "fixed",
+              },
+            ];
+          },
+        };
+      }
+    });
+  });
+  return result;
+};
+
 export const ComponentsSelector = () => {
+  const { state } = useLocation();
+  let dataColumns: string[] = [];
+  let data: any = {};
+  let dataTypes: DatasetTypes = {};
+
+  Object.entries(state).map(([key, value]) => {
+    if (key == "dataColumns") dataColumns = value;
+    if (key == "data") data = value;
+    if (key == "dataTypes") dataTypes = value;
+  });
+
   const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
   const [progressState, setProgressState] = useState({
     show: false,
     active: false,
     done: false,
   });
-  const components = useAppSelector((s) => s.builder.components);
+  const components = {
+    ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
+    // ...prefixKeys(models()),
+    // ...prefixKeys(outputs()),
+  };
   const dispatch = useAppDispatch();
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
