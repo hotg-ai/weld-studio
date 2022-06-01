@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isMap, isObject, uniqueId } from "lodash";
 import { pino } from "pino";
-const logger = pino();
+
 import moment from "moment";
 import {
   // extractMetadata,
@@ -25,7 +25,7 @@ import { v4 as uuid } from "uuid";
 import * as projectJson from "../../../data/base.json";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import { ProcBlock, Metadata } from "@hotg-ai/rune";
-
+const logger = pino();
 export const loadProject = createAsyncThunk<
   LoadedProject,
   LoadProjectParams,

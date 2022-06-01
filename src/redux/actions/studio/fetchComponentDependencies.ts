@@ -4,14 +4,13 @@ import { uploadModel } from "./uploadModel";
 
 type FetchComponentDependencies = {
   componentID: string;
-  token: string;
 };
 
 export const fetchComponentDependencies = createAsyncThunk<
   void,
   FetchComponentDependencies,
   ThunkApiConfig
->("builder/fetchComponentDependencies", async ({ componentID, token }, api) => {
+>("builder/fetchComponentDependencies", async ({ componentID }, api) => {
   const {
     builder: { components, project },
   } = api.getState();
@@ -35,5 +34,5 @@ export const fetchComponentDependencies = createAsyncThunk<
 
   const response = await fetch(downloadURL);
   const model = await response.arrayBuffer();
-  api.dispatch(uploadModel({ displayName, model, path: identifier, token }));
+  api.dispatch(uploadModel({ displayName, model, path: identifier }));
 });
