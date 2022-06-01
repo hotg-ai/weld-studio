@@ -1,8 +1,6 @@
 import _ from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
 import {
-  Upload,
-  Button,
   message,
   Popover,
   Empty,
@@ -22,7 +20,7 @@ import { ColorFromComponentTypeString } from "./utils/ForgeNodeUtils";
 import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
 import { uploadModel } from "../../redux/actions/studio/uploadModel";
-import Modal from "antd/lib/modal/Modal";
+import Modal from "../Dataset/components/modal";
 import TextArea from "antd/lib/input/TextArea";
 export type ComponentListItemProps = {
   id: string;
@@ -76,7 +74,7 @@ const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
         onDragStart(event, component.type);
       }}
     >
-      <p>{component.displayName}</p>
+      <p style={{ margin: "0" }}>{component.displayName}</p>
       <Popover
         style={{ fontWeight: "600" }}
         color={nodeType2Color(component.type)}
@@ -205,25 +203,15 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
 
   return (
     <>
-      <div
-        ref={nodesListRef}
-        style={{
-          // maxHeight: nodesListHeight,
-          overflowY: "scroll",
-          paddingRight: "10px",
-          marginRight: "-10px",
-          scrollbarColor: "gray blue",
-          paddingBottom: "75px",
-        }}
-      >
+      <div ref={nodesListRef} className="nodeList__container">
         <aside>
           {states.componentTypeKeys.length ? (
-            <Collapse
-              className="StudioBody--left__cards"
-              ghost
-              activeKey={states.activeCollapseKeys}
-            >
-              {states.componentTypeKeys.map((type: string) => (
+            states.componentTypeKeys.map((type: string) => (
+              <Collapse
+                className="StudioBody--left__cards"
+                ghost
+                activeKey={states.activeCollapseKeys}
+              >
                 <Collapse.Panel
                   header={
                     <div
@@ -267,8 +255,8 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                     }
                   )}
                 </Collapse.Panel>
-              ))}
-            </Collapse>
+              </Collapse>
+            ))
           ) : (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -413,54 +401,55 @@ export const ComponentsSelector = () => {
           components={components}
         />
       </form>
-      <Modal
-        title="Add New Schema"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Submit"
-        className="schema_modal"
-      >
-        <div className="header">
-          <span>Code Editor Mode</span>
-          <Switch
-            style={{ background: "#7D2DFF" }}
-            onChange={(checked) => setShowSchematable(checked)}
-          />
-          <span>Table Mode</span>
-        </div>
-        <div className="content">
-          {showSchematable ? (
-            <div className="table__container">
-              <Table
-                dataSource={tableData}
-                columns={columns}
-                pagination={false}
-              />
-              <button
-                onClick={() => {
-                  setTableData((prev) => [
-                    ...prev,
-                    { name: "", dataType: "", parameter: "", nullable: false },
-                  ]);
-                }}
-              >
-                + Add Schema
-              </button>
-            </div>
-          ) : (
-            <div className="editor__container">
-              <TextArea
-                value={schemaCode}
-                onChange={(e) => setSchemaCode(e.target.value)}
-              />
-              <div>
-                <Checkbox>Nullable</Checkbox>
+      {isModalVisible && (
+        <Modal
+          title="Add New Schema"
+          setModalVisible={setIsModalVisible}
+          className="schema_modal"
+        >
+          <div className="header">
+            <span>Code Editor Mode</span>
+            <Switch onChange={(checked) => setShowSchematable(checked)} />
+            <span>Table Mode</span>
+          </div>
+          <div className="content">
+            {showSchematable ? (
+              <div className="table__container">
+                <Table
+                  dataSource={tableData}
+                  columns={columns}
+                  pagination={false}
+                />
+                <button
+                  onClick={() => {
+                    setTableData((prev) => [
+                      ...prev,
+                      {
+                        name: "",
+                        dataType: "",
+                        parameter: "",
+                        nullable: false,
+                      },
+                    ]);
+                  }}
+                >
+                  + Add Schema
+                </button>
               </div>
-            </div>
-          )}
-        </div>
-      </Modal>
+            ) : (
+              <div className="editor__container">
+                <TextArea
+                  value={schemaCode}
+                  onChange={(e) => setSchemaCode(e.target.value)}
+                />
+                <div>
+                  <Checkbox>Nullable</Checkbox>
+                </div>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
     </>
   );
 };

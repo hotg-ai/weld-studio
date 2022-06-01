@@ -1,3 +1,4 @@
+import { Collapse } from "antd";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Dropdown, DropdownOption } from "../common/dropdown";
@@ -19,11 +20,27 @@ const DummytTableData = [
 function Anaysis() {
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
+  const [activeCollapseKeys, setActiveCollapseKeys] = useState([
+    "Data Columns",
+  ]);
 
   const { id } = useParams();
 
   const fileInput = document.querySelector(".input-file") as HTMLInputElement,
     the_return = document.querySelector(".file-return")!;
+
+  const toggleActiveCollapseKeys = (key: string) => {
+    const activeCollapseKeysVar = [...activeCollapseKeys];
+    const keyIndex = activeCollapseKeysVar.indexOf(key);
+
+    if (keyIndex === -1) {
+      activeCollapseKeysVar.push(key);
+    } else {
+      activeCollapseKeysVar.splice(keyIndex, 1);
+    }
+
+    setActiveCollapseKeys(activeCollapseKeysVar);
+  };
 
   return (
     <div className="analysis_page">
@@ -40,30 +57,79 @@ function Anaysis() {
             <span>Drag Modules</span>
           </div>
 
-          <Dropdown title={"Data Columns"}>
-            <DropdownOption>
-              <div className="dropdownOption__Content pink">HHID: INTEGER</div>
+          <Collapse
+            className="StudioBody--left__cards"
+            ghost
+            activeKey={activeCollapseKeys}
+          >
+            <Collapse.Panel
+              header={
+                <div
+                  onClick={() => toggleActiveCollapseKeys("Data Columns")}
+                  className="itemCollapseName"
+                >
+                  Data Columns
+                </div>
+              }
+              key={"Data Columns"}
+            >
               <div className="dropdownOption__Content pink">
                 hahAVG_PN: FLOATaha
               </div>
               <div className="dropdownOption__Content pink">RCSR: INTEGER</div>
-            </DropdownOption>
-          </Dropdown>
-          <Dropdown title={"Predictive Analytics (Proc Block)"}>
-            <DropdownOption>
+            </Collapse.Panel>
+          </Collapse>
+
+          <Collapse
+            className="StudioBody--left__cards"
+            ghost
+            activeKey={activeCollapseKeys}
+          >
+            <Collapse.Panel
+              header={
+                <div
+                  onClick={() =>
+                    toggleActiveCollapseKeys(
+                      "Predictive Analytics (Proc Block)"
+                    )
+                  }
+                  className="itemCollapseName"
+                >
+                  Predictive Analytics (Proc Block)
+                </div>
+              }
+              key={"Predictive Analytics (Proc Block)"}
+            >
               <div className="dropdownOption__Content green">
                 Linear Mixed Model
               </div>
-            </DropdownOption>
-          </Dropdown>
-          <Dropdown title={"Image Classification"}>
-            <DropdownOption>
+            </Collapse.Panel>
+          </Collapse>
+
+          <Collapse
+            className="StudioBody--left__cards"
+            ghost
+            activeKey={activeCollapseKeys}
+          >
+            <Collapse.Panel
+              header={
+                <div
+                  onClick={() =>
+                    toggleActiveCollapseKeys("Image Classification")
+                  }
+                  className="itemCollapseName"
+                >
+                  Image Classification
+                </div>
+              }
+              key={"Image Classification"}
+            >
               <div className="dropdownOption__Content blue">
                 Classify Images
               </div>
               <div className="dropdownOption__Content blue">Predict Range</div>
-            </DropdownOption>
-          </Dropdown>
+            </Collapse.Panel>
+          </Collapse>
         </div>
         <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
