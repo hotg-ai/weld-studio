@@ -173,11 +173,11 @@ export default function StudioCanvas({}: OwnProps) {
   const onConnect = useCallback((connection: Connection) => {
     const id = uuid();
     setEdges((edges) =>
-      addEdge({ ...connection, id, animated: false, type: "custom" }, edges)
+      addEdge({ ...connection, id, animated: true, type: "custom" }, edges)
     );
     store.dispatch({
       type: "ADD_EDGE",
-      payload: addEdge({ ...connection, id, animated: false, type: "custom" }, [
+      payload: addEdge({ ...connection, id, animated: true, type: "custom" }, [
         ...diagram.edges,
       ]).slice(-1)[0],
     });

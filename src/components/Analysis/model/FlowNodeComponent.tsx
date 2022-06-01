@@ -140,7 +140,6 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
       className={`StudioBody--middle__up__item StudioBody--middle__up__item${ColorFromComponentTypeString(
         props.data.type
       )}`}
-      style={{ borderBottomStyle: "solid" }}
     >
       {props.data.inputs?.map((input, index, inputs) => {
         return (

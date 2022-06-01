@@ -474,6 +474,7 @@ export const builderSlice = createSlice({
         });
       })
       .addCase(loadBuildLogs.fulfilled, (state, action) => {
+        //@ts-ignore
         state.buildLogs[action.payload.jobId].logs = action.payload.logs;
       })
       .addCase(loadBuildLogs.rejected, (state) => {

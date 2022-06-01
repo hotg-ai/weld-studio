@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { Message } from "console-feed/src/definitions/Component";
+import { Message } from "console-feed/lib/definitions/Console";
 import { ErrorMessage } from "../../../redux/builderSlice";
 import { AppStoreState } from "../../../redux/store";
 

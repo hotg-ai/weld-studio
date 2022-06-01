@@ -12,7 +12,7 @@ import {
   Table,
   Checkbox,
 } from "antd";
-import { CloudUploadOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import { QuestionMark, WebWhite } from "../../assets/index";
@@ -21,14 +21,10 @@ import { Capability, Component, prefixKeys } from "./model";
 import { ColorFromComponentTypeString } from "./utils/ForgeNodeUtils";
 import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
-import { uploadModel } from "../../redux/actions/studio/uploadModel";
 import Modal from "antd/lib/modal/Modal";
 import TextArea from "antd/lib/input/TextArea";
-import { useLocation } from "react-router-dom";
-import capabilities from "./model/capabilities";
 import { DatasetTypes } from "../Dataset";
-import { stringify } from "querystring";
-import { ClearComponents, UpdateComponents } from "src/redux/builderSlice";
+import { UpdateComponents } from "src/redux/builderSlice";
 import outputs from "./model/outputs";
 export type ComponentListItemProps = {
   id: string;
@@ -76,13 +72,13 @@ const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
     <div
       style={{ cursor: "pointer" }}
       draggable
-      className={`dropdownOption__Content ${color}`}
+      className={`StudioBody--left__card StudioBody--left__card${color}`}
       onDragStart={(event) => {
         event.dataTransfer.setData("forge-node-dragged", id);
         onDragStart(event, component.type);
       }}
     >
-      <p>{component.displayName}</p>
+      <p style={{ margin: "0" }}>{component.displayName}</p>
       <Popover
         style={{ fontWeight: "600" }}
         color={nodeType2Color(component.type)}
@@ -211,25 +207,15 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
 
   return (
     <>
-      <div
-        ref={nodesListRef}
-        style={{
-          // maxHeight: nodesListHeight,
-          overflowY: "scroll",
-          paddingRight: "10px",
-          marginRight: "-10px",
-          scrollbarColor: "gray blue",
-          paddingBottom: "75px",
-        }}
-      >
+      <div ref={nodesListRef} className="nodeList__container">
         <aside>
           {states.componentTypeKeys.length ? (
-            <Collapse
-              className="StudioBody--left__cards"
-              ghost
-              activeKey={states.activeCollapseKeys}
-            >
-              {states.componentTypeKeys.map((type: string) => (
+            states.componentTypeKeys.map((type: string) => (
+              <Collapse
+                className="StudioBody--left__cards"
+                ghost
+                activeKey={states.activeCollapseKeys}
+              >
                 <Collapse.Panel
                   header={
                     <div
@@ -273,8 +259,8 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                     }
                   )}
                 </Collapse.Panel>
-              ))}
-            </Collapse>
+              </Collapse>
+            ))
           ) : (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -359,12 +345,6 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
     active: false,
     done: false,
   });
-
-  // const components = {
-  //   ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
-  //   // ...prefixKeys(models()),
-  //   // ),
-  // };
 
   useMemo(() => {
     dispatch(
@@ -490,54 +470,51 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
           components={components}
         />
       </form>
-      <Modal
-        title="Add New Schema"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Submit"
-        className="schema_modal"
-      >
-        <div className="header">
-          <span>Code Editor Mode</span>
-          <Switch
-            style={{ background: "#7D2DFF" }}
-            onChange={(checked) => setShowSchematable(checked)}
-          />
-          <span>Table Mode</span>
-        </div>
-        <div className="content">
-          {showSchematable ? (
-            <div className="table__container">
-              <Table
-                dataSource={tableData}
-                columns={columns}
-                pagination={false}
-              />
-              <button
-                onClick={() => {
-                  setTableData((prev) => [
-                    ...prev,
-                    { name: "", dataType: "", parameter: "", nullable: false },
-                  ]);
-                }}
-              >
-                + Add Schema
-              </button>
-            </div>
-          ) : (
-            <div className="editor__container">
-              <TextArea
-                value={schemaCode}
-                onChange={(e) => setSchemaCode(e.target.value)}
-              />
-              <div>
-                <Checkbox>Nullable</Checkbox>
+      {isModalVisible && (
+        <Modal title="Add New Schema" className="schema_modal">
+          <div className="header">
+            <span>Code Editor Mode</span>
+            <Switch onChange={(checked) => setShowSchematable(checked)} />
+            <span>Table Mode</span>
+          </div>
+          <div className="content">
+            {showSchematable ? (
+              <div className="table__container">
+                <Table
+                  dataSource={tableData}
+                  columns={columns}
+                  pagination={false}
+                />
+                <button
+                  onClick={() => {
+                    setTableData((prev) => [
+                      ...prev,
+                      {
+                        name: "",
+                        dataType: "",
+                        parameter: "",
+                        nullable: false,
+                      },
+                    ]);
+                  }}
+                >
+                  + Add Schema
+                </button>
               </div>
-            </div>
-          )}
-        </div>
-      </Modal>
+            ) : (
+              <div className="editor__container">
+                <TextArea
+                  value={schemaCode}
+                  onChange={(e) => setSchemaCode(e.target.value)}
+                />
+                <div>
+                  <Checkbox>Nullable</Checkbox>
+                </div>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
     </>
   );
 };
