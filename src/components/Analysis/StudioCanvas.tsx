@@ -71,7 +71,7 @@ export default function StudioCanvas({}: OwnProps) {
   /*
     React Flow Props
   */
-  const nodeTypes = useMemo(
+  const nodeTypes: NodeTypes = useMemo(
     () => ({
       capability: FlowNodeComponent,
       model: FlowNodeComponent,
@@ -272,6 +272,7 @@ export default function StudioCanvas({}: OwnProps) {
   }
 
   const edgeTypes = useMemo(() => ({ custom: CustomEdge }), []);
+  
   return (
     <div
       ref={reactFlowWrapper}

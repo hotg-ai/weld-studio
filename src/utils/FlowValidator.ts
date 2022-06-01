@@ -1,5 +1,3 @@
-import { TrademarkOutlined } from "@ant-design/icons";
-import { Console } from "console";
 import _ from "lodash";
 import {
   Connection,
@@ -11,7 +9,6 @@ import {
 import { FlowElements } from "../redux/reactFlowSlice";
 import { detectInvalidNodes, detectInvalidNodesPort } from "../utils";
 import { Component } from "../components/Analysis/model";
-import capabilities from "../components/Analysis/model/capabilities";
 import { FlowNodeData } from "../components/Analysis/model/FlowNodeComponent";
 
 export type ValidatorErrorHintTarget = {
