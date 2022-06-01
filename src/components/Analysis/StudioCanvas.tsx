@@ -6,9 +6,15 @@ import React, {
   useState,
 } from "react";
 import { v4 as uuid } from "uuid";
-import { Component } from "./model";
+import {
+  Component,
+  modelProperties,
+  outputProperties,
+  Property,
+  PropertyValues,
+  Tensor,
+} from "./model";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { defaultPropertyValues, inputs, outputs } from "./model/ForgeNodeModel";
 import { ClearSelectedNode, SelectNode } from "../../redux/builderSlice";
 import { AppDispatch, store } from "../../redux/store";
 import { fetchComponentDependencies } from "../../redux/actions/studio/fetchComponentDependencies";
@@ -34,7 +40,70 @@ import CustomEdge from "./CustomEdge";
 
 type OwnProps = {};
 
+function componentProperties(component: Component): Record<string, Property> {
+  switch (component.type) {
+    case "capability":
+    case "proc-block":
+      return component.properties;
+    case "model":
+      return modelProperties;
+    case "output":
+      return outputProperties;
+    default:
+      throw new Error(
+        "Typescript makes sure this is unreachable, but eslint insists on the branch anyway 🤷"
+      );
+  }
+}
+
+export function defaultPropertyValues(
+  component: Component
+): Record<string, string | number> {
+  const values: Record<string, string | number> = {};
+  const properties = componentProperties(component);
+
+  for (const [name, property] of Object.entries(properties)) {
+    values[name] = property.defaultValue;
+  }
+
+  return values;
+}
+
+export function inputs(component: Component): Tensor[] {
+  switch (component.type) {
+    case "capability":
+      return [];
+    case "model":
+      return component.inputs;
+    case "proc-block":
+      // TODO: Proc-blocks can be generic over their inputs, so we should
+      // probably do something smarter here
+      return component.exampleInputs;
+    case "output":
+      // TODO: figure out how to represent "any tensor"
+      return component.exampleInputs;
+  }
+}
+
+export function outputs(
+  component: Component,
+  propertyValues: PropertyValues
+): Tensor[] {
+  switch (component.type) {
+    case "capability":
+      return component.outputs(propertyValues);
+    case "model":
+      return component.outputs;
+    case "proc-block":
+      // TODO: Compute this using component.outputs()
+      return component.exampleOutputs;
+    default:
+      return [];
+  }
+}
+
 export default function StudioCanvas({}: OwnProps) {
+  console.log("STUDIO CANVAS LOADED");
   const [canvasNodes, setNodes] = useState<Node<FlowNodeData>[]>([]);
   const [canvasEdges, setEdges] = useState<Edge<undefined>[]>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -71,7 +140,7 @@ export default function StudioCanvas({}: OwnProps) {
   /*
     React Flow Props
   */
-  const nodeTypes: NodeTypes = useMemo(
+  const nodeTypes = useMemo(
     () => ({
       capability: FlowNodeComponent,
       model: FlowNodeComponent,
@@ -272,7 +341,7 @@ export default function StudioCanvas({}: OwnProps) {
   }
 
   const edgeTypes = useMemo(() => ({ custom: CustomEdge }), []);
-  
+
   return (
     <div
       ref={reactFlowWrapper}

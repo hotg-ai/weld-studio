@@ -90,7 +90,7 @@ function componentProperties(component: Component): Record<string, Property> {
   }
 }
 
-export function defaultPropertyValues(
+function defaultPropertyValues(
   component: Component
 ): Record<string, string | number> {
   const values: Record<string, string | number> = {};
@@ -103,7 +103,7 @@ export function defaultPropertyValues(
   return values;
 }
 
-export function inputs(component: Component): Tensor[] {
+function inputs(component: Component): Tensor[] {
   switch (component.type) {
     case "capability":
       return [];
@@ -119,7 +119,7 @@ export function inputs(component: Component): Tensor[] {
   }
 }
 
-export function outputs(
+function outputs(
   component: Component,
   propertyValues: PropertyValues
 ): Tensor[] {
