@@ -175,6 +175,24 @@ export const builderSlice = createSlice({
         refreshDimensions: !state.refreshDimensions,
       };
     },
+    ClearComponents: (state: builderState) => {
+      return {
+        ...state,
+        components: {},
+      };
+    },
+    UpdateComponents: (
+      state: builderState,
+      action: PayloadAction<Record<string, Component>>
+    ) => {
+      return {
+        ...state,
+        components: {
+          ...state.components,
+          ...action.payload,
+        },
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -479,5 +497,7 @@ export const {
   SetOnboardingCredentials,
   SetProgressBarPercentage,
   RefreshDimensions,
+  ClearComponents,
+  UpdateComponents,
 } = builderSlice.actions;
 export default builderSlice.reducer;

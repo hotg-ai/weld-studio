@@ -19,6 +19,7 @@ export const store = configureStore({
       serializableCheck: {
         // Ignore these action types
         ignoredActions: [
+          "builder/UpdateComponents",
           "builder/SetForgeCredentials",
           "SELECT_NODE",
           "BUILD_PROJECT",

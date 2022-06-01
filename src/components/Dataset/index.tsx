@@ -9,7 +9,25 @@ import Table from "./components/table";
 import "./dataset.css";
 import { TableData } from "../../types";
 
-import Modal from "./components/modal";
+
+type IntegerColumnType = {
+  type: "INTEGER";
+  value: Uint16Array;
+};
+
+type DoubleColumnType = {
+  type: "DOUBLE";
+  value: Float64Array;
+};
+
+type VarcharColumnType = {
+  type: "VARCHAR";
+  value: string;
+};
+
+type TableColumnType = IntegerColumnType | DoubleColumnType | VarcharColumnType;
+type TableColumnTypes = Record<string, TableColumnType>;
+export type DatasetTypes = Record<string, TableColumnTypes>;
 
 const Dataset = ({
   setSql,
@@ -32,6 +50,30 @@ const Dataset = ({
         alert("something went wrong, Please copy the link again!");
       });
   };
+  let dataTypes: DatasetTypes = {};
+
+  tables.map((table: TableData, tidx: number) => {
+    if (!dataTypes[table.table_name]) dataTypes[table.table_name] = {};
+    table.column_names.map((item, idx) => {
+      if (!dataTypes[table.table_name][item]) {
+        if (table.column_types[idx] === "INTEGER")
+          dataTypes[table.table_name][item] = {
+            type: "INTEGER",
+            value: new Uint16Array(),
+          };
+        if (table.column_types[idx] === "DOUBLE")
+          dataTypes[table.table_name][item] = {
+            type: "DOUBLE",
+            value: new Float64Array(),
+          };
+        if (table.column_types[idx] === "VARCHAR")
+          dataTypes[table.table_name][item] = {
+            type: "VARCHAR",
+            value: "",
+          };
+      }
+    });
+  });
 
   return (
     <div className="dataset_page">
@@ -101,7 +143,14 @@ const Dataset = ({
               <img src="/assets/share.svg" alt="" />
               <span>Share</span>
             </button> */}
-            <Link to={`/analysis/${id}`}>
+            <Link
+              to={{ pathname: `/analysis/${id}` }}
+              state={{
+                dataColumns: data && data.length ? Object.keys(data[0]) : {},
+                data: data,
+                dataTypes,
+              }}
+            >
               <button>
                 <span> Add Analysis</span>
               </button>

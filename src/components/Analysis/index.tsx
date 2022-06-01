@@ -1,28 +1,32 @@
 import { Collapse } from "antd";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { Dropdown, DropdownOption } from "../common/dropdown";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { DatasetTypes } from "../Dataset";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
 import "./analysis.css";
+import InputDimensions from "./InputDimensions";
+import OutputDimensions from "./OutputDimensions";
+import Properties from "./Properties";
 import StudioCanvas from "./StudioCanvas";
 import { ComponentsSelector } from "./StudioComponentsSelector";
 
-const DummytTableData = [
-  { name: "sam", age: 20, job: "developer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-];
-function Anaysis() {
+function Analysis() {
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
+  const { state } = useLocation();
+  let dataColumns: string[] = [];
+  let data: any = {};
+  let dataTypes: DatasetTypes = {};
+
+  Object.entries(state).map(([key, value]) => {
+    if (key == "dataColumns") dataColumns = value;
+    if (key == "data") data = value;
+    if (key == "dataTypes") dataTypes = value;
+  });
 
   const { id } = useParams();
 
@@ -134,7 +138,11 @@ function Anaysis() {
         <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
         </button>
-        <ComponentsSelector />
+        <ComponentsSelector
+          data={data}
+          dataColumns={dataColumns}
+          dataTypes={dataTypes}
+        />
       </div>
 
       <div className="analysis_page_content">
@@ -152,7 +160,7 @@ function Anaysis() {
                 <img src="/assets/properties.svg" alt="" />
                 <span>Properties</span>
               </div>
-              <div className="inputs__container">
+              {/* <div className="inputs__container">
                 <label>
                   Data Type: <input type="text" />
                 </label>
@@ -162,12 +170,15 @@ function Anaysis() {
                 <label>
                   Nullable: <input type="checkbox" />
                 </label>
-              </div>
+              </div> */}
+              <InputDimensions disabled />
+              <Properties disabled />
+              <OutputDimensions disabled />
             </div>
           </div>
         </div>
         <div className="studio-table__container">
-          <Table data={DummytTableData} />
+          <Table data={data} />
         </div>
       </div>
 
@@ -183,7 +194,14 @@ function Anaysis() {
 
               <div>
                 <div className="btn-switch">
-                  <p>Datasets / Schemas</p>
+                  <p>Dataset</p>
+                  <label className="switch">
+                    <input type="checkbox" />
+                    <span className="slider round"></span>
+                  </label>
+                </div>
+                <div className="btn-switch">
+                  <p>Schemas</p>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider round"></span>
@@ -199,7 +217,7 @@ function Anaysis() {
                 </div>
 
                 <div className="btn-switch">
-                  <p>Weld Analaysis</p>
+                  <p>Weld Analysis</p>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider round"></span>
@@ -207,7 +225,7 @@ function Anaysis() {
                 </div>
               </div>
 
-              <button className="btn-purple-round">Save as .SQL</button>
+              <button className="btn-purple-round">Save as .Weld</button>
             </div>
 
             <div className="modal-footer">
@@ -296,4 +314,4 @@ function Anaysis() {
   );
 }
 
-export default Anaysis;
+export default Analysis;

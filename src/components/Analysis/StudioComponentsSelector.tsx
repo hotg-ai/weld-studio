@@ -1,6 +1,8 @@
-import _ from "lodash";
+import _, { result } from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
 import {
+  Upload,
+  Button,
   message,
   Popover,
   Empty,
@@ -10,18 +12,20 @@ import {
   Table,
   Checkbox,
 } from "antd";
-import { CloudUploadOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import { QuestionMark, WebWhite } from "../../assets/index";
 
-import { Component } from "./model";
+import { Capability, Component, prefixKeys } from "./model";
 import { ColorFromComponentTypeString } from "./utils/ForgeNodeUtils";
 import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
-import { uploadModel } from "../../redux/actions/studio/uploadModel";
-import Modal from "../Dataset/components/modal";
+import Modal from "antd/lib/modal/Modal";
 import TextArea from "antd/lib/input/TextArea";
+import { DatasetTypes } from "../Dataset";
+import { UpdateComponents } from "src/redux/builderSlice";
+import outputs from "./model/outputs";
 export type ComponentListItemProps = {
   id: string;
   component: Component;
@@ -218,7 +222,7 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                       onClick={() => toggleActiveCollapseKeys(type)}
                       className="itemCollapseName"
                     >
-                      {type}
+                      {type === "input" ? "Data Columns" : type}
                       {type === "input" && (
                         <button
                           onClick={(e) => {
@@ -278,15 +282,80 @@ function filter<V>(
   return Object.fromEntries(retained);
 }
 
-export const ComponentsSelector = () => {
+const generateCapabilities = (
+  dataColumns: string[],
+  dataTypes: DatasetTypes
+): Record<string, Capability> => {
+  let result: Record<string, Capability> = {};
+  Object.values(dataTypes).forEach((v) => {
+    Object.entries(v).forEach(([column, value]) => {
+      if (dataColumns.filter((col) => col === column).length > 0) {
+        column = column.replaceAll('"', "");
+        result[column] = {
+          type: "capability",
+          displayName: column,
+          identifier: "RAW",
+          source: "custom",
+          properties: {
+            length: {
+              type: "integer",
+              defaultValue: 1,
+              required: true,
+              description: "Length of raw data in bytes",
+            },
+            source: {
+              type: "integer",
+              required: true,
+              defaultValue: 0,
+              description:
+                "Specify which input to use when multiple inputs are provided",
+            },
+          },
+          description: "",
+          acceptedOutputElementTypes: [{ elementTypes: ["f32"] }],
+          outputs: (p) => {
+            const { length } = p;
+            if (typeof length !== "number") {
+              throw new Error();
+            }
+
+            return [
+              {
+                elementType: "u8",
+                dimensions: [length],
+                displayName: "data",
+                description: `Raw output from ${column} Column`,
+                dimensionType: "fixed",
+              },
+            ];
+          },
+        };
+      }
+    });
+  });
+  return result;
+};
+
+export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
+  const dispatch = useAppDispatch();
+  const components = useAppSelector((s) => s.builder.components);
   const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
   const [progressState, setProgressState] = useState({
     show: false,
     active: false,
     done: false,
   });
-  const components = useAppSelector((s) => s.builder.components);
-  const dispatch = useAppDispatch();
+
+  useMemo(() => {
+    dispatch(
+      UpdateComponents({
+        ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
+        ...prefixKeys(outputs()),
+      })
+    );
+  }, [dataColumns, dataTypes]);
+
+  // dispatch(ClearComponents());
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [schemaCode, setSchemaCode] = useState("");
@@ -402,11 +471,7 @@ export const ComponentsSelector = () => {
         />
       </form>
       {isModalVisible && (
-        <Modal
-          title="Add New Schema"
-          setModalVisible={setIsModalVisible}
-          className="schema_modal"
-        >
+        <Modal title="Add New Schema" className="schema_modal">
           <div className="header">
             <span>Code Editor Mode</span>
             <Switch onChange={(checked) => setShowSchematable(checked)} />
