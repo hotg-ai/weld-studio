@@ -34,7 +34,6 @@ export type ModelInfo = {
 type UploadModelArgs = {
   displayName: string;
   path: string;
-  token: string;
   model: ArrayBuffer;
 };
 
@@ -65,32 +64,29 @@ export const uploadModel = createAsyncThunk<
   ModelComponent,
   UploadModelArgs,
   ThunkApiConfig
->(
-  "builder/uploadModel",
-  async ({ token, path, model, displayName }, thunkApi) => {
-    const { inputs, outputs } = await modelInfo(model, token);
-    const key = `model/${path}`;
-    const component: Model = {
-      type: "model",
-      displayName,
-      identifier: path,
-      format: "tensorflow-lite",
-      source: "custom",
-      inputs: inputs.map(toForgeTensor),
-      outputs: outputs.map(toForgeTensor),
-    };
-    const raw = await fetch(
-      `https://func.hotg.ai/function/sbfs/project/${displayName}/${key}`,
-      {
-        method: "POST",
-        cache: "no-cache",
-        headers: {
-          "Content-Type": "application/octet-stream",
-        },
-        body: base64Encode(model),
-        mode: "no-cors",
-      }
-    );
-    return { key, model: component };
-  }
-);
+>("builder/uploadModel", async ({ path, model, displayName }, thunkApi) => {
+  const { inputs, outputs } = await modelInfo(model, "");
+  const key = `model/${path}`;
+  const component: Model = {
+    type: "model",
+    displayName,
+    identifier: path,
+    format: "tensorflow-lite",
+    source: "custom",
+    inputs: inputs.map(toForgeTensor),
+    outputs: outputs.map(toForgeTensor),
+  };
+  const raw = await fetch(
+    `https://func.hotg.ai/function/sbfs/project/${displayName}/${key}`,
+    {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/octet-stream",
+      },
+      body: base64Encode(model),
+      mode: "no-cors",
+    }
+  );
+  return { key, model: component };
+});

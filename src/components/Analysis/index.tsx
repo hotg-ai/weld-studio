@@ -4,6 +4,7 @@ import { Dropdown, DropdownOption } from "../common/dropdown";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
 import "./analysis.css";
+import StudioCanvas from "./StudioCanvas";
 
 const DummytTableData = [
   { name: "sam", age: 20, job: "developer" },
@@ -71,7 +72,7 @@ function Anaysis() {
       <div className="analysis_page_content">
         <div className="studio__container">
           <div className="studio__content">
-            <h5>Drop Here</h5>
+            <StudioCanvas />
           </div>
           <div className="sidebar_right">
             <button onClick={() => setCustomModalVisible(true)}>

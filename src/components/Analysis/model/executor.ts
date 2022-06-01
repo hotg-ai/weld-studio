@@ -1,6 +1,6 @@
 import { isStringArray } from "../../../redux/actions/project/loadProject";
 import { pino } from "pino";
-const logger = pino();
+
 import {
   CanvasLink,
   CanvasNode,
@@ -19,7 +19,7 @@ import { Port } from "./Storm";
 import { Tensor } from ".";
 
 import { ProcBlock } from "@hotg-ai/rune";
-
+const logger = pino();
 const loadProject = async (projectName: string): Promise<RuneCanvas> => {
   const project: ProjectInfo = {
     name: projectName,

@@ -1,472 +1,322 @@
-import _ from "lodash";
-import {
-  useState,
+import React, {
+  useCallback,
   useEffect,
-  useRef,
   useMemo,
-  DragEvent,
-  SetStateAction,
+  useRef,
+  useState,
 } from "react";
-import {
-  Upload,
-  Button,
-  message,
-  Popover,
-  Empty,
-  Input,
-  Collapse,
-  Switch,
-  Table,
-  Checkbox,
-} from "antd";
-import { CloudUploadOutlined, PlusOutlined } from "@ant-design/icons";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { QuestionMark, WebWhite } from "../../assets/index";
-
+import { v4 as uuid } from "uuid";
 import { Component } from "./model";
-import { ColorFromComponentTypeString } from "./utils/ForgeNodeUtils";
-import { UploadChangeParam } from "antd/lib/upload";
-import { UploadFile } from "antd/lib/upload/interface";
-import Modal from "antd/lib/modal/Modal";
-import TextArea from "antd/lib/input/TextArea";
-export type ComponentListItemProps = {
-  id: string;
-  component: Component;
-};
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { defaultPropertyValues, inputs, outputs } from "./model/ForgeNodeModel";
+import { ClearSelectedNode, SelectNode } from "../../redux/builderSlice";
+import { AppDispatch, store } from "../../redux/store";
+import { fetchComponentDependencies } from "../../redux/actions/studio/fetchComponentDependencies";
+import ReactFlow, {
+  Controls,
+  Position,
+  addEdge,
+  Connection,
+  Edge,
+  Node,
+  applyEdgeChanges,
+  applyNodeChanges,
+  ReactFlowInstance,
+  ConnectionMode,
+  NodeTypes,
+} from "react-flow-renderer";
+import { FlowNodeData, FlowNodeComponent } from "./model/FlowNodeComponent";
+import { flowCanvasToDiagram } from "./utils/FlowUtils";
+import { isDiagramValid } from "./utils/FlowValidator";
+import { expressValidationHinting } from "../../utils";
+import CustomEdge from "./CustomEdge";
 
-const nodeType2Color = (
-  type: string
-):
-  | "purple"
-  | "pink"
-  | "red"
-  | "yellow"
-  | "orange"
-  | "cyan"
-  | "green"
-  | "blue"
-  | "geekblue"
-  | "magenta"
-  | "volcano"
-  | "gold"
-  | "lime" => {
-  switch (type) {
-    case "capability":
-      return "purple";
-    case "model":
-      return "pink";
-    case "proc-block":
-      return "cyan";
-    case "output":
-      return "green";
-    default:
-      return "purple";
-  }
-};
+type OwnProps = {};
 
-const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
-  const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
-    event.dataTransfer.setData("application/reactflow", nodeType);
-    event.dataTransfer.setData("application/json", JSON.stringify(component));
-    event.dataTransfer.effectAllowed = "move";
-  };
-  const color = ColorFromComponentTypeString(component.type);
-  return (
-    <div
-      style={{ cursor: "pointer" }}
-      draggable
-      className={`StudioBody--left__card StudioBody--left__card${color}`}
-      onDragStart={(event) => {
-        event.dataTransfer.setData("forge-node-dragged", id);
-        onDragStart(event, component.type);
-      }}
-    >
-      <p>{component.displayName}</p>
-      <Popover
-        style={{ fontWeight: "600" }}
-        color={nodeType2Color(component.type)}
-        placement="right"
-        title={`A ${component.type}`}
-        content={
-          <div>
-            <p style={{ width: "200px", wordWrap: "break-word" }}>
-              {component.description}
-            </p>
-            <p
-              hidden={
-                component.helperUrl === undefined || component.helperUrl === ""
-              }
-            >
-              <br />
-              Link:{" "}
-              <a href={component.helperUrl} target="_blank" rel="noreferrer">
-                <img src={WebWhite} className="select--icon" />
-              </a>
-            </p>
-          </div>
-        }
-        trigger="hover"
-      >
-        {component.description && <img src={QuestionMark} width="16" />}
-      </Popover>
-    </div>
-  );
-};
+export default function StudioCanvas({}: OwnProps) {
+  const [canvasNodes, setNodes] = useState<Node<FlowNodeData>[]>([]);
+  const [canvasEdges, setEdges] = useState<Edge<undefined>[]>([]);
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const diagram = useAppSelector((e) => e.flow);
 
-type NodesListProps = {
-  components: Record<string, Component>;
-  setIsmodalVisible: any;
-};
+  const [reactFlowInstance, setReactFlowInstance] = useState<
+    ReactFlowInstance | undefined
+  >(undefined);
 
-const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
-  const getComponentTypes = (components: [string, Component][]): string[] => {
-    return components
-      .reduce((acc: string[], [_, component]) => {
-        if (acc.indexOf(component.type) === -1) acc.push(component.type);
-        return acc;
-      }, [])
-      .filter((type) => type !== "model")
-      .map((type) => (type === "capability" ? "input" : type)); // NOTICE: this replaces capability with input in the collapse headers list. OMG!
-  };
-  const uploadedComponents = Object.entries(
-    filter(components, (c) => c.source === "custom")
-  );
-
-  const [states, setStates] = useState<{
-    componentTypeKeys: string[];
-    filteredListItems: [string, Component][];
-    activeCollapseKeys: string[];
-  }>({
-    componentTypeKeys: [] as string[],
-    filteredListItems: [] as [string, Component][],
-    activeCollapseKeys: [] as string[],
-  });
+  const loadedProject = useAppSelector((s) => s.builder.project);
+  const components = useAppSelector((s) => s.builder.components);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const rawComponents = Object.entries(components);
-    const componentTypeKeys = getComponentTypes(rawComponents);
+    if (loadedProject.state == "loaded" && loadedProject.diagram) {
+      const d = flowCanvasToDiagram(loadedProject.diagram, components);
+      store.dispatch({
+        type: "SET_DIAGRAM",
+        payload: d,
+      });
+      setNodes(d.nodes);
+      setEdges(d.edges);
+      const result = isDiagramValid(diagram, components);
+      if (result.error)
+        expressValidationHinting(result.error, undefined, dispatch, [], false);
+    }
+  }, [loadedProject.state]);
 
-    setStates({
-      componentTypeKeys,
-      filteredListItems: rawComponents,
-      activeCollapseKeys: componentTypeKeys,
+  // We ned to clear selection so that we can see the properties panel showing the
+  useEffect(() => {
+    dispatch(ClearSelectedNode());
+  }, []);
+
+  /*
+    React Flow Props
+  */
+  const nodeTypes = useMemo(
+    () => ({
+      capability: FlowNodeComponent,
+      model: FlowNodeComponent,
+      "proc-block": FlowNodeComponent,
+      output: FlowNodeComponent,
+    }),
+    []
+  );
+
+  const connectionLineStyle = { stroke: "#333", strokeWidth: 4 };
+
+  const onInit = (reactFlowInstance: ReactFlowInstance) => {
+    setReactFlowInstance(reactFlowInstance);
+  };
+
+  const removeNode = async (nodes: Node<FlowNodeData>[]) => {
+    await dispatch(ClearSelectedNode());
+    nodes.forEach(async (node) => {
+      await dispatch({ type: "DELETE_NODE", payload: node.id });
     });
-  }, [components]);
+  };
 
-  const [nodesListHeight, setNodesListHeight] = useState("80vh");
-  const nodesListRef = useRef<HTMLDivElement>(null);
+  const removeEdge = async (edges: Edge<undefined>[]) => {
+    await dispatch(ClearSelectedNode());
+    edges.forEach(async (edge) => {
+      await dispatch({ type: "DELETE_EDGE", payload: edge.id });
+    });
+  };
 
-  const applyNodesListRefHeight = () => {
-    if (nodesListRef) {
-      const leftSidebarHeight =
-        nodesListRef.current?.parentElement?.parentElement?.clientHeight;
-      if (leftSidebarHeight) {
-        const otherElementsHeight = 125;
-        setNodesListHeight(
-          String(`${leftSidebarHeight - otherElementsHeight}px`)
-        );
+  const onConnect = useCallback((connection: Connection) => {
+    const id = uuid();
+    setEdges((edges) =>
+      addEdge({ ...connection, id, animated: false, type: "custom" }, edges)
+    );
+    store.dispatch({
+      type: "ADD_EDGE",
+      payload: addEdge({ ...connection, id, animated: false, type: "custom" }, [
+        ...diagram.edges,
+      ]).slice(-1)[0],
+    });
+  }, []);
+
+  const onNodeDragStop = (
+    event: React.MouseEvent<Element, MouseEvent>,
+    node: Node<FlowNodeData>
+  ) => {
+    store.dispatch({ type: "REPOSITION_NODE", payload: node });
+  };
+
+  const onDrop = (
+    event: React.DragEvent,
+    components: Record<string, Component | undefined>,
+    dispatch: AppDispatch
+  ) => {
+    event.preventDefault();
+    if (reactFlowWrapper && reactFlowWrapper.current && reactFlowInstance) {
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+
+      const position = reactFlowInstance.project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
+      if (event.dataTransfer) {
+        const componentID: string =
+          event.dataTransfer.getData("forge-node-dragged");
+        const component = components[componentID];
+        if (component) {
+          const id: string = uuid();
+          const data: Node<FlowNodeData> = {
+            id: id,
+            position: position,
+            type: component.type,
+            data: {
+              componentID,
+              name: component.displayName,
+              type: component.type,
+              label: component.displayName,
+              inputs: [],
+              outputs: [],
+              inputPorts: [],
+              outputPorts: [],
+              componentIdentifier: component.identifier,
+              propertiesValueMap: defaultPropertyValues(component),
+            },
+          };
+          if (component.type === "capability") {
+            let count = 0;
+            diagram.nodes.forEach((node) => {
+              if (node.type === "capability") count++;
+            });
+            data.data.propertiesValueMap["source"] = count;
+          }
+          switch (component.type) {
+            case "capability":
+              data.sourcePosition = Position.Right;
+              break;
+            case "output":
+              data.targetPosition = Position.Left;
+              break;
+            default:
+              data.sourcePosition = Position.Right;
+              data.targetPosition = Position.Left;
+              break;
+          }
+          inputs(component).forEach((tensor, idx) => {
+            const name =
+              tensor.displayName || `${component.displayName} input ${idx + 1}`;
+            const id = uuid();
+            data.data?.inputs.push({
+              id,
+              idx,
+              name,
+              tensor: tensor,
+              type: "",
+              alignment: "left",
+              in: true,
+              label: name,
+            });
+            data.data?.inputPorts.push();
+          });
+          if (data.data?.propertiesValueMap)
+            outputs(component, data.data?.propertiesValueMap).forEach(
+              (tensor, idx) => {
+                const name =
+                  tensor.displayName ||
+                  `${component.displayName} output ${idx + 1}`;
+                const id = uuid();
+                data.data?.outputs.push({
+                  id,
+                  idx,
+                  name,
+                  tensor: tensor,
+                  type: "",
+                  alignment: "left",
+                  in: true,
+                  label: name,
+                });
+              }
+            );
+          store.dispatch({ type: "ADD_NODE", payload: data });
+          setNodes([...canvasNodes, data]);
+          // getAccessTokenSilently().then((token) =>
+          dispatch(fetchComponentDependencies({ componentID: componentID }));
+          // );
+        }
       }
     }
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const rawComponents = Object.entries(components);
-    let filteredListItems = rawComponents;
-
-    if (value.length) {
-      filteredListItems = rawComponents.filter(([_, component]) =>
-        component.displayName.toLowerCase().includes(value.toLowerCase())
-      );
-    }
-
-    const componentTypeKeys = getComponentTypes(filteredListItems);
-
-    setStates({
-      componentTypeKeys,
-      filteredListItems,
-      activeCollapseKeys: [...componentTypeKeys],
-    });
+  const onNodeClick = async (
+    event: React.MouseEvent<Element, MouseEvent>,
+    node: Node<any>
+  ) => {
+    //@ts-ignore
+    if (event.target.className === "nodeDelete_btn") return;
+    event.stopPropagation();
+    event.preventDefault();
+    await dispatch(ClearSelectedNode());
+    if (node && node.position) await dispatch(SelectNode({ id: node.id }));
   };
 
-  const toggleActiveCollapseKeys = (key: string) => {
-    const activeCollapseKeys = [...states.activeCollapseKeys];
-    const keyIndex = activeCollapseKeys.indexOf(key);
-
-    if (keyIndex === -1) {
-      activeCollapseKeys.push(key);
-    } else {
-      activeCollapseKeys.splice(keyIndex, 1);
-    }
-
-    setStates({ ...states, activeCollapseKeys });
+  const onEdgeClick = async (
+    event: React.MouseEvent<Element, MouseEvent>,
+    edge: Edge<undefined>
+  ) => {
+    await dispatch(ClearSelectedNode());
+    event.stopPropagation();
+    event.preventDefault();
   };
 
-  useEffect(() => {
-    // applyNodesListRefHeight();
-    // window.addEventListener("resize", applyNodesListRefHeight);
-    // return () => window.removeEventListener("resize", applyNodesListRefHeight);
-  }, [nodesListRef]);
+  const onNodesChange = useCallback(
+    (changes) => {
+      setNodes((nodes) => {
+        const newNodes = applyNodeChanges(changes, nodes);
+        // dispatch({ type: "SET_NODES", payload: newNodes});
+        return newNodes;
+      });
+    },
+    [setNodes]
+  );
 
+  const onEdgesChange = useCallback(
+    (changes) => {
+      setEdges((edges) => {
+        const newEdges = applyEdgeChanges(changes, edges);
+        // dispatch({ type: "SET_EDGES", payload: newEdges});
+        return newEdges;
+      });
+    },
+    [setEdges]
+  );
+
+  const reactFlowNode = document.querySelector(".react-flow__nodes")!;
+  if (reactFlowNode) {
+    reactFlowNode.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+    }); //for prevent right click on mac devices on selecting multiple nodes
+  }
+
+  const edgeTypes = useMemo(() => ({ custom: CustomEdge }), []);
   return (
-    <>
-      <div
-        ref={nodesListRef}
-        style={{
-          // maxHeight: nodesListHeight,
-          overflowY: "scroll",
-          paddingRight: "10px",
-          marginRight: "-10px",
-          scrollbarColor: "gray blue",
-          paddingBottom: "75px",
+    <div
+      ref={reactFlowWrapper}
+      className="StudioBody--canvas_container"
+      style={{
+        height: "100%",
+        left: "0",
+        position: "absolute",
+        top: "0",
+        width: "100%",
+      }}
+    >
+      <ReactFlow
+        fitView
+        fitViewOptions={{ padding: 20 }}
+        nodesDraggable={true}
+        elementsSelectable={true}
+        connectionMode={ConnectionMode.Strict}
+        connectionLineStyle={connectionLineStyle}
+        nodeTypes={nodeTypes}
+        onInit={onInit}
+        nodes={diagram.nodes}
+        edges={diagram.edges}
+        onConnect={onConnect}
+        onNodeClick={onNodeClick}
+        onEdgeClick={onEdgeClick}
+        selectionKeyCode={"Control"}
+        deleteKeyCode={"Backspace"}
+        multiSelectionKeyCode={"Shift"}
+        onNodesDelete={removeNode}
+        onEdgesDelete={removeEdge}
+        onDrop={(e) => {
+          onDrop(e, components, dispatch);
         }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+        }}
+        onNodesChange={onNodesChange} // update local state
+        onEdgesChange={onEdgesChange} // update local state
+        onNodeDragStop={onNodeDragStop} // update redux
+        attributionPosition={"bottom-left"}
+        edgeTypes={edgeTypes}
       >
-        <aside>
-          {states.componentTypeKeys.length ? (
-            <Collapse
-              className="StudioBody--left__cards"
-              ghost
-              activeKey={states.activeCollapseKeys}
-            >
-              {states.componentTypeKeys.map((type: string) => (
-                <Collapse.Panel
-                  header={
-                    <div
-                      onClick={() => toggleActiveCollapseKeys(type)}
-                      className="itemCollapseName"
-                    >
-                      {type}
-                      {type === "input" && (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setIsmodalVisible(true);
-                          }}
-                        >
-                          <PlusOutlined />
-                          Add Schema
-                        </button>
-                      )}
-                    </div>
-                  }
-                  key={type}
-                >
-                  {states.filteredListItems.map(
-                    ([id, component]: [string, Component]) => {
-                      // NOTICE: the same as above replacement, FOR GOD'S SAKE.
-                      if (
-                        type === "input"
-                          ? component.type === "capability"
-                          : type.includes(component.type) &&
-                            component.source !== "custom" &&
-                            ["input", "output", "proc-block"].includes(type)
-                      ) {
-                        return (
-                          <ComponentListItem
-                            key={id}
-                            id={id}
-                            component={component}
-                          />
-                        );
-                      }
-                    }
-                  )}
-                </Collapse.Panel>
-              ))}
-            </Collapse>
-          ) : (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="No component(s) to show."
-            />
-          )}
-        </aside>
-      </div>
-    </>
+        <Controls />
+      </ReactFlow>
+    </div>
   );
-};
-
-function filter<V>(
-  items: Record<string, V>,
-  predicate: (value: V) => boolean
-): Record<string, V> {
-  const entries = Object.entries(items);
-  const retained = entries.filter((pair) => predicate(pair[1]));
-  return Object.fromEntries(retained);
 }
-
-export const ComponentsSelector = () => {
-  const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
-  const [progressState, setProgressState] = useState({
-    show: false,
-    active: false,
-    done: false,
-  });
-  const components = useAppSelector((s) => s.builder.components);
-
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [schemaCode, setSchemaCode] = useState("");
-  const [showSchematable, setShowSchematable] = useState<boolean>(false);
-  const [tableData, setTableData] = useState<any[]>([
-    { name: "Unknown Title", dataType: "UB", parameter: "", nullable: true },
-    { name: "Unknown!", dataType: "", parameter: "", nullable: false },
-  ]);
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  //   const onUpload = async (info: UploadChangeParam<UploadFile<any>>) => {
-  //     const { name: fileName, status: uploadStatus, originFileObj } = info?.file;
-
-  //     if (uploadStatus === "error") {
-  //       message.error(`${fileName} file upload failed.`);
-  //       return;
-  //     }
-
-  //     try {
-  //       setProgressState({
-  //         done: false,
-  //         show: true,
-  //         active: true,
-  //       });
-
-  //       const [model] = await Promise.all([originFileObj?.arrayBuffer()]);
-
-  //       const displayName = _.startCase(fileName.replace(/\..*$/, ""));
-
-  //       let results;
-  //       // if (model && fileName && displayName)
-  //       //   results = await dispatch(
-  //       //     uploadModel({
-  //       //       displayName,
-  //       //       path: fileName,
-  //       //       token,
-  //       //       model,
-  //       //     })
-  //       //   );
-
-  //       if (results && results.meta.requestStatus !== "fulfilled") {
-  //         setProgressState({
-  //           show: false,
-  //           active: false,
-  //           done: false,
-  //         });
-  //         message.error(`${info.file.name} file upload failed with error.`);
-  //         return;
-  //       }
-
-  //       if (results && results.meta.requestStatus === "fulfilled") {
-  //         message.success(`${fileName} file uploaded successfully`);
-  //         setProgressState({
-  //           show: false,
-  //           active: false,
-  //           done: true,
-  //         });
-  //         return;
-  //       }
-  //     } catch (err) {
-  //       message.error(`${info.file.name} file upload failed with error ${err}`);
-  //     }
-  //     return;
-  //   };
-
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (name: string) => {
-        return <Input type="text" defaultValue={name} />;
-      },
-    },
-    {
-      title: "Data Type",
-      dataIndex: "dataType",
-      key: "dataType",
-      render: (dataType: string) => {
-        return <Input type="text" defaultValue={dataType} />;
-      },
-    },
-    {
-      title: "Parameter 1",
-      dataIndex: "parameter",
-      key: "parameter",
-      render: (parameter: string) => {
-        return <Input type="text" defaultValue={parameter} />;
-      },
-    },
-    {
-      title: "Nullable",
-      dataIndex: "nullable",
-      key: "nullable",
-      render: (nullable: boolean) => {
-        return <Checkbox defaultChecked={nullable} />;
-      },
-    },
-  ];
-
-  return (
-    <>
-      <form action="">
-        <NodesList
-          setIsmodalVisible={setIsModalVisible}
-          components={components}
-        />
-      </form>
-      <Modal
-        title="Add New Schema"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Submit"
-        className="schema_modal"
-      >
-        <div className="header">
-          <span>Code Editor Mode</span>
-          <Switch
-            style={{ background: "#7D2DFF" }}
-            onChange={(checked: SetStateAction<boolean>) =>
-              setShowSchematable(checked)
-            }
-          />
-          <span>Table Mode</span>
-        </div>
-        <div className="content">
-          {showSchematable ? (
-            <div className="table__container">
-              <Table
-                dataSource={tableData}
-                columns={columns}
-                pagination={false}
-              />
-              <button
-                onClick={() => {
-                  setTableData((prev) => [
-                    ...prev,
-                    { name: "", dataType: "", parameter: "", nullable: false },
-                  ]);
-                }}
-              >
-                + Add Schema
-              </button>
-            </div>
-          ) : (
-            <div className="editor__container">
-              <TextArea
-                value={schemaCode}
-                onChange={(e) => setSchemaCode(e.target.value)}
-              />
-              <div>
-                <Checkbox>Nullable</Checkbox>
-              </div>
-            </div>
-          )}
-        </div>
-      </Modal>
-    </>
-  );
-};
