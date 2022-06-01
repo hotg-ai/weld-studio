@@ -5,6 +5,7 @@ import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
 import "./analysis.css";
 import StudioCanvas from "./StudioCanvas";
+import { ComponentsSelector } from "./StudioComponentsSelector";
 
 const DummytTableData = [
   { name: "sam", age: 20, job: "developer" },
@@ -67,6 +68,7 @@ function Anaysis() {
         <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
         </button>
+        <ComponentsSelector />
       </div>
 
       <div className="analysis_page_content">
