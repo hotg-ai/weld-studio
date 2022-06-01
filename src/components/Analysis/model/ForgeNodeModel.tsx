@@ -2,11 +2,11 @@
 import {
   NodeModel,
   // PortModelAlignment,
-  NodeModelGenerics
+  NodeModelGenerics,
 } from "@projectstorm/react-diagrams";
 import {
   BaseModelOptions,
-  DeserializeEvent
+  DeserializeEvent,
 } from "@projectstorm/react-canvas-core";
 import {
   Component,
@@ -14,7 +14,7 @@ import {
   outputProperties,
   Property,
   PropertyValues,
-  Tensor
+  Tensor,
 } from ".";
 
 import { ColorFromComponentTypeString } from "../utils/ForgeNodeUtils";
@@ -24,7 +24,7 @@ declare enum PortModelAlignment {
   TOP = "top",
   LEFT = "left",
   BOTTOM = "bottom",
-  RIGHT = "right"
+  RIGHT = "right",
 }
 
 type Port = {
@@ -183,7 +183,7 @@ export class ForgeNodeModel extends NodeModel<Generics> {
       id: this.id,
       color: this.color,
       componentIdentifier: this.component?.identifier,
-      componentID: this.options.componentID
+      componentID: this.options.componentID,
     };
   }
 
@@ -191,7 +191,7 @@ export class ForgeNodeModel extends NodeModel<Generics> {
     this.preparePorts();
     super.deserialize(event);
     const {
-      data: { id, name, propertiesValueMap, type, color }
+      data: { id, name, propertiesValueMap, type, color },
     } = event;
     this.id = id;
     this.name = name.split("----")[0];
@@ -206,9 +206,7 @@ export class ForgeNodeModel extends NodeModel<Generics> {
   private ports_registration: Record<string, boolean> = {};
 
   private preparePorts() {
-    Object.values(this.getPorts()).forEach(p => this.removePort(p));
-
-    this.removePort;
+    Object.values(this.getPorts()).forEach((p) => this.removePort(p));
 
     inputs(this.component).forEach((tensor, idx) => {
       const name = tensor.displayName || `${this.name} input ${idx + 1}`;
@@ -220,7 +218,7 @@ export class ForgeNodeModel extends NodeModel<Generics> {
             name,
             label: name,
             idx,
-            tensor
+            tensor,
           })
         );
       }
@@ -237,7 +235,7 @@ export class ForgeNodeModel extends NodeModel<Generics> {
             name,
             label: name,
             idx,
-            tensor
+            tensor,
           })
         );
       }

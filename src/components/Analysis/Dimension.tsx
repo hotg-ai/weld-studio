@@ -8,11 +8,10 @@ import { calculateSizebyDataType } from "./Properties";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { StormApplication } from "../Analysis/StormApplication";
-const { Option } = Select;
 import { PortErrorComponent } from "../Analysis/model/Storm";
 import { detectInvalidNodesPort, expressValidationHinting } from "../../utils";
 import { isDiagramValid } from "./utils/FlowValidator";
-
+const { Option } = Select;
 type Props = {
   app?: StormApplication;
   name: string;
