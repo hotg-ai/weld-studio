@@ -1,0 +1,7 @@
+<svg id="Tutorial_icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g id="Rectangle_548" data-name="Rectangle 548" fill="none" stroke="#bbade3" stroke-linecap="round" stroke-width="2">
+    <rect width="24" height="24" rx="6" stroke="none"/>
+    <rect x="1" y="1" width="22" height="22" rx="5" fill="none"/>
+  </g>
+  <path id="Icon_awesome-hands-helping" data-name="Icon awesome-hands-helping" d="M12.2,4.8H8.4V6.2a1.8,1.8,0,0,1-3.6,0V3.161l-1.622.975A1.6,1.6,0,0,0,2.4,5.506V6.688L.4,7.843A.8.8,0,0,0,.106,8.936l2,3.465a.8.8,0,0,0,1.092.292L5.784,11.2H9.2a1.6,1.6,0,0,0,1.6-1.6h.4a.8.8,0,0,0,.8-.8V7.2h.2a.6.6,0,0,0,.6-.6V5.4A.6.6,0,0,0,12.2,4.8Zm3.692-.935L13.891.4A.8.8,0,0,0,12.8.108L10.214,1.6H7.659a1.612,1.612,0,0,0-.847.242l-.837.522a.8.8,0,0,0-.375.677V6.2a1,1,0,0,0,2,0V4h4.6a1.4,1.4,0,0,1,1.4,1.4v.712l2-1.155a.8.8,0,0,0,.292-1.092Z" transform="translate(4.002 5.599)" fill="#bbade3"/>
+</svg>
