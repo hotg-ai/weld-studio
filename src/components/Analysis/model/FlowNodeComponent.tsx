@@ -26,7 +26,7 @@ export type ForgeNodeProps = {
   dragHandle?: any;
   id: string;
   isConnectable: boolean;
-  isDragging: boolean;
+  isDragging?: boolean;
   selected: boolean;
   sourcePosition?: string;
   targetPosition?: string;
