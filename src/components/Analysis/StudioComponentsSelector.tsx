@@ -28,6 +28,8 @@ import { useLocation } from "react-router-dom";
 import capabilities from "./model/capabilities";
 import { DatasetTypes } from "../Dataset";
 import { stringify } from "querystring";
+import { ClearComponents, UpdateComponents } from "src/redux/builderSlice";
+import outputs from "./model/outputs";
 export type ComponentListItemProps = {
   id: string;
   component: Component;
@@ -301,43 +303,42 @@ const generateCapabilities = (
   let result: Record<string, Capability> = {};
   Object.values(dataTypes).forEach((v) => {
     Object.entries(v).forEach(([column, value]) => {
-      console.log(value, dataColumns);
-      if (dataColumns.filter((col) => col === column).length >= 0) {
+      if (dataColumns.filter((col) => col === column).length > 0) {
         column = column.replaceAll('"', "");
         result[column] = {
           type: "capability",
           displayName: column,
-          identifier: column,
-          source: "builtin",
+          identifier: "RAW",
+          source: "custom",
           properties: {
-            // n: {
-            //   type: "integer",
-            //   description: "The number of samples",
-            //   required: true,
-            //   defaultValue: 1000,
-            // },
-            // source: {
-            //   type: "integer",
-            //   required: true,
-            //   defaultValue: 0,
-            //   description:
-            //     "Specify which input to use when multiple inputs are provided",
-            // },
+            length: {
+              type: "integer",
+              defaultValue: 1,
+              required: true,
+              description: "Length of raw data in bytes",
+            },
+            source: {
+              type: "integer",
+              required: true,
+              defaultValue: 0,
+              description:
+                "Specify which input to use when multiple inputs are provided",
+            },
           },
           description: "",
           acceptedOutputElementTypes: [{ elementTypes: ["f32"] }],
           outputs: (p) => {
-            const { n } = p;
-            if (typeof n !== "number") {
+            const { length } = p;
+            if (typeof length !== "number") {
               throw new Error();
             }
+
             return [
               {
-                elementType: "f32",
-                defaultElementType: ["f32"],
-                dimensions: [1, n, 3, 1],
-                displayName: "Data Column",
-                description: "",
+                elementType: "u8",
+                dimensions: [length],
+                displayName: "data",
+                description: `Raw output from ${column} Column`,
                 dimensionType: "fixed",
               },
             ];
@@ -349,30 +350,32 @@ const generateCapabilities = (
   return result;
 };
 
-export const ComponentsSelector = () => {
-  const { state } = useLocation();
-  let dataColumns: string[] = [];
-  let data: any = {};
-  let dataTypes: DatasetTypes = {};
-
-  Object.entries(state).map(([key, value]) => {
-    if (key == "dataColumns") dataColumns = value;
-    if (key == "data") data = value;
-    if (key == "dataTypes") dataTypes = value;
-  });
-
+export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
+  const dispatch = useAppDispatch();
+  const components = useAppSelector((s) => s.builder.components);
   const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
   const [progressState, setProgressState] = useState({
     show: false,
     active: false,
     done: false,
   });
-  const components = {
-    ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
-    // ...prefixKeys(models()),
-    // ...prefixKeys(outputs()),
-  };
-  const dispatch = useAppDispatch();
+
+  // const components = {
+  //   ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
+  //   // ...prefixKeys(models()),
+  //   // ),
+  // };
+
+  useMemo(() => {
+    dispatch(
+      UpdateComponents({
+        ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
+        ...prefixKeys(outputs()),
+      })
+    );
+  }, [dataColumns, dataTypes]);
+
+  // dispatch(ClearComponents());
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [schemaCode, setSchemaCode] = useState("");

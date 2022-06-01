@@ -22,9 +22,10 @@ export function prefixKeys(
  */
 export function builtinComponents(): Record<string, Component> {
   return {
-    ...prefixKeys(capabilities()),
-    ...prefixKeys(models()),
-    ...prefixKeys(outputs()),
+    // ...prefixKeys(capabilities()),
+    // ...prefixKeys(procBlo)
+    // ...prefixKeys(models()),
+    // ...prefixKeys(outputs()),
   };
 }
 

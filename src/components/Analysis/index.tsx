@@ -1,9 +1,13 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Dropdown, DropdownOption } from "../common/dropdown";
+import { DatasetTypes } from "../Dataset";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
 import "./analysis.css";
+import InputDimensions from "./InputDimensions";
+import OutputDimensions from "./OutputDimensions";
+import Properties from "./Properties";
 import StudioCanvas from "./StudioCanvas";
 import { ComponentsSelector } from "./StudioComponentsSelector";
 
@@ -16,9 +20,23 @@ const DummytTableData = [
   { name: "sara", age: 24, job: "designer" },
   { name: "sara", age: 24, job: "designer" },
 ];
-function Anaysis() {
+function Analysis() {
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
+  const { state } = useLocation();
+  let dataColumns: string[] = [];
+  let data: any = {};
+  let dataTypes: DatasetTypes = {};
+
+  Object.entries(state).map(([key, value]) => {
+    if (key == "dataColumns") dataColumns = value;
+    if (key == "data") data = value;
+    if (key == "dataTypes") dataTypes = value;
+  });
+
+  useEffect(() => {
+    console.log("STATE", state);
+  }, [state]);
 
   const { id } = useParams();
 
@@ -68,7 +86,11 @@ function Anaysis() {
         <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
         </button>
-        <ComponentsSelector />
+        <ComponentsSelector
+          data={data}
+          dataColumns={dataColumns}
+          dataTypes={dataTypes}
+        />
       </div>
 
       <div className="analysis_page_content">
@@ -86,7 +108,7 @@ function Anaysis() {
                 <img src="/assets/properties.svg" alt="" />
                 <span>Properties</span>
               </div>
-              <div className="inputs__container">
+              {/* <div className="inputs__container">
                 <label>
                   Data Type: <input type="text" />
                 </label>
@@ -96,12 +118,15 @@ function Anaysis() {
                 <label>
                   Nullable: <input type="checkbox" />
                 </label>
-              </div>
+              </div> */}
+              <InputDimensions disabled />
+              <Properties disabled />
+              <OutputDimensions disabled />
             </div>
           </div>
         </div>
         <div className="studio-table__container">
-          <Table data={DummytTableData} />
+          <Table data={data} />
         </div>
       </div>
 
@@ -237,4 +262,4 @@ function Anaysis() {
   );
 }
 
-export default Anaysis;
+export default Analysis;
