@@ -9,7 +9,6 @@ import Table from "./components/table";
 import "./dataset.css";
 import { TableData } from "../../types";
 
-import Modal from "./components/modal";
 
 const Dataset = ({
   setSql,

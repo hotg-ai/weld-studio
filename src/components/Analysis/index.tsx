@@ -114,7 +114,14 @@ function Anaysis() {
 
               <div>
                 <div className="btn-switch">
-                  <p>Datasets / Schemas</p>
+                  <p>Dataset</p>
+                  <label className="switch">
+                    <input type="checkbox" />
+                    <span className="slider round"></span>
+                  </label>
+                </div>
+                <div className="btn-switch">
+                  <p>Schemas</p>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider round"></span>
@@ -130,7 +137,7 @@ function Anaysis() {
                 </div>
 
                 <div className="btn-switch">
-                  <p>Weld Analaysis</p>
+                  <p>Weld Analysis</p>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider round"></span>
@@ -138,7 +145,7 @@ function Anaysis() {
                 </div>
               </div>
 
-              <button className="btn-purple-round">Save as .SQL</button>
+              <button className="btn-purple-round">Save as .Weld</button>
             </div>
 
             <div className="modal-footer">
@@ -177,7 +184,7 @@ function Anaysis() {
                     htmlFor="my-file"
                     className="input-file-trigger"
                     onKeyDown={function (event: any) {
-                      if (event.keyCode == 13 || event.keyCode == 32) {
+                      if (event.keyCode === 13 || event.keyCode === 32) {
                         fileInput.focus();
                       }
                     }}
