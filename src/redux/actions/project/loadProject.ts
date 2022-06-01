@@ -25,7 +25,7 @@ import { v4 as uuid } from "uuid";
 import * as projectJson from "../../../data/base.json";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import { ProcBlock, Metadata } from "@hotg-ai/rune";
-const logger = pino();
+
 export const loadProject = createAsyncThunk<
   LoadedProject,
   LoadProjectParams,
@@ -228,7 +228,7 @@ export async function loadProcBlockMetadata(
   }
   const wasm = await response.arrayBuffer();
   // return await extractMetadata(wasm);
-  const pb = await ProcBlock.load(wasm, logger);
+  const pb = await ProcBlock.load(wasm, pino());
   return pb.metadata();
 }
 

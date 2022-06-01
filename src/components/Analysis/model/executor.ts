@@ -19,7 +19,6 @@ import { Port } from "./Storm";
 import { Tensor } from ".";
 
 import { ProcBlock } from "@hotg-ai/rune";
-const logger = pino();
 const loadProject = async (projectName: string): Promise<RuneCanvas> => {
   const project: ProjectInfo = {
     name: projectName,
@@ -111,7 +110,7 @@ export const executeLocally = async (
           const response = await fetch(
             `https://func.hotg.ai/function/sbfs/pb/${name}.wasm`
           );
-          const evaluate = await ProcBlock.load(response, logger);
+          const evaluate = await ProcBlock.load(response, pino());
 
           const samples = new Float64Array([100, 200, 300]);
           const tensor: rt.Tensor = {
