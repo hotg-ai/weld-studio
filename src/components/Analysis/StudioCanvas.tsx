@@ -24,6 +24,7 @@ import ReactFlow, {
   ReactFlowInstance,
   ConnectionMode,
   NodeTypes,
+  EdgeChange,
 } from "react-flow-renderer";
 import { FlowNodeData, FlowNodeComponent } from "./model/FlowNodeComponent";
 import { flowCanvasToDiagram } from "./utils/FlowUtils";
@@ -253,7 +254,7 @@ export default function StudioCanvas({}: OwnProps) {
   );
 
   const onEdgesChange = useCallback(
-    (changes) => {
+    (changes: EdgeChange[]) => {
       setEdges((edges) => {
         const newEdges = applyEdgeChanges(changes, edges);
         // dispatch({ type: "SET_EDGES", payload: newEdges});
