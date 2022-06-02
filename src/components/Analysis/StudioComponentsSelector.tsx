@@ -21,7 +21,7 @@ import { Capability, Component, prefixKeys } from "./model";
 import { ColorFromComponentTypeString } from "./utils/ForgeNodeUtils";
 import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
-import Modal from "antd/lib/modal/Modal";
+import Modal from "../Dataset/components/modal";
 import TextArea from "antd/lib/input/TextArea";
 import { DatasetTypes } from "../Dataset";
 import { UpdateComponents } from "src/redux/builderSlice";
@@ -46,16 +46,18 @@ const nodeType2Color = (
   | "magenta"
   | "volcano"
   | "gold"
-  | "lime" => {
+  | "lime"
+  | "#00b594"
+  | "#cb4ebc" => {
   switch (type) {
     case "capability":
       return "purple";
     case "model":
-      return "pink";
+      return "#cb4ebc";
     case "proc-block":
       return "cyan";
     case "output":
-      return "green";
+      return "#00b594";
     default:
       return "purple";
   }
@@ -80,7 +82,9 @@ const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
     >
       <p style={{ margin: "0" }}>{component.displayName}</p>
       <Popover
-        style={{ fontWeight: "600" }}
+        style={{
+          fontWeight: "600",
+        }}
         color={nodeType2Color(component.type)}
         placement="right"
         title={`A ${component.type}`}
@@ -365,13 +369,6 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
     { name: "Unknown!", dataType: "", parameter: "", nullable: false },
   ]);
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
   const onUpload = async (info: UploadChangeParam<UploadFile<any>>) => {
     const { name: fileName, status: uploadStatus, originFileObj } = info?.file;
 
@@ -471,7 +468,11 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
         />
       </form>
       {isModalVisible && (
-        <Modal title="Add New Schema" className="schema_modal">
+        <Modal
+          setModalVisible={setIsModalVisible}
+          title="Add New Schema"
+          className="schema_modal"
+        >
           <div className="header">
             <span>Code Editor Mode</span>
             <Switch onChange={(checked) => setShowSchematable(checked)} />
