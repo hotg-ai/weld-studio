@@ -103,7 +103,6 @@ export function outputs(
 }
 
 export default function StudioCanvas({}: OwnProps) {
-  //console.log("STUDIO CANVAS LOADED");
   const [canvasNodes, setNodes] = useState<Node<FlowNodeData>[]>([]);
   const [canvasEdges, setEdges] = useState<Edge<undefined>[]>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -199,7 +198,13 @@ export default function StudioCanvas({}: OwnProps) {
     event.preventDefault();
     if (reactFlowWrapper && reactFlowWrapper.current && reactFlowInstance) {
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-
+      console.log(
+        "X Y DROP POS",
+        reactFlowBounds.left,
+        reactFlowBounds.top,
+        event.clientX,
+        event.clientY
+      );
       const position = reactFlowInstance.project({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
@@ -350,7 +355,6 @@ export default function StudioCanvas({}: OwnProps) {
       style={{
         height: "100%",
         left: "0",
-        position: "relative",
         top: "0",
         width: "100%",
       }}

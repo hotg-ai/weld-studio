@@ -86,11 +86,11 @@ class App extends React.Component<{}, AppState> {
 
   executeQuery(sql: string) {
     // FIXME: This is a hack so we can test the Rune compiler
-    invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
+    // invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
 
     // FIXME: This is a hack to make sure the backend can search WAPM for all
     // proc-blocks
-    invoke("known_proc_blocks").then(console.log).catch(console.error);
+    // invoke("known_proc_blocks").then(console.log).catch(console.error);
 
     this.setState({ data: [] });
     if (this.state.isQueryLoading) return;
@@ -173,7 +173,19 @@ class App extends React.Component<{}, AppState> {
                 }
               />
               <Route path="/analysis/:id" element={<Anaysis />} />
-              <Route path="/" element={<Home setQueryError={(queryError) => this.setState({queryError})} setIsLoadingTable={(isLoadingTable) => this.setState({isLoadingTable})} />} />
+              <Route
+                path="/"
+                element={
+                  <Home
+                    setQueryError={(queryError) =>
+                      this.setState({ queryError })
+                    }
+                    setIsLoadingTable={(isLoadingTable) =>
+                      this.setState({ isLoadingTable })
+                    }
+                  />
+                }
+              />
             </Routes>
           </Router>
         </div>

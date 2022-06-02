@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { storm2rune } from "src/canvas2rune";
 import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
-import { useAppSelector } from "src/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
 import { saveProject } from "src/redux/actions/project/saveProject";
 import { FlowElements } from "src/redux/reactFlowSlice";
 import { DatasetTypes } from "../Dataset";
@@ -28,7 +28,7 @@ function Analysis() {
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { state } = useLocation();
   let dataColumns: string[] = [];
   let data: any = {};

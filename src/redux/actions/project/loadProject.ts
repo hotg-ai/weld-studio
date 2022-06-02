@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isMap, isObject, uniqueId } from "lodash";
-import { pino } from "pino";
+import pino from "pino";
 
 import moment from "moment";
 import {
@@ -25,6 +25,7 @@ import { v4 as uuid } from "uuid";
 import * as projectJson from "../../../data/base.json";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import { ProcBlock, Metadata } from "@hotg-ai/rune";
+import { invoke } from "@tauri-apps/api/tauri";
 
 export const loadProject = createAsyncThunk<
   LoadedProject,
@@ -50,7 +51,7 @@ export const loadProject = createAsyncThunk<
   if (!baseURL) {
     throw new Error("The $REACT_APP_ASSETS_BASE_URL variable is not set.");
   }
-  const procBlocks = loadProcBlocks(baseURL);
+  const procBlocks = loadProcBlocks();
 
   try {
     // const raw = await fetch(`${process.env.REACT_APP_AUTH0_REDIRECT_URI}/project/base.json`, { mode: 'no-cors' });
@@ -187,40 +188,59 @@ export const loadProject = createAsyncThunk<
 /**
  * Load all known proc-blocks from the backend and extract their metadata.
  *
- * @param baseURL a URL pointing to the folder containing all proc-blocks.
  */
-export async function loadProcBlocks(
-  baseURL: string
-): Promise<Record<string, ProcBlockMetadata>> {
-  const filenames = await readManifest(baseURL);
+export async function loadProcBlocks(): Promise<Record<string, Metadata>> {
+  const components: Record<string, Metadata> = {};
+  const procBlocks: any[] = await invoke("known_proc_blocks");
 
-  // Note: we want to download all proc-blocks and extract their metadata in
-  // parallel
-  // const promises = filenames.map((f) => loadProcBlockMetadata(baseURL, f));
-  const metadata = await readMetadata();
-  // const allMetadata = await Promise.allSettled(promises);
-
-  const components: Record<string, ProcBlockMetadata> = {};
-
-  for (let i = 0; i < filenames.length; i++) {
-    const filename = filenames[i];
-    //   const meta = allMetadata[i];
-
-    //   if (meta.status == "rejected") {
-    //     throw meta.reason;
-    //   }
-
-    const [name] = filename.split(".");
-    components[name] = metadata[filename];
-  }
+  const a = await procBlocks.map(async (pb) => {
+    const metadata = await loadProcBlockMetadata(pb["publicUrl"]);
+    const [name] = pb["name"].split("/");
+    components[name] = metadata;
+    console.log("META DATA", name, metadata);
+  });
+  console.log("ALL METADATA LOADED");
   return components;
+  // Promise.allSettled(promises)
+  //   .then((allMetaData) => {
+  //     procBlocks.map((procBlock, index) => {
+  //       console.log("PROC BLOCKS", procBlock, allMetaData[index]);
+  //       const result = allMetaData[index];
+  //       if (result.status === "fulfilled") {
+
+  //       }
+  //     });
+  //   })
+  //   .then(() => {
+
+  //   });
+
+  // const filenames = await readManifest(baseURL);
+
+  // // Note: we want to download all proc-blocks and extract their metadata in
+  // // parallel
+
+  // const metadata = await readMetadata();
+  // //
+
+  // for (let i = 0; i < filenames.length; i++) {
+  //   const filename = filenames[i];
+  //   //   const meta = allMetadata[i];
+
+  //   //   if (meta.status == "rejected") {
+  //   //     throw meta.reason;
+  //   //   }
+
+  //   const [name] = filename.split(".");
+  //   components[name] = metadata[filename];
+  // }
+  // return components;
 }
 
 export async function loadProcBlockMetadata(
-  baseURL: string,
   filename: string
 ): Promise<Metadata> {
-  const url = `${baseURL}/${filename}`;
+  const url = `${filename}`;
   const response = await fetch(url);
   if (!response.ok) {
     const { status, statusText } = response;
@@ -228,7 +248,8 @@ export async function loadProcBlockMetadata(
   }
   const wasm = await response.arrayBuffer();
   // return await extractMetadata(wasm);
-  const pb = await ProcBlock.load(wasm, pino());
+  const logger = pino({ browser: { write: console.log } });
+  const pb = await ProcBlock.load(wasm, logger);
   return pb.metadata();
 }
 

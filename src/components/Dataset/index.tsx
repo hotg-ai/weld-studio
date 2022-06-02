@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/tauri";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -8,7 +8,11 @@ import CodeEditor from "./components/editor";
 import Table from "./components/table";
 import "./dataset.css";
 import { TableData } from "../../types";
-
+import { useAppDispatch } from "src/hooks/hooks";
+import { loadProcBlocks } from "src/redux/actions/project/loadProject";
+import { UpdateComponents } from "src/redux/builderSlice";
+import { metadataToComponent } from "../Analysis/model/metadata";
+import _ from "lodash";
 type IntegerColumnType = {
   type: "INTEGER";
   value: Uint16Array;
@@ -39,6 +43,30 @@ const Dataset = ({
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
   const { id } = useParams();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    console.log("HELLO HELL");
+    const procBlocks = async () => {
+      const pb = await loadProcBlocks();
+
+      const pbs = Object.entries(pb).map(
+        ([name, meta]) =>
+          [
+            `proc-block/${_.camelCase(name)}`,
+            metadataToComponent(name, meta),
+          ] as const
+      );
+      console.log("PBS", pbs);
+      await dispatch(
+        UpdateComponents({
+          ...Object.fromEntries(pbs),
+        })
+      );
+    };
+    procBlocks().catch(console.error);
+  }, []);
+
   const copyLinkToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)

@@ -16,7 +16,7 @@ import { uploadWordlist } from "./actions/studio/uploadWordlist";
 import { deployProject } from "./actions/project/deployProject";
 import { loadBuildLogs } from "./actions/build/loadBuildLogs";
 import { forgeLoggerParams } from "./models/logs";
-import { metadataToComponent } from "../components/Analysis/model/metadata";
+// import { metadataToComponent } from "../components/Analysis/model/metadata";
 import _ from "lodash";
 import { ResourceDeclaration } from "../components/Analysis/model/Storm";
 import { ProjectInfo } from "./reducers/builder";
@@ -189,6 +189,7 @@ export const builderSlice = createSlice({
       state: builderState,
       action: PayloadAction<Record<string, Component>>
     ) => {
+      console.log("STATE UPDATE COMPONENTS", action.payload);
       return {
         ...state,
         components: {

@@ -40,6 +40,8 @@ export default function CustomEdge(props: CustomEdgeProps) {
     targetY,
     targetPosition,
   } = props;
+
+  console.log("POSITION", sourceX, sourceY, targetX, targetY);
   const pathData = {
     sourceX,
     sourceY,
@@ -79,11 +81,11 @@ export default function CustomEdge(props: CustomEdgeProps) {
         className="edgebutton-foreignobject"
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
-        <body>
+        <div>
           <button className="edgebutton" onClick={removeEdge}>
             <img src={deleteSvg} alt="" />
           </button>
-        </body>
+        </div>
       </foreignObject>
     </>
   );
