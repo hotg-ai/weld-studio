@@ -148,11 +148,11 @@ function Analysis() {
                 }
               }}
             >
-              <img src="/assets/model.svg" alt="<" />
-              <span>Build &amp; Run</span>
+              {/* <img src="/assets/model.svg" alt="<" /> */}
+              <span>{"</> "}Build &amp; Run</span>
             </button>
             <button onClick={() => setCustomModalVisible(true)}>
-              <img src="/assets/share.svg" alt="<" />
+              {/* <img src="/assets/share.svg" alt="<" /> */}
               <span>Save and Share</span>
             </button>
             <div className="properties__container">
