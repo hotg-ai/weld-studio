@@ -38,17 +38,16 @@ class App extends React.Component<{}, AppState> {
     super(props);
     this.getTables();
 
-    // listen("tauri://file-drop", (e) => {
-    //   console.log("eeee", e);
-    //   this.eventHandlerFileDrop(e as FileDropEvent);
-    // }).then((u) => {
-    //   if (u) this.unsubscribers.push(u);
-    // });
+    listen("tauri://file-drop", (e) => {
+      this.eventHandlerFileDrop(e as FileDropEvent);
+    }).then((u) => {
+      if (u) this.unsubscribers.push(u);
+    });
 
-    let event: FileDropEvent = {
-      payload: ["/Users/mohit/Desktop/hurricanium.csv"], // Chnage this path to your hurricanium file.
-    };
-    this.eventHandlerFileDrop(event);
+    // let event: FileDropEvent = {
+    //   payload: ["/Users/mohit/Desktop/hurricanium.csv"], // Chnage this path to your hurricanium file.
+    // };
+    // this.eventHandlerFileDrop(event);
 
     listen("load_csv_complete", (payload: unknown) =>
       this.eventHandlerLoadCSVComplete([payload])
@@ -125,11 +124,9 @@ class App extends React.Component<{}, AppState> {
 
   eventHandlerFileDrop(event: FileDropEvent) {
     if (!event.payload || (event.payload && event.payload.length === 0)) {
-      console.log("Hiiiiii", event);
       return;
     }
     this.setState({ isLoadingTable: true });
-    console.log("SET LOADING TABLE TRUE", event);
     let files = event.payload as string[];
     if (files.length > 0) {
       invoke("load_csv", { invokeMessage: files[0] })

@@ -60,8 +60,7 @@
         "height": 768,
         "resizable": true,
         "title": "Weld Studio",
-        "width": 1024,
-        "fileDropEnabled": false
+        "width": 1024
       }
     ]
   }
