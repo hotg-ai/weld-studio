@@ -29,7 +29,6 @@ import outputs from "./model/outputs";
 export type ComponentListItemProps = {
   id: string;
   component: Component;
-  onAddComponent: (component: Component) => void;
 };
 
 const nodeType2Color = (
@@ -64,13 +63,12 @@ const nodeType2Color = (
   }
 };
 
-const ComponentListItem = ({ id, component, onAddComponent }: ComponentListItemProps) => {
+const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
   const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.setData("application/json", JSON.stringify(component));
     event.dataTransfer.effectAllowed = "move";
   };
-
   const color = ColorFromComponentTypeString(component.type);
   return (
     <div
@@ -80,10 +78,6 @@ const ComponentListItem = ({ id, component, onAddComponent }: ComponentListItemP
       onDragStart={(event) => {
         event.dataTransfer.setData("forge-node-dragged", id);
         onDragStart(event, component.type);
-      }}
-      onClick={(event) => {
-
-        onAddComponent(component);
       }}
     >
       <p style={{ margin: "0" }}>{component.displayName}</p>
