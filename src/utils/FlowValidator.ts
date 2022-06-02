@@ -1,5 +1,3 @@
-import { TrademarkOutlined } from "@ant-design/icons";
-import { Console } from "console";
 import _ from "lodash";
 import {
   Connection,
@@ -11,7 +9,6 @@ import {
 import { FlowElements } from "../redux/reactFlowSlice";
 import { detectInvalidNodes, detectInvalidNodesPort } from "../utils";
 import { Component } from "../components/Analysis/model";
-import capabilities from "../components/Analysis/model/capabilities";
 import { FlowNodeData } from "../components/Analysis/model/FlowNodeComponent";
 
 export type ValidatorErrorHintTarget = {
@@ -267,7 +264,7 @@ export const isTensorIncompatible4 = (
     const sourceDimension: Dimension = sourceDimensions[i];
     const targetDimension: Dimension = targetDimensions[i];
 
-    if (targetDimension == 0) {
+    if (targetDimension === 0) {
       // the next node's input port can accept any number of elements in this
       // dimension. For example, if it says the accepted shape is "f32[1, 0, 2]",
       // I could pass in a "f32[1, 5, 2]" or a "f32[1, 9000, 2]", but not a "f32[2, 2, 2]".
@@ -865,7 +862,7 @@ export const isPropertyValueValid = (
   const node = diagram.nodes.find((node) => node.id === id);
   if (node) {
     const connectedEdges = diagram.edges.filter(
-      (edge) => edge.source == node?.id
+      (edge) => edge.source === node?.id
     );
     if (connectedEdges.length > 0) {
       const payload = isPropertyIncompatible(

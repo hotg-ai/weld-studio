@@ -77,7 +77,11 @@ export interface builderState {
 export const initialState: builderState = {
   selected: undefined,
   credentials: undefined,
-  project: { state: "not-loaded" },
+  project: {
+    state: "loaded",
+    info: { id: "", name: "", ownerId: 0, path: "", templateName: "", url: "" },
+    procBlocks: {},
+  },
   currentBuildSHA: undefined,
   lastLogSHA: undefined,
   lastSuccesfullyBuiltBuild: undefined,
@@ -173,6 +177,24 @@ export const builderSlice = createSlice({
       return {
         ...state,
         refreshDimensions: !state.refreshDimensions,
+      };
+    },
+    ClearComponents: (state: builderState) => {
+      return {
+        ...state,
+        components: {},
+      };
+    },
+    UpdateComponents: (
+      state: builderState,
+      action: PayloadAction<Record<string, Component>>
+    ) => {
+      return {
+        ...state,
+        components: {
+          ...state.components,
+          ...action.payload,
+        },
       };
     },
   },
@@ -456,6 +478,7 @@ export const builderSlice = createSlice({
         });
       })
       .addCase(loadBuildLogs.fulfilled, (state, action) => {
+        //@ts-ignore
         state.buildLogs[action.payload.jobId].logs = action.payload.logs;
       })
       .addCase(loadBuildLogs.rejected, (state) => {
@@ -478,5 +501,7 @@ export const {
   SetOnboardingCredentials,
   SetProgressBarPercentage,
   RefreshDimensions,
+  ClearComponents,
+  UpdateComponents,
 } = builderSlice.actions;
 export default builderSlice.reducer;

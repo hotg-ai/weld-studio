@@ -9,7 +9,7 @@ import {
   ColorFromComponentTypeHex,
   ColorFromComponentTypeString,
 } from "../utils/ForgeNodeUtils";
-import deleteBlackSvg from "../img/icons/deleteBlack.svg";
+import deleteBlackSvg from "../icons/deleteBlack.svg";
 
 import { Port, PortErrorComponent } from "./Storm";
 
@@ -26,7 +26,7 @@ export type ForgeNodeProps = {
   dragHandle?: any;
   id: string;
   isConnectable: boolean;
-  isDragging: boolean;
+  isDragging?: boolean;
   selected: boolean;
   sourcePosition?: string;
   targetPosition?: string;
@@ -140,7 +140,6 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
       className={`StudioBody--middle__up__item StudioBody--middle__up__item${ColorFromComponentTypeString(
         props.data.type
       )}`}
-      style={{ borderBottomStyle: "solid" }}
     >
       {props.data.inputs?.map((input, index, inputs) => {
         return (

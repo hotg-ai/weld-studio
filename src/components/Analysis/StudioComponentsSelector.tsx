@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { result } from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
 import {
   Upload,
@@ -12,18 +12,20 @@ import {
   Table,
   Checkbox,
 } from "antd";
-import { CloudUploadOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import { QuestionMark, WebWhite } from "../../assets/index";
 
-import { Component } from "./model";
+import { Capability, Component, prefixKeys } from "./model";
 import { ColorFromComponentTypeString } from "./utils/ForgeNodeUtils";
 import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
-import { uploadModel } from "../../redux/actions/studio/uploadModel";
-import Modal from "antd/lib/modal/Modal";
+import Modal from "../Dataset/components/modal";
 import TextArea from "antd/lib/input/TextArea";
+import { DatasetTypes } from "../Dataset";
+import { UpdateComponents } from "src/redux/builderSlice";
+import outputs from "./model/outputs";
 export type ComponentListItemProps = {
   id: string;
   component: Component;
@@ -44,16 +46,18 @@ const nodeType2Color = (
   | "magenta"
   | "volcano"
   | "gold"
-  | "lime" => {
+  | "lime"
+  | "#00b594"
+  | "#cb4ebc" => {
   switch (type) {
     case "capability":
       return "purple";
     case "model":
-      return "pink";
+      return "#cb4ebc";
     case "proc-block":
       return "cyan";
     case "output":
-      return "green";
+      return "#00b594";
     default:
       return "purple";
   }
@@ -76,9 +80,11 @@ const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
         onDragStart(event, component.type);
       }}
     >
-      <p>{component.displayName}</p>
+      <p style={{ margin: "0" }}>{component.displayName}</p>
       <Popover
-        style={{ fontWeight: "600" }}
+        style={{
+          fontWeight: "600",
+        }}
         color={nodeType2Color(component.type)}
         placement="right"
         title={`A ${component.type}`}
@@ -205,32 +211,22 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
 
   return (
     <>
-      <div
-        ref={nodesListRef}
-        style={{
-          // maxHeight: nodesListHeight,
-          overflowY: "scroll",
-          paddingRight: "10px",
-          marginRight: "-10px",
-          scrollbarColor: "gray blue",
-          paddingBottom: "75px",
-        }}
-      >
+      <div ref={nodesListRef} className="nodeList__container">
         <aside>
           {states.componentTypeKeys.length ? (
-            <Collapse
-              className="StudioBody--left__cards"
-              ghost
-              activeKey={states.activeCollapseKeys}
-            >
-              {states.componentTypeKeys.map((type: string) => (
+            states.componentTypeKeys.map((type: string) => (
+              <Collapse
+                className="StudioBody--left__cards"
+                ghost
+                activeKey={states.activeCollapseKeys}
+              >
                 <Collapse.Panel
                   header={
                     <div
                       onClick={() => toggleActiveCollapseKeys(type)}
                       className="itemCollapseName"
                     >
-                      {type}
+                      {type === "input" ? "Data Columns" : type}
                       {type === "input" && (
                         <button
                           onClick={(e) => {
@@ -267,8 +263,8 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                     }
                   )}
                 </Collapse.Panel>
-              ))}
-            </Collapse>
+              </Collapse>
+            ))
           ) : (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -290,15 +286,80 @@ function filter<V>(
   return Object.fromEntries(retained);
 }
 
-export const ComponentsSelector = () => {
+const generateCapabilities = (
+  dataColumns: string[],
+  dataTypes: DatasetTypes
+): Record<string, Capability> => {
+  let result: Record<string, Capability> = {};
+  Object.values(dataTypes).forEach((v) => {
+    Object.entries(v).forEach(([column, value]) => {
+      if (dataColumns.filter((col) => col === column).length > 0) {
+        column = column.replaceAll('"', "");
+        result[column] = {
+          type: "capability",
+          displayName: column,
+          identifier: "RAW",
+          source: "custom",
+          properties: {
+            length: {
+              type: "integer",
+              defaultValue: 1,
+              required: true,
+              description: "Length of raw data in bytes",
+            },
+            source: {
+              type: "integer",
+              required: true,
+              defaultValue: 0,
+              description:
+                "Specify which input to use when multiple inputs are provided",
+            },
+          },
+          description: "",
+          acceptedOutputElementTypes: [{ elementTypes: ["f32"] }],
+          outputs: (p) => {
+            const { length } = p;
+            if (typeof length !== "number") {
+              throw new Error();
+            }
+
+            return [
+              {
+                elementType: "u8",
+                dimensions: [length],
+                displayName: "data",
+                description: `Raw output from ${column} Column`,
+                dimensionType: "fixed",
+              },
+            ];
+          },
+        };
+      }
+    });
+  });
+  return result;
+};
+
+export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
+  const dispatch = useAppDispatch();
+  const components = useAppSelector((s) => s.builder.components);
   const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
   const [progressState, setProgressState] = useState({
     show: false,
     active: false,
     done: false,
   });
-  const components = useAppSelector((s) => s.builder.components);
-  const dispatch = useAppDispatch();
+
+  useMemo(() => {
+    dispatch(
+      UpdateComponents({
+        ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
+        ...prefixKeys(outputs()),
+      })
+    );
+  }, [dataColumns, dataTypes]);
+
+  // dispatch(ClearComponents());
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [schemaCode, setSchemaCode] = useState("");
@@ -307,13 +368,6 @@ export const ComponentsSelector = () => {
     { name: "Unknown Title", dataType: "UB", parameter: "", nullable: true },
     { name: "Unknown!", dataType: "", parameter: "", nullable: false },
   ]);
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
 
   const onUpload = async (info: UploadChangeParam<UploadFile<any>>) => {
     const { name: fileName, status: uploadStatus, originFileObj } = info?.file;
@@ -413,54 +467,55 @@ export const ComponentsSelector = () => {
           components={components}
         />
       </form>
-      <Modal
-        title="Add New Schema"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Submit"
-        className="schema_modal"
-      >
-        <div className="header">
-          <span>Code Editor Mode</span>
-          <Switch
-            style={{ background: "#7D2DFF" }}
-            onChange={(checked) => setShowSchematable(checked)}
-          />
-          <span>Table Mode</span>
-        </div>
-        <div className="content">
-          {showSchematable ? (
-            <div className="table__container">
-              <Table
-                dataSource={tableData}
-                columns={columns}
-                pagination={false}
-              />
-              <button
-                onClick={() => {
-                  setTableData((prev) => [
-                    ...prev,
-                    { name: "", dataType: "", parameter: "", nullable: false },
-                  ]);
-                }}
-              >
-                + Add Schema
-              </button>
-            </div>
-          ) : (
-            <div className="editor__container">
-              <TextArea
-                value={schemaCode}
-                onChange={(e) => setSchemaCode(e.target.value)}
-              />
-              <div>
-                <Checkbox>Nullable</Checkbox>
+      {isModalVisible && (
+        <Modal
+          setModalVisible={setIsModalVisible}
+          title="Add New Schema"
+          className="schema_modal"
+        >
+          <div className="header">
+            <span>Code Editor Mode</span>
+            <Switch onChange={(checked) => setShowSchematable(checked)} />
+            <span>Table Mode</span>
+          </div>
+          <div className="content">
+            {showSchematable ? (
+              <div className="table__container">
+                <Table
+                  dataSource={tableData}
+                  columns={columns}
+                  pagination={false}
+                />
+                <button
+                  onClick={() => {
+                    setTableData((prev) => [
+                      ...prev,
+                      {
+                        name: "",
+                        dataType: "",
+                        parameter: "",
+                        nullable: false,
+                      },
+                    ]);
+                  }}
+                >
+                  + Add Schema
+                </button>
               </div>
-            </div>
-          )}
-        </div>
-      </Modal>
+            ) : (
+              <div className="editor__container">
+                <TextArea
+                  value={schemaCode}
+                  onChange={(e) => setSchemaCode(e.target.value)}
+                />
+                <div>
+                  <Checkbox>Nullable</Checkbox>
+                </div>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
     </>
   );
 };

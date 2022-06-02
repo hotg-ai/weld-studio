@@ -7,13 +7,12 @@ import { Node } from "react-flow-renderer";
 import { calculateSizebyDataType } from "./Properties";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { StormApplication } from "../Analysis/StormApplication";
+// import { StormApplication } from "../Analysis/StormApplication";
 import { PortErrorComponent } from "../Analysis/model/Storm";
 import { detectInvalidNodesPort, expressValidationHinting } from "../../utils";
 import { isDiagramValid } from "./utils/FlowValidator";
 const { Option } = Select;
 type Props = {
-  app?: StormApplication;
   name: string;
   tensor: Tensor;
   setTensor: (tensor: Tensor) => void;

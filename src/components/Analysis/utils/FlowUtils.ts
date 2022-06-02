@@ -369,17 +369,14 @@ export const diagramToRuneCanvas = (
     };
     links[link.id] = link;
   });
-  if (project.diagram) {
-    const result: RuneCanvas = {
-      ...project.diagram,
-      runeCanvasVersion: "0.2.0",
-      nodes: nodes,
-      links: links,
-      components: customComponents(components),
-      resources: rez,
-    };
-    return result;
-  } else {
-    throw Error("Diagram Missing/Invalid");
-  }
+
+  const result: RuneCanvas = {
+    name: "",
+    runeCanvasVersion: "0.2.0",
+    nodes: nodes,
+    links: links,
+    components: customComponents(components),
+    resources: rez,
+  };
+  return result;
 };

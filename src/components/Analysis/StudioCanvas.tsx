@@ -6,9 +6,15 @@ import React, {
   useState,
 } from "react";
 import { v4 as uuid } from "uuid";
-import { Component } from "./model";
+import {
+  Component,
+  modelProperties,
+  outputProperties,
+  Property,
+  PropertyValues,
+  Tensor,
+} from "./model";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { defaultPropertyValues, inputs, outputs } from "./model/ForgeNodeModel";
 import { ClearSelectedNode, SelectNode } from "../../redux/builderSlice";
 import { AppDispatch, store } from "../../redux/store";
 import { fetchComponentDependencies } from "../../redux/actions/studio/fetchComponentDependencies";
@@ -24,6 +30,7 @@ import ReactFlow, {
   ReactFlowInstance,
   ConnectionMode,
   NodeTypes,
+  EdgeChange,
 } from "react-flow-renderer";
 import { FlowNodeData, FlowNodeComponent } from "./model/FlowNodeComponent";
 import { flowCanvasToDiagram } from "./utils/FlowUtils";
@@ -33,7 +40,70 @@ import CustomEdge from "./CustomEdge";
 
 type OwnProps = {};
 
+function componentProperties(component: Component): Record<string, Property> {
+  switch (component.type) {
+    case "capability":
+    case "proc-block":
+      return component.properties;
+    case "model":
+      return modelProperties;
+    case "output":
+      return outputProperties;
+    default:
+      throw new Error(
+        "Typescript makes sure this is unreachable, but eslint insists on the branch anyway 🤷"
+      );
+  }
+}
+
+export function defaultPropertyValues(
+  component: Component
+): Record<string, string | number> {
+  const values: Record<string, string | number> = {};
+  const properties = componentProperties(component);
+
+  for (const [name, property] of Object.entries(properties)) {
+    values[name] = property.defaultValue;
+  }
+
+  return values;
+}
+
+export function inputs(component: Component): Tensor[] {
+  switch (component.type) {
+    case "capability":
+      return [];
+    case "model":
+      return component.inputs;
+    case "proc-block":
+      // TODO: Proc-blocks can be generic over their inputs, so we should
+      // probably do something smarter here
+      return component.exampleInputs;
+    case "output":
+      // TODO: figure out how to represent "any tensor"
+      return component.exampleInputs;
+  }
+}
+
+export function outputs(
+  component: Component,
+  propertyValues: PropertyValues
+): Tensor[] {
+  switch (component.type) {
+    case "capability":
+      return component.outputs(propertyValues);
+    case "model":
+      return component.outputs;
+    case "proc-block":
+      // TODO: Compute this using component.outputs()
+      return component.exampleOutputs;
+    default:
+      return [];
+  }
+}
+
 export default function StudioCanvas({}: OwnProps) {
+  console.log("STUDIO CANVAS LOADED");
   const [canvasNodes, setNodes] = useState<Node<FlowNodeData>[]>([]);
   const [canvasEdges, setEdges] = useState<Edge<undefined>[]>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -103,11 +173,11 @@ export default function StudioCanvas({}: OwnProps) {
   const onConnect = useCallback((connection: Connection) => {
     const id = uuid();
     setEdges((edges) =>
-      addEdge({ ...connection, id, animated: false, type: "custom" }, edges)
+      addEdge({ ...connection, id, animated: true, type: "custom" }, edges)
     );
     store.dispatch({
       type: "ADD_EDGE",
-      payload: addEdge({ ...connection, id, animated: false, type: "custom" }, [
+      payload: addEdge({ ...connection, id, animated: true, type: "custom" }, [
         ...diagram.edges,
       ]).slice(-1)[0],
     });
@@ -125,6 +195,7 @@ export default function StudioCanvas({}: OwnProps) {
     components: Record<string, Component | undefined>,
     dispatch: AppDispatch
   ) => {
+    console.log("OnDrop");
     event.preventDefault();
     if (reactFlowWrapper && reactFlowWrapper.current && reactFlowInstance) {
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -253,7 +324,7 @@ export default function StudioCanvas({}: OwnProps) {
   );
 
   const onEdgesChange = useCallback(
-    (changes) => {
+    (changes: EdgeChange[]) => {
       setEdges((edges) => {
         const newEdges = applyEdgeChanges(changes, edges);
         // dispatch({ type: "SET_EDGES", payload: newEdges});
@@ -271,6 +342,7 @@ export default function StudioCanvas({}: OwnProps) {
   }
 
   const edgeTypes = useMemo(() => ({ custom: CustomEdge }), []);
+
   return (
     <div
       ref={reactFlowWrapper}
@@ -278,7 +350,7 @@ export default function StudioCanvas({}: OwnProps) {
       style={{
         height: "100%",
         left: "0",
-        position: "absolute",
+        position: "relative",
         top: "0",
         width: "100%",
       }}

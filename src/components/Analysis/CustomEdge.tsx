@@ -4,11 +4,11 @@ import {
   getEdgeCenter,
   getMarkerEnd,
 } from "react-flow-renderer";
-import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
-import { ClearSelectedNode } from "src/redux/builderSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { ClearSelectedNode } from "../../redux/builderSlice";
 
-import "./styles.scss";
-import deleteSvg from "./img/icons/delete.svg";
+// import "./styles.scss";
+import deleteSvg from "./icons/delete.svg";
 
 const foreignObjectSize = 40;
 
@@ -17,26 +17,38 @@ const onEdgeClick = (evt, id) => {
   alert(`remove ${id}`);
 };
 
-export default function CustomEdge({
-  id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition,
-  targetPosition,
-  style = {},
-  markerEnd,
-}) {
+type CustomEdgeProps = {
+  id: any;
+  sourceX: any;
+  sourceY: any;
+  targetX: any;
+  targetY: any;
+  sourcePosition: any;
+  targetPosition: any;
+  style?: any;
+  markerEnd?: any;
+};
+
+export default function CustomEdge(props: CustomEdgeProps) {
   const dispatch = useAppDispatch();
-  const edgePath = getBezierPath({
+  const {
+    id,
     sourceX,
     sourceY,
     sourcePosition,
     targetX,
     targetY,
     targetPosition,
-  });
+  } = props;
+  const pathData = {
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  };
+  const edgePath = getBezierPath(pathData);
   const [edgeCenterX, edgeCenterY] = getEdgeCenter({
     sourceX,
     sourceY,
@@ -54,10 +66,10 @@ export default function CustomEdge({
     <>
       <path
         id={id}
-        style={style}
+        style={props.style}
         className="react-flow__edge-path"
         d={edgePath}
-        markerEnd={markerEnd}
+        markerEnd={props.markerEnd}
       />
       <foreignObject
         width={foreignObjectSize}

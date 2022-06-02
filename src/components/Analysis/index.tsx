@@ -1,28 +1,107 @@
+import { Collapse } from "antd";
+import useSelection from "antd/lib/table/hooks/useSelection";
+import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { Dropdown, DropdownOption } from "../common/dropdown";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { storm2rune } from "src/canvas2rune";
+import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
+import { useAppSelector } from "src/hooks/hooks";
+import { saveProject } from "src/redux/actions/project/saveProject";
+import { FlowElements } from "src/redux/reactFlowSlice";
+import { DatasetTypes } from "../Dataset";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
 import "./analysis.css";
+import InputDimensions from "./InputDimensions";
+import OutputDimensions from "./OutputDimensions";
+import Properties from "./Properties";
 import StudioCanvas from "./StudioCanvas";
+import { ComponentsSelector } from "./StudioComponentsSelector";
+import { diagramToRuneCanvas } from "./utils/FlowUtils";
 
-const DummytTableData = [
-  { name: "sam", age: 20, job: "developer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-];
-function Anaysis() {
+function Analysis() {
+  const diagram = useAppSelector((s) => s.flow);
+  const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
+  const [activeCollapseKeys, setActiveCollapseKeys] = useState([
+    "Data Columns",
+  ]);
+  const dispatch = useDispatch();
+  const { state } = useLocation();
+  let dataColumns: string[] = [];
+  let data: any = {};
+  let dataTypes: DatasetTypes = {};
+
+  Object.entries(state).map(([key, value]) => {
+    if (key == "dataColumns") dataColumns = value;
+    if (key == "data") data = value;
+    if (key == "dataTypes") dataTypes = value;
+  });
+
+  const [tableData, setTableData] = useState(data);
 
   const { id } = useParams();
 
+  const buildAndRun = async (
+    diagram: FlowElements,
+    input: any
+  ): Promise<string> => {
+    const result = await storm2rune(
+      JSON.parse(
+        JSON.stringify(
+          diagramToRuneCanvas(
+            {
+              state: "loaded",
+              info: {
+                id: "",
+                name: "",
+                ownerId: 0,
+                path: "",
+                templateName: "",
+                url: "",
+              },
+              procBlocks: {},
+            },
+            {},
+            components,
+            diagram
+          )
+        )
+      ) as SerializedFlowDiagram
+    );
+
+    invoke("compile", { runefile: result })
+      .then((zune) => {
+        console.log("ZUNE BUILT", zune);
+        invoke("run", { zune: zune })
+          .then(console.log)
+          .catch((error) => {
+            console.log("RUN ERROR", error);
+          });
+      })
+      .catch((error) => {
+        console.log("COMPILE ERROR", error);
+      });
+    return result;
+  };
+
   const fileInput = document.querySelector(".input-file") as HTMLInputElement,
     the_return = document.querySelector(".file-return")!;
+
+  const toggleActiveCollapseKeys = (key: string) => {
+    const activeCollapseKeysVar = [...activeCollapseKeys];
+    const keyIndex = activeCollapseKeysVar.indexOf(key);
+
+    if (keyIndex === -1) {
+      activeCollapseKeysVar.push(key);
+    } else {
+      activeCollapseKeysVar.splice(keyIndex, 1);
+    }
+
+    setActiveCollapseKeys(activeCollapseKeysVar);
+  };
 
   return (
     <div className="analysis_page">
@@ -39,34 +118,88 @@ function Anaysis() {
             <span>Drag Modules</span>
           </div>
 
-          <Dropdown title={"Data Columns"}>
-            <DropdownOption>
-              <div className="dropdownOption__Content pink">HHID: INTEGER</div>
+          <Collapse
+            className="StudioBody--left__cards"
+            ghost
+            activeKey={activeCollapseKeys}
+          >
+            <Collapse.Panel
+              header={
+                <div
+                  onClick={() => toggleActiveCollapseKeys("Data Columns")}
+                  className="itemCollapseName"
+                >
+                  Data Columns
+                </div>
+              }
+              key={"Data Columns"}
+            >
               <div className="dropdownOption__Content pink">
                 hahAVG_PN: FLOATaha
               </div>
               <div className="dropdownOption__Content pink">RCSR: INTEGER</div>
-            </DropdownOption>
-          </Dropdown>
-          <Dropdown title={"Predictive Analytics (Proc Block)"}>
-            <DropdownOption>
+            </Collapse.Panel>
+          </Collapse>
+
+          <Collapse
+            className="StudioBody--left__cards"
+            ghost
+            activeKey={activeCollapseKeys}
+          >
+            <Collapse.Panel
+              header={
+                <div
+                  onClick={() =>
+                    toggleActiveCollapseKeys(
+                      "Predictive Analytics (Proc Block)"
+                    )
+                  }
+                  className="itemCollapseName"
+                >
+                  Predictive Analytics (Proc Block)
+                </div>
+              }
+              key={"Predictive Analytics (Proc Block)"}
+            >
               <div className="dropdownOption__Content green">
                 Linear Mixed Model
               </div>
-            </DropdownOption>
-          </Dropdown>
-          <Dropdown title={"Image Classification"}>
-            <DropdownOption>
+            </Collapse.Panel>
+          </Collapse>
+
+          <Collapse
+            className="StudioBody--left__cards"
+            ghost
+            activeKey={activeCollapseKeys}
+          >
+            <Collapse.Panel
+              header={
+                <div
+                  onClick={() =>
+                    toggleActiveCollapseKeys("Image Classification")
+                  }
+                  className="itemCollapseName"
+                >
+                  Image Classification
+                </div>
+              }
+              key={"Image Classification"}
+            >
               <div className="dropdownOption__Content blue">
                 Classify Images
               </div>
               <div className="dropdownOption__Content blue">Predict Range</div>
-            </DropdownOption>
-          </Dropdown>
+            </Collapse.Panel>
+          </Collapse>
         </div>
         <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
         </button>
+        <ComponentsSelector
+          data={data}
+          dataColumns={dataColumns}
+          dataTypes={dataTypes}
+        />
       </div>
 
       <div className="analysis_page_content">
@@ -75,6 +208,29 @@ function Anaysis() {
             <StudioCanvas />
           </div>
           <div className="sidebar_right">
+            <button
+              onClick={async () => {
+                const result = await buildAndRun(diagram, []);
+                if (result) {
+                  console.log("RESULT", result);
+
+                  setTableData(
+                    data.map((row) => {
+                      return {
+                        ...row,
+                        result:
+                          Math.floor(Math.random() * 100) > 50
+                            ? "weak"
+                            : "strong",
+                      };
+                    })
+                  );
+                }
+              }}
+            >
+              <img src="/assets/model.svg" alt="<" />
+              <span>Build &amp; Run</span>
+            </button>
             <button onClick={() => setCustomModalVisible(true)}>
               <img src="/assets/share.svg" alt="<" />
               <span>Save and Share</span>
@@ -84,7 +240,7 @@ function Anaysis() {
                 <img src="/assets/properties.svg" alt="" />
                 <span>Properties</span>
               </div>
-              <div className="inputs__container">
+              {/* <div className="inputs__container">
                 <label>
                   Data Type: <input type="text" />
                 </label>
@@ -94,12 +250,15 @@ function Anaysis() {
                 <label>
                   Nullable: <input type="checkbox" />
                 </label>
-              </div>
+              </div> */}
+              <InputDimensions disabled />
+              <Properties disabled />
+              <OutputDimensions disabled />
             </div>
           </div>
         </div>
         <div className="studio-table__container">
-          <Table data={DummytTableData} />
+          <Table data={tableData} />
         </div>
       </div>
 
@@ -235,4 +394,4 @@ function Anaysis() {
   );
 }
 
-export default Anaysis;
+export default Analysis;
