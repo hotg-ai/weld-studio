@@ -195,6 +195,7 @@ export default function StudioCanvas({}: OwnProps) {
     components: Record<string, Component | undefined>,
     dispatch: AppDispatch
   ) => {
+    console.log("OnDrop");
     event.preventDefault();
     if (reactFlowWrapper && reactFlowWrapper.current && reactFlowInstance) {
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
