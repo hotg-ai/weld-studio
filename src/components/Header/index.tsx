@@ -3,9 +3,16 @@ import "./header.css";
 const Header = () => {
   return (
     <div className="header__container">
-      <img src="/assets/DeSilo.svg" height="35px" alt="DeSilo" className="header-logo" />
-        <div>
-          <span>Powered by</span>
+      <a href="/">
+        <img
+          src="/assets/DeSilo.svg"
+          height="35px"
+          alt="DeSilo"
+          className="header-logo"
+        />
+      </a>
+      <div>
+        <span>Powered by</span>
         <a href="https://hotg.ai" target="_blank">
           <img src="/assets/hotg.svg" alt="Hotg" />
         </a>

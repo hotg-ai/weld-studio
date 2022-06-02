@@ -104,7 +104,8 @@ class App extends React.Component<{}, AppState> {
         //setData(result_typed.records)
       })
       .catch((e) => {
-        this.setState({ queryError: e }, () => {
+        //Note: e is an object and we can't put the entire object in jsx as queryError,So we need to set queryError to the message property of the e object.
+        this.setState({ queryError: e.message }, () => {
           console.log(this.state);
         });
       })

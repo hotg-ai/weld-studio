@@ -430,6 +430,10 @@ input:checked + .slider:before {
   -ms-transition: all 0.4s;
   -o-transition: all 0.4s;
 }
+
+.input-file-trigger > p {
+  margin: 0 !important;
+}
 .save_modal__container .input-file-trigger:hover {
   background-color: #8159d1 !important;
 }
@@ -831,4 +835,14 @@ input:checked + .slider:before {
   outline: none;
   border: 1px solid #333;
   cursor: pointer;
+}
+
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  padding: 12px 0 6px 0;
+}
+.ant-collapse-ghost
+  > .ant-collapse-item
+  > .ant-collapse-content
+  > .ant-collapse-content-box {
+  padding: 0 0 12px 0;
 }
