@@ -1,6 +1,14 @@
 import { Collapse } from "antd";
+import useSelection from "antd/lib/table/hooks/useSelection";
+import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { storm2rune } from "src/canvas2rune";
+import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
+import { useAppSelector } from "src/hooks/hooks";
+import { saveProject } from "src/redux/actions/project/saveProject";
+import { FlowElements } from "src/redux/reactFlowSlice";
 import { DatasetTypes } from "../Dataset";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
@@ -10,13 +18,17 @@ import OutputDimensions from "./OutputDimensions";
 import Properties from "./Properties";
 import StudioCanvas from "./StudioCanvas";
 import { ComponentsSelector } from "./StudioComponentsSelector";
+import { diagramToRuneCanvas } from "./utils/FlowUtils";
 
 function Analysis() {
+  const diagram = useAppSelector((s) => s.flow);
+  const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
+  const dispatch = useDispatch();
   const { state } = useLocation();
   let dataColumns: string[] = [];
   let data: any = {};
@@ -28,7 +40,52 @@ function Analysis() {
     if (key == "dataTypes") dataTypes = value;
   });
 
+  const [tableData, setTableData] = useState(data);
+
   const { id } = useParams();
+
+  const buildAndRun = async (
+    diagram: FlowElements,
+    input: any
+  ): Promise<string> => {
+    const result = await storm2rune(
+      JSON.parse(
+        JSON.stringify(
+          diagramToRuneCanvas(
+            {
+              state: "loaded",
+              info: {
+                id: "",
+                name: "",
+                ownerId: 0,
+                path: "",
+                templateName: "",
+                url: "",
+              },
+              procBlocks: {},
+            },
+            {},
+            components,
+            diagram
+          )
+        )
+      ) as SerializedFlowDiagram
+    );
+
+    invoke("compile", { runefile: result })
+      .then((zune) => {
+        console.log("ZUNE BUILT", zune);
+        invoke("run", { zune: zune })
+          .then(console.log)
+          .catch((error) => {
+            console.log("RUN ERROR", error);
+          });
+      })
+      .catch((error) => {
+        console.log("COMPILE ERROR", error);
+      });
+    return result;
+  };
 
   const fileInput = document.querySelector(".input-file") as HTMLInputElement,
     the_return = document.querySelector(".file-return")!;
@@ -151,6 +208,29 @@ function Analysis() {
             <StudioCanvas />
           </div>
           <div className="sidebar_right">
+            <button
+              onClick={async () => {
+                const result = await buildAndRun(diagram, []);
+                if (result) {
+                  console.log("RESULT", result);
+
+                  setTableData(
+                    data.map((row) => {
+                      return {
+                        ...row,
+                        result:
+                          Math.floor(Math.random() * 100) > 50
+                            ? "weak"
+                            : "strong",
+                      };
+                    })
+                  );
+                }
+              }}
+            >
+              <img src="/assets/model.svg" alt="<" />
+              <span>Build &amp; Run</span>
+            </button>
             <button onClick={() => setCustomModalVisible(true)}>
               <img src="/assets/share.svg" alt="<" />
               <span>Save and Share</span>
@@ -178,7 +258,7 @@ function Analysis() {
           </div>
         </div>
         <div className="studio-table__container">
-          <Table data={data} />
+          <Table data={tableData} />
         </div>
       </div>
 
