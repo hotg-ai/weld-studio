@@ -103,7 +103,7 @@ export function outputs(
 }
 
 export default function StudioCanvas({}: OwnProps) {
-  console.log("STUDIO CANVAS LOADED");
+  //console.log("STUDIO CANVAS LOADED");
   const [canvasNodes, setNodes] = useState<Node<FlowNodeData>[]>([]);
   const [canvasEdges, setEdges] = useState<Edge<undefined>[]>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);

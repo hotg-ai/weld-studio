@@ -173,7 +173,7 @@ class App extends React.Component<{}, AppState> {
                 }
               />
               <Route path="/analysis/:id" element={<Anaysis />} />
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home setQueryError={(queryError) => this.setState({queryError})} setIsLoadingTable={(isLoadingTable) => this.setState({isLoadingTable})} />} />
             </Routes>
           </Router>
         </div>

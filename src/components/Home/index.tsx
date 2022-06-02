@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import DatasetCard from "./components/datasetCard";
 import Tag from "./components/tag";
 import "./home.css";
+import { invoke } from "@tauri-apps/api/tauri";
+import { open } from "@tauri-apps/api/dialog"
+
+import { useNavigate } from "react-router";
 
 const tags = [
   {
@@ -161,11 +165,13 @@ type datasets = {
   updateTime: string;
 }[];
 
-function Home() {
+function Home({setQueryError, setIsLoadingTable} : {setQueryError: (error: string) => void, setIsLoadingTable: (isLoading: boolean) => void}) {
   const [searchValue, setSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [rawDatasets, setRawDatasets] = useState<datasets>();
   const [datasets, setDatasets] = useState<datasets>();
+  const history = useNavigate();
+
   const [categories, setCategories] = useState<any>({
     title: "Task Categories",
     tags: [],
@@ -273,7 +279,45 @@ function Home() {
               <img src="/assets/searchIcon.svg" alt="" />
             </div>
           </form>
+
+          <div className="upload__container">
+            <button onClick={async () => {
+              const file = await open({
+                title: "Select a CSV file",
+                filters: [ { "extensions": ['csv', 'tsv', 'txt'], "name": "delimited files" }]
+              })
+                    
+
+                if (file) {
+
+                  setIsLoadingTable(true);
+                  invoke("load_csv", { invokeMessage: file })
+                    .then((res) => {
+                      let result = res as string;
+                      setQueryError(`${file} loaded as ${result}`);
+                      setIsLoadingTable(false);
+
+                      
+                      history("/dataset/1", {replace: true});
+                    //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
+                    })
+                    .catch((e) => {
+                      setIsLoadingTable(false)
+                      setQueryError(e.message);
+
+                    history("/dataset/1", {replace: true});
+                    });
+                  }
+
+            }}>
+              Add Dataset
+            </button>
+     
+          </div>
         </div>
+
+
+
 
         <div className="datasets__container">
           {datasets &&
