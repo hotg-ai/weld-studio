@@ -81,7 +81,7 @@ class App extends React.Component<{}, AppState> {
 
   executeQuery(sql: string) {
     // FIXME: This is a hack so we can test the Rune compiler
-    //invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
+    invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
 
     // FIXME: This is a hack to make sure the backend can search WAPM for all
     // proc-blocks

@@ -77,7 +77,11 @@ export interface builderState {
 export const initialState: builderState = {
   selected: undefined,
   credentials: undefined,
-  project: { state: "not-loaded" },
+  project: {
+    state: "loaded",
+    info: { id: "", name: "", ownerId: 0, path: "", templateName: "", url: "" },
+    procBlocks: {},
+  },
   currentBuildSHA: undefined,
   lastLogSHA: undefined,
   lastSuccesfullyBuiltBuild: undefined,
