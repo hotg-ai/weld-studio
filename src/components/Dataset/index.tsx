@@ -181,7 +181,7 @@ const Dataset = ({
       </div>
       <div className="table__container">
         {queryError ? (
-          <span className="error">{queryError}</span>
+          <pre>{queryError}</pre>
         ) : data.length > 0 ? (
           <Table data={data} />
         ) : (
