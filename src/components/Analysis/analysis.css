@@ -11,7 +11,8 @@
 }
 
 .sidebar_left {
-  min-height: 100vh;
+  max-height: calc(100vh - 35px);
+  overflow-y: scroll;
   width: 22%;
   background: #e6e6e6;
   padding: 20px 30px;
