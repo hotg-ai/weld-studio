@@ -1,8 +1,8 @@
-import _, { result } from "lodash";
+import _ from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
 import {
-  Upload,
-  Button,
+  // Upload,
+  // Button,
   message,
   Popover,
   Empty,
@@ -226,7 +226,7 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                       onClick={() => toggleActiveCollapseKeys(type)}
                       className="itemCollapseName"
                     >
-                      {type === "input" ? "Data Columns" : type}
+                      {type === "input" ? "Data Columns" : type === "proc-block" ? "Analysis Blocks" : type === "output" ? "Terminator" : type}
                       {type === "input" && (
                         <button
                           onClick={(e) => {

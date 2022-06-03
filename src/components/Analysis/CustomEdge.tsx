@@ -2,7 +2,6 @@ import React from "react";
 import {
   getBezierPath,
   getEdgeCenter,
-  getMarkerEnd,
 } from "react-flow-renderer";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { ClearSelectedNode } from "../../redux/builderSlice";
@@ -80,9 +79,9 @@ export default function CustomEdge(props: CustomEdgeProps) {
         className="edgebutton-foreignobject"
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
-        <div>
+        <div className="body">
           <button className="edgebutton" onClick={removeEdge}>
-            <img src={deleteSvg} alt="" />
+            <img width="8px" height="8px" style={{marginTop: "-10px", marginLeft: "-1px" }} src={deleteSvg} alt="" />
           </button>
         </div>
       </foreignObject>

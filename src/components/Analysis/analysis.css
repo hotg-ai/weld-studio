@@ -792,7 +792,7 @@ input:checked + .slider:before {
   border-right: 10px solid !important;
   border-left: 10px solid !important;
   border-radius: 10px !important;
-  position: relative !important;
+  /* position: relative !important; */
   width: 200px !important;
   padding: 0 !important;
 }
@@ -842,17 +842,24 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
 }
-.react-flow__edge-custom body {
+.react-flow__edge-custom .body {
   background: transparent;
 }
-.react-flow__edge-custom body button {
-  width: 100%;
-  height: 100%;
+.react-flow__edge-custom .body button {
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   outline: none;
   border: 1px solid #333;
+  background: #f4f4f4;
   cursor: pointer;
-}
+} 
+
+.react-flow__edge-custom .body > image {
+  width: 20px;
+  height: 20px;
+} 
+
 
 .ant-collapse > .ant-collapse-item > .ant-collapse-header {
   padding: 12px 0 6px 0;
@@ -862,4 +869,14 @@ input:checked + .slider:before {
   > .ant-collapse-content
   > .ant-collapse-content-box {
   padding: 0 0 12px 0;
+}
+
+.StudioBody--right__form__infoProject input {
+  border: 2px solid rgb(139, 139, 147);
+  border-radius: 4px;
+  font-family: 'Monteserrat', sans-serif;
+}
+
+.react-flow__attribution {
+  display: none
 }

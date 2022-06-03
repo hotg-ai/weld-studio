@@ -247,7 +247,7 @@ function PropertyInput(props: InputType) {
             Property
           </label>
         </Col>
-        {property.type.endsWith("string") && name !== "model-format" ? (
+        {property.type && property.type.endsWith("string") && name !== "model-format" ? (
           <StringInput {...props} />
         ) : property.type === "string-enum" || name === "model-format" ? (
           // <StringInput {...props} />
