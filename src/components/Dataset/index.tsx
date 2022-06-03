@@ -48,10 +48,15 @@ const Dataset = ({
   useEffect(() => {
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
-      const pbs = Object.entries(pb).map(
-        ([name, procBlock]) =>
-          [`proc-block/${name}`, metadataToComponent(name, procBlock)] as const
-      );
+      const allProckBlocks: any[] = await invoke("known_proc_blocks");
+      const pbs = Object.entries(pb).map(([name, procBlock]) => {
+        const match = allProckBlocks.filter((p) => p["name"] === name);
+        const matchUrl = match[0]["publicUrl"];
+        return [
+          `proc-block/${name}`,
+          metadataToComponent(name, procBlock, matchUrl),
+        ] as const;
+      });
       await dispatch(
         UpdateComponents({
           ...Object.fromEntries(pbs),

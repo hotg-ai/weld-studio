@@ -42,7 +42,8 @@ export function isTensorHint(item?: any): item is TensorHint {
  */
 export function metadataToComponent(
   componentName: string,
-  procBlock: ProcBlock
+  procBlock: ProcBlock,
+  url: string
 ): Component {
   const {
     name,
@@ -57,7 +58,7 @@ export function metadataToComponent(
   return {
     type: "proc-block",
     displayName: name,
-    identifier: `wapm:///${name}?version=${version}`,
+    identifier: url /*`wapm:///${name}?version=${version}`*/,
     description: stripMarkdown(description),
     richDesciption: description,
     source: "builtin",
