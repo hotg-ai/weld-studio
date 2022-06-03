@@ -191,17 +191,9 @@ export default function StudioCanvas({}: OwnProps) {
     components: Record<string, Component | undefined>,
     dispatch: AppDispatch
   ) => {
-    console.log("OnDrop");
     event.preventDefault();
     if (reactFlowWrapper && reactFlowWrapper.current && reactFlowInstance) {
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      console.log(
-        "X Y DROP POS",
-        reactFlowBounds.left,
-        reactFlowBounds.top,
-        event.clientX,
-        event.clientY
-      );
       const position = reactFlowInstance.project({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,

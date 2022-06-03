@@ -42,15 +42,6 @@ export const deployProject = createAsyncThunk<
   try {
     let body: RuneCompilerResponse;
     if (project.state === "loaded") {
-      console.log(
-        await storm2rune(
-          JSON.parse(
-            JSON.stringify(
-              diagramToRuneCanvas(project, resources, components, diagram)
-            )
-          ) as SerializedFlowDiagram
-        )
-      );
       response = await fetch(
         `https://func.hotg.ai/function/rune-compiler?project-id=${project.info.name}`,
         {

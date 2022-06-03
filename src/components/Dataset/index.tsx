@@ -46,18 +46,12 @@ const Dataset = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log("HELLO HELL");
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
-      console.log("ALL PROC BLOCKS", pb);
       const pbs = Object.entries(pb).map(
         ([name, procBlock]) =>
-          [
-            `proc-block/${name}`,
-            metadataToComponent(name, procBlock),
-          ] as const
+          [`proc-block/${name}`, metadataToComponent(name, procBlock)] as const
       );
-      console.log("PBS", pbs);
       await dispatch(
         UpdateComponents({
           ...Object.fromEntries(pbs),

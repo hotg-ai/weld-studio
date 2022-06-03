@@ -41,7 +41,6 @@ export default function CustomEdge(props: CustomEdgeProps) {
     targetPosition,
   } = props;
 
-  console.log("POSITION", sourceX, sourceY, targetX, targetY);
   const pathData = {
     sourceX,
     sourceY,

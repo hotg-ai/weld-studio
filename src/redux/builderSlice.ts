@@ -189,7 +189,6 @@ export const builderSlice = createSlice({
       state: builderState,
       action: PayloadAction<Record<string, Component>>
     ) => {
-      console.log("STATE UPDATE COMPONENTS", action.payload);
       return {
         ...state,
         components: {
