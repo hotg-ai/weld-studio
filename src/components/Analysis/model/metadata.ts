@@ -8,17 +8,17 @@ import {
   Runtime,
   Rune,
   TensorMetadata,
-  // ProcBlock,
+  ProcBlock,
 } from "@hotg-ai/rune";
 import { runtime_v1 } from "@hotg-ai/rune-wit-files";
 import {
-  ProcBlock,
   ElementTypesTensor,
   Property,
   PropertyWithDefaultValue,
   Tensor,
   KnownType,
   ElementType,
+  Component,
 } from ".";
 import { ArgumentType } from "./bindings/runtime-v1";
 
@@ -72,44 +72,6 @@ export function isTensorHint(item?: any): item is TensorHint {
   );
 }
 
-// export async function extractMetadata(
-//   wasm: ArrayBuffer
-// ): Promise<ProcBlockMetadata> {
-//   const rune = new Rune();
-
-//   // create the imports object that gets passed to our WebAssembly module
-//   const imports = {};
-
-//   // // Register our implementation of the "Runtime" interface
-
-//   // wit.addRuntimeV1ToImports(
-//   //   imports,
-//   //   runtime,
-//   //   (name: string) => rune.instance.exports[name]
-//   // );
-
-//   console.log("Loading WebAssembly module...");
-//   // Only now can we finish initializing our Rune
-//   await rune.instantiate(wasm, imports);
-
-//   await rune.load(wasm);
-//   try {
-//     // ... and tell it to execute the startup code.
-
-//   } catch (e) {
-//     console.error("Start failed", e);
-//     throw e;
-//   }
-
-//   // As part of the proc-block's start() function it should have registered
-//   // metadata for a node.
-//   if (runtime.metadata) {
-//     return runtime.metadata;
-//   } else {
-//     throw new Error("No metadata was registered");
-//   }
-// }
-
 /**
  * Try to convert the proc-block metadata into its corresponding component
  * for consumption by the UI.
@@ -121,7 +83,7 @@ export function isTensorHint(item?: any): item is TensorHint {
 export function metadataToComponent(
   componentName: string,
   meta: Metadata
-): ProcBlock {
+): Component {
   const {
     name,
     version,
@@ -135,19 +97,15 @@ export function metadataToComponent(
   return {
     type: "proc-block",
     displayName: name,
-    // Note: we are hard-coding the hotg-ai/proc-blocks repository and the
-    // fact that we'll give version 1.2.3 the tag v1.2.3
-    identifier: `hotg-ai/proc-blocks@v${version}#${componentName}`,
+    identifier: `wapm:///${name}?version=${version}`,
     description: stripMarkdown(description),
     richDesciption: description,
     source: "builtin",
     helperUrl: homepage || repository,
     acceptedInputElementTypes: convertElementTypesTensors(inputs),
     acceptedOutputElementTypes: convertElementTypesTensors(outputs),
-    // exampleInputs: convertTensors(inputs),
-    // exampleOutputs: convertTensors(outputs),
-    exampleInputs: [],
-    exampleOutputs: [],
+    exampleInputs: convertTensors(inputs),
+    exampleOutputs: convertTensors(outputs),
     properties: convertArguments(args),
     outputs: () => {
       throw new Error();

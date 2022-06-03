@@ -8,12 +8,15 @@ pub mod wapm;
 
 use anyhow::{Context, Error};
 use change_case::snake_case;
-use hotg_rune_compiler::{BuildConfig, FeatureFlags};
+use hotg_rune_compiler::{
+    asset_loader::{AssetLoader, DefaultAssetLoader},
+    BuildConfig, FeatureFlags,
+};
 use tracing;
 use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
-use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use std::{path::Path, sync::Arc};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 use arrow::json;
 use serde_json;
@@ -27,10 +30,7 @@ use std::sync::{
 use arrow::record_batch::RecordBatch;
 use duckdb::{params, Connection, Result};
 
-use crate::{
-    compiler::{compile, Cache, CachingStrategy},
-    wapm::known_proc_blocks,
-};
+use crate::{compiler::compile, wapm::known_proc_blocks};
 // use serde::*;
 
 #[derive(Debug)]
@@ -42,7 +42,6 @@ struct Cancelled(AtomicBool);
 struct DefragStudioState {
     pub conn: Mutex<Connection>,
 }
-
 
 fn main() -> Result<(), Error> {
     if std::env::var_os("RUST_LOG").is_none() {
@@ -62,7 +61,6 @@ fn main() -> Result<(), Error> {
     };
     tracing::info!("Initializing Defrag Studio");
 
-
     let submenu = Submenu::new(
         "Edit",
         Menu::new()
@@ -72,11 +70,13 @@ fn main() -> Result<(), Error> {
             .add_native_item(MenuItem::SelectAll)
             .add_native_item(MenuItem::Undo)
             .add_native_item(MenuItem::Redo)
-            .add_native_item(MenuItem::Quit)
+            .add_native_item(MenuItem::Quit),
     );
     let menu = Menu::new()
         .add_item(CustomMenuItem::new("hide", "Hide"))
         .add_submenu(submenu);
+    let assets: Arc<dyn AssetLoader + Send + Sync> =
+        Arc::new(DefaultAssetLoader::default().cached());
 
     tauri::Builder::default()
         .manage(state)
@@ -92,7 +92,7 @@ fn main() -> Result<(), Error> {
             }
             _ => {}
         })
-        .manage(Arc::new(Cache::with_strategy(CachingStrategy::Url)))
+        .manage(assets)
         .manage(reqwest::Client::new())
         .manage(BuildConfig {
             current_directory: std::env::current_dir()?,

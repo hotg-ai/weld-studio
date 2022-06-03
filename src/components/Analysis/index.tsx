@@ -45,8 +45,8 @@ function Analysis() {
   const { id } = useParams();
 
   const buildAndRun = async (
-    diagram: FlowElements,
-    input: any
+    diagram: FlowElements
+    // data: any[]
   ): Promise<string> => {
     const result = await storm2rune(
       JSON.parse(
@@ -71,6 +71,10 @@ function Analysis() {
         )
       ) as SerializedFlowDiagram
     );
+
+    // const input = data.map((row) => {
+    //   return row[""];
+    // })
 
     invoke("compile", { runefile: result })
       .then((zune) => {
@@ -130,21 +134,9 @@ function Analysis() {
           <div className="sidebar_right">
             <button
               onClick={async () => {
-                const result = await buildAndRun(diagram, []);
+                const result = await buildAndRun(diagram);
                 if (result) {
                   console.log("RESULT", result);
-
-                  setTableData(
-                    data.map((row) => {
-                      return {
-                        ...row,
-                        result:
-                          Math.floor(Math.random() * 100) > 50
-                            ? "weak"
-                            : "strong",
-                      };
-                    })
-                  );
                 }
               }}
             >

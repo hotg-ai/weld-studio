@@ -191,55 +191,26 @@ export const loadProject = createAsyncThunk<
  */
 export async function loadProcBlocks(): Promise<Record<string, Metadata>> {
   const components: Record<string, Metadata> = {};
+
   const procBlocks: any[] = await invoke("known_proc_blocks");
-
-  const a = await procBlocks.map(async (pb) => {
-    const metadata = await loadProcBlockMetadata(pb["publicUrl"]);
-    const [name] = pb["name"].split("/");
-    components[name] = metadata;
-    console.log("META DATA", name, metadata);
+  const promises = procBlocks.map(async (pb) => {
+    try {
+      const procBlock = await loadProcBlock(pb["publicUrl"]);
+      components[pb["name"]] = procBlock.metadata();
+      console.log(
+        procBlock.graph({
+          input: "input",
+        })
+      );
+    } catch (e) {
+      console.log("Didn't load procblock", e);
+    }
   });
-  console.log("ALL METADATA LOADED");
+  await Promise.all(promises);
   return components;
-  // Promise.allSettled(promises)
-  //   .then((allMetaData) => {
-  //     procBlocks.map((procBlock, index) => {
-  //       console.log("PROC BLOCKS", procBlock, allMetaData[index]);
-  //       const result = allMetaData[index];
-  //       if (result.status === "fulfilled") {
-
-  //       }
-  //     });
-  //   })
-  //   .then(() => {
-
-  //   });
-
-  // const filenames = await readManifest(baseURL);
-
-  // // Note: we want to download all proc-blocks and extract their metadata in
-  // // parallel
-
-  // const metadata = await readMetadata();
-  // //
-
-  // for (let i = 0; i < filenames.length; i++) {
-  //   const filename = filenames[i];
-  //   //   const meta = allMetadata[i];
-
-  //   //   if (meta.status == "rejected") {
-  //   //     throw meta.reason;
-  //   //   }
-
-  //   const [name] = filename.split(".");
-  //   components[name] = metadata[filename];
-  // }
-  // return components;
 }
 
-export async function loadProcBlockMetadata(
-  filename: string
-): Promise<Metadata> {
+export async function loadProcBlock(filename: string): Promise<ProcBlock> {
   const url = `${filename}`;
   const response = await fetch(url);
   if (!response.ok) {
@@ -247,10 +218,9 @@ export async function loadProcBlockMetadata(
     throw new Error(`Unable to retrieve ${filename}: ${status} ${statusText}`);
   }
   const wasm = await response.arrayBuffer();
-  // return await extractMetadata(wasm);
   const logger = pino({ browser: { write: console.log } });
   const pb = await ProcBlock.load(wasm, logger);
-  return pb.metadata();
+  return pb;
 }
 
 async function readManifest(baseURL: string): Promise<string[]> {
