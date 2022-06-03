@@ -856,13 +856,12 @@ input:checked + .slider:before {
   border: 1px solid #333;
   background: #f4f4f4;
   cursor: pointer;
-} 
+}
 
 .react-flow__edge-custom .body > image {
   width: 20px;
   height: 20px;
-} 
-
+}
 
 .ant-collapse > .ant-collapse-item > .ant-collapse-header {
   padding: 12px 0 6px 0;
@@ -877,9 +876,9 @@ input:checked + .slider:before {
 .StudioBody--right__form__infoProject input {
   border: 2px solid rgb(139, 139, 147);
   border-radius: 4px;
-  font-family: 'Monteserrat', sans-serif;
+  font-family: "Monteserrat", sans-serif;
 }
 
 .react-flow__attribution {
-  display: none
+  display: none;
 }
