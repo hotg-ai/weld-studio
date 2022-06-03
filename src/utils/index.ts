@@ -1,6 +1,5 @@
 import { Message } from "console-feed/lib/definitions/Console";
 import { Log } from "../redux/builderSlice";
-import { ValidatorError } from "../utils/FlowValidator";
 
 export const openNotification = (
   id: string,
@@ -17,25 +16,6 @@ export const openNotification = (
   logs: Message[]
 ) => {
   logError(message, dispatch, logs);
-};
-
-export const expressValidationHinting = (
-  errors: ValidatorError[],
-  logMessage = "Check Nodes and Ports please",
-  dispatch: any,
-  logs: Message[],
-  silenceLogging = false
-): void => {
-  errors.forEach((error) => {
-    if (error.target?.type == "port") {
-      detectInvalidNodesPort(error.target?.id, "invalid");
-      detectInvalidNodes(error.target?.id, "invalid");
-    }
-    if (error.target?.type == "node") {
-      detectInvalidNodes(error.target?.id, "invalid");
-    }
-  });
-  if (silenceLogging) logError(logMessage, dispatch, logs);
 };
 
 export const logError = (message: string, dispatch: any, logs: Message[]) => {

@@ -14,7 +14,7 @@ import {
   outputProperties,
   Property,
   PropertyValues,
-  Tensor,
+  TensorDescriptionModel as Tensor,
 } from ".";
 
 import { ColorFromComponentTypeString } from "../utils/ForgeNodeUtils";

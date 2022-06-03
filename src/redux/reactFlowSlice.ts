@@ -1,6 +1,10 @@
 import { AnyAction } from "redux";
 import { Edge, Node, XYPosition } from "react-flow-renderer";
-import { Component, Dimension, Tensor } from "../components/Analysis/model";
+import {
+  Component,
+  Dimension,
+  TensorDescriptionModel,
+} from "../components/Analysis/model";
 import { FlowNodeData } from "../components/Analysis/model/FlowNodeComponent";
 import { Port, PortErrorComponent } from "../components/Analysis/model/Storm";
 import { calculateSizebyDataType } from "../components/Analysis/Properties";
@@ -68,7 +72,12 @@ type UnsetPortErrorAction = {
 
 type UpdateTensorAction = {
   type: "UPDATE_TENSOR";
-  payload: { selected: string; ports: Port[]; port: Port; tensor: Tensor };
+  payload: {
+    selected: string;
+    ports: Port[];
+    port: Port;
+    tensor: TensorDescriptionModel;
+  };
 };
 
 type AcceptedActionTypes =

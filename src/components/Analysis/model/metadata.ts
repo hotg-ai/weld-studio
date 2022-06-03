@@ -9,62 +9,22 @@ import {
   Rune,
   TensorMetadata,
   ProcBlock,
+  Dimensions,
+  ElementType,
+  Tensor,
+  TensorDescriptor,
+  SupportedArgumentType,
+  Tensors,
 } from "@hotg-ai/rune";
 import { runtime_v1 } from "@hotg-ai/rune-wit-files";
 import {
-  ElementTypesTensor,
   Property,
   PropertyWithDefaultValue,
-  Tensor,
   KnownType,
-  ElementType,
   Component,
+  TensorDescriptionModel,
+  ElementType as ModelElementType,
 } from ".";
-import { ArgumentType } from "./bindings/runtime-v1";
-
-export type ProcBlockMetadata = {
-  name: string;
-  version: string;
-  description?: string;
-  repository?: string;
-  homepage?: string;
-  tags: string[];
-  arguments: ArgumentMetadata[];
-  inputs: Metadata[];
-  outputs: Metadata[];
-};
-
-// export type ArgumentMetadata = {
-//   name: string;
-//   description?: string;
-//   defaultValue?: string;
-//   typeHint?: wit.TypeHint;
-// };
-
-// export type MediaHint = {
-//   type: "interpret-as";
-//   value: {
-//     media: "audio" | "image";
-//   };
-// };
-
-// export type SupportedShapesHint = {
-//   type: "supported-shape";
-//   value: {
-//     accepted_element_types: wit.ElementType[];
-//     dimensions: Dimensions;
-//   };
-// };
-
-export type Dimensions = DimensionsDynamic | DimensionsFixed;
-
-export type DimensionsDynamic = { type: "dynamic" };
-export type DimensionsFixed = {
-  type: "fixed";
-  value: Array<number | null>;
-};
-
-// export type TensorHint = MediaHint | SupportedShapesHint;
 
 export function isTensorHint(item?: any): item is TensorHint {
   return (
@@ -82,7 +42,7 @@ export function isTensorHint(item?: any): item is TensorHint {
  */
 export function metadataToComponent(
   componentName: string,
-  meta: Metadata
+  procBlock: ProcBlock
 ): Component {
   const {
     name,
@@ -93,7 +53,7 @@ export function metadataToComponent(
     arguments: args,
     inputs,
     outputs,
-  } = meta;
+  } = procBlock.metadata();
   return {
     type: "proc-block",
     displayName: name,
@@ -128,9 +88,16 @@ function convertElementTypesTensors(
   return inputs.map(convertElementTypesTensor);
 }
 
+export type ElementTypesTensor = {
+  /**
+   * A default type of Element Type which will not change
+   */
+  readonly elementTypes: ModelElementType[];
+};
+
 function convertElementTypesTensor(tensor: TensorMetadata): ElementTypesTensor {
   const { hints } = tensor;
-  const elementTypes: ElementType[] = [];
+  const elementTypes: ModelElementType[] = [];
 
   for (const hint of hints) {
     if (hint.type == "supported-shapes") {
@@ -144,9 +111,7 @@ function convertElementTypesTensor(tensor: TensorMetadata): ElementTypesTensor {
   return { elementTypes };
 }
 
-function convertElementType(
-  ty: ElementType | runtime_v1.ElementType
-): ElementType {
+function convertElementType(ty: ElementType): ModelElementType {
   switch (ty.toString()) {
     case "u8":
       return "u8";
@@ -174,11 +139,15 @@ function convertElementType(
   return "utf8";
 }
 
-function convertTensors(inputs: TensorMetadata[]): Tensor[] {
+function convertTensors(inputs: TensorMetadata[]): TensorDescriptionModel[] {
   return inputs.map((t) => exampleTensor(t));
 }
 
-function exampleTensor({ name, description, hints }: TensorMetadata): Tensor {
+function exampleTensor({
+  name,
+  description,
+  hints,
+}: TensorMetadata): TensorDescriptionModel {
   const { dimensions, elementType, dimensionType } =
     deriveExampleFromTensorHints(hints);
   return {
@@ -192,9 +161,12 @@ function exampleTensor({ name, description, hints }: TensorMetadata): Tensor {
 
 function deriveExampleFromTensorHints(
   hints: TensorHint[]
-): Pick<Tensor, "dimensions" | "elementType" | "dimensionType"> {
+): Pick<
+  TensorDescriptionModel,
+  "dimensions" | "elementType" | "dimensionType"
+> {
   let dimensions: number[] = [1];
-  let elementType: ElementType | undefined;
+  let elementType: ModelElementType | undefined;
   let dimensionType = "fixed";
   for (const hint of hints) {
     if (hint.type == "supported-shapes") {
@@ -272,63 +244,3 @@ function convertDefaults(
     //   return { type: "longstring", defaultValue: defaultValue || "" };
   }
 }
-
-// class Runtime implements wit.RuntimeV1 {
-//   metadata?: ProcBlockMetadata;
-
-//   metadataNew(name: string, version: string): ProcBlockMetadataWrapper {
-//     return new ProcBlockMetadataWrapper(name, version);
-//   }
-
-//   argumentMetadataNew(name: string): ArgumentMetadataWrapper {
-//     return new ArgumentMetadataWrapper(name);
-//   }
-
-//   tensorMetadataNew(name: string): TensorMetadataWrapper {
-//     return new TensorMetadataWrapper(name);
-//   }
-
-//   interpretAsImage(): TensorHint {
-//     return { type: "interpret-as", value: { media: "image" } };
-//   }
-
-//   interpretAsAudio(): TensorHint {
-//     return { type: "interpret-as", value: { media: "audio" } };
-//   }
-
-//   // supportedShapes(
-//   //   supportedElementTypes: wit.ElementType[],
-//   //   dimensions: wit.Dimensions
-//   // ): TensorHint {
-//   //   let dims: Dimensions;
-
-//   //   switch (dimensions.tag) {
-//   //     case "dynamic":
-//   //       dims = { type: "dynamic" };
-//   //       break;
-//   //     case "fixed":
-//   //       const dimensionLengths = [...dimensions.val];
-//   //       dims = {
-//   //         type: "fixed",
-//   //         value: dimensionLengths.map((d) => (d == 0 ? null : d)),
-//   //       };
-//   //       break;
-//   //   }
-
-//   //   return {
-//   //     type: "supported-shape",
-//   //     value: {
-//   //       accepted_element_types: supportedElementTypes,
-//   //       dimensions: dims,
-//   //     },
-//   //   };
-//   // }
-
-//   // registerNode(m: wit.Metadata) {
-//   //   if (m instanceof ProcBlockMetadataWrapper) {
-//   //     this.metadata = m.metadata;
-//   //   } else {
-//   //     throw new Error("Unreachable");
-//   //   }
-//   // }
-// }

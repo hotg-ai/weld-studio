@@ -8,7 +8,6 @@ import {
   storm2flow,
 } from "../utils/FlowUtils";
 import { isMap, isObject, uniqueId } from "lodash";
-import { ProcBlockMetadata } from "./metadata";
 import { v4 as uuid } from "uuid";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 
@@ -16,9 +15,9 @@ import { ProjectInfo } from "../../../redux/reducers/builder";
 import * as rt from "./bindings/runtime-v1";
 
 import { Port } from "./Storm";
-import { Tensor } from ".";
+import { TensorDescriptionModel } from ".";
 
-import { ProcBlock } from "@hotg-ai/rune";
+import { Metadata, ProcBlock } from "@hotg-ai/rune";
 const loadProject = async (projectName: string): Promise<RuneCanvas> => {
   const project: ProjectInfo = {
     name: projectName,
@@ -73,7 +72,7 @@ const readManifest = async (): Promise<string[]> => {
   return body;
 };
 
-const readMetadata = async (): Promise<Record<string, ProcBlockMetadata>> => {
+const readMetadata = async (): Promise<Record<string, Metadata>> => {
   const response = await fetch(
     `https://func.hotg.ai/function/sbfs/pb/metadata.json`
   );
@@ -83,7 +82,7 @@ const readMetadata = async (): Promise<Record<string, ProcBlockMetadata>> => {
     throw new Error(`${status} ${statusText}`);
   }
 
-  const body: Record<string, ProcBlockMetadata> = await response.json();
+  const body: Record<string, Metadata> = await response.json();
 
   if (!isObject(body)) {
     throw new Error("Unable to parse the manifest file");
@@ -158,12 +157,12 @@ export const getTargetNode = (
   return result;
 };
 
-export const getOutputs = (diagram: RuneCanvas): Tensor[][] => {
-  let result: Tensor[][] = [];
+export const getOutputs = (diagram: RuneCanvas): TensorDescriptionModel[][] => {
+  let result: TensorDescriptionModel[][] = [];
   Object.entries(diagram.nodes).forEach(([id, node]: [string, CanvasNode]) => {
     if (node.data.type === "output") {
       const n = getSourceNode(diagram, node.data.id);
-      let outputs: Tensor[] = [];
+      let outputs: TensorDescriptionModel[] = [];
       if (n) {
         Object.entries(n[0].data.ports).forEach(
           ([id, port]: [string, Port]) => {

@@ -1,7 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 // Removal of the following import creates scary error phantoms in the tests
 import { AppDispatch, AppStoreState } from "../../../redux/store";
-import { ElementType, Model, Tensor } from "../../../components/Analysis/model";
+import {
+  ElementType,
+  Model,
+  TensorDescriptionModel,
+} from "../../../components/Analysis/model";
 import { ThunkApiConfig } from "../project";
 
 export function base64Encode(buffer: ArrayBuffer): string {
@@ -52,7 +56,11 @@ async function modelInfo(file: ArrayBuffer, token: string): Promise<ModelInfo> {
   return response.json();
 }
 
-function toForgeTensor({ name, element_kind, dims }: ModelInfoTensor): Tensor {
+function toForgeTensor({
+  name,
+  element_kind,
+  dims,
+}: ModelInfoTensor): TensorDescriptionModel {
   return {
     displayName: name,
     elementType: element_kind,

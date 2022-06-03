@@ -6,8 +6,8 @@ import {
   Capability,
   Component,
   Model,
-  ProcBlock,
-  Tensor,
+  ProcBlockComponent,
+  TensorDescriptionModel,
 } from "../components/Analysis/model/";
 import { FlowNodeData } from "../components/Analysis/model/FlowNodeComponent";
 import {
@@ -23,7 +23,7 @@ export type CanvasNodePort = {
   name: string;
   label: string;
   type: string;
-  tensor?: Tensor;
+  tensor?: TensorDescriptionModel;
 };
 
 export type CanvasNodeData = {
@@ -169,8 +169,8 @@ export const getDimensions = (
   componentID: string,
   port: Port,
   components: Record<string, Component>
-): Tensor => {
-  const result: Tensor = { ...port.tensor };
+): TensorDescriptionModel => {
+  const result: TensorDescriptionModel = { ...port.tensor };
 
   if (!components[componentID])
     throw new Error(`${componentID} is not a known/registered Component ID`);
@@ -186,16 +186,16 @@ export const getDimensions = (
   }
 
   if (component.type == "proc-block") {
-    component = component as ProcBlock;
+    component = component as ProcBlockComponent;
     if (port.in) {
       return {
         ...result,
-        dimensionType: component.exampleInputs[port.idx].dimensionType,
+        dimensionType: component.exampleInputs[port.idx].elementType,
       };
     } else {
       return {
         ...result,
-        dimensionType: component.exampleOutputs[port.idx].dimensionType,
+        elementType: component.exampleOutputs[port.idx].elementType,
       };
     }
   }
@@ -205,12 +205,12 @@ export const getDimensions = (
     if (port.in) {
       return {
         ...result,
-        dimensionType: component.inputs[port.idx].dimensionType,
+        elementType: component.inputs[port.idx].elementType,
       };
     } else {
       return {
         ...result,
-        dimensionType: component.outputs[port.idx].dimensionType,
+        elementType: component.outputs[port.idx].elementType,
       };
     }
   }

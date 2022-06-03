@@ -1,4 +1,4 @@
-import { Model, Output, Tensor } from ".";
+import { Model, Output, TensorDescriptionModel as Tensor } from ".";
 
 export type LayerNodeModel = {
   id: string;

@@ -1,9 +1,9 @@
-import { Output, ProcBlockOutput, Tensor } from ".";
+import { Output, ProcBlockOutput, TensorDescriptionModel as Tensor } from ".";
 
 function success(...tensors: Tensor[]): ProcBlockOutput {
   return {
     error: null,
-    tensors
+    tensors,
   };
 }
 
@@ -27,18 +27,18 @@ const serial: Output = {
         "i64",
         "f32",
         "f64",
-        "utf8"
-      ]
-    }
+        "utf8",
+      ],
+    },
   ],
   exampleInputs: [
     {
       elementType: "utf8",
       dimensions: [1],
-      dimensionType: "dynamic"
-    }
+      dimensionType: "dynamic",
+    },
   ],
-  outputs: inputs => success(...inputs)
+  outputs: (inputs) => success(...inputs),
 };
 
 export default function outputs(): Record<string, Output> {

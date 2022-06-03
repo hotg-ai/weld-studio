@@ -1,5 +1,6 @@
 /* eslint-disable no-magic-numbers */
 
+import { ElementType } from "@hotg-ai/rune";
 import { Model } from ".";
 
 // The general process for adding a new model is as follows:
@@ -27,22 +28,22 @@ const mobileBert: Model = {
       dimensions: [1, 384],
       displayName: "input_ids",
       description: "Tokenized inputs",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "i32",
       dimensions: [1, 384],
       displayName: "input_mask",
       description: "Masked inputs",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "i32",
       dimensions: [1, 384],
       displayName: "segment_ids",
       description: "Segmented inputs",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -50,16 +51,16 @@ const mobileBert: Model = {
       dimensions: [1, 384],
       displayName: "end_logits",
       description: "logits where string ends",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1, 384],
       displayName: "start_logits",
       description: "logits where strings starts",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 // eslint-disable-next-line
@@ -81,23 +82,23 @@ const yamnet: Model = {
       dimensions: [1, 15600],
       displayName: "input_1",
       description: "Audio Feature Input",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
       elementType: "f32",
       dimensions: [1, 521],
       displayName: "Identity",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [96, 64],
       displayName: "Identity_1",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const stylePredict: Model = {
@@ -115,8 +116,8 @@ const stylePredict: Model = {
       dimensions: [1, 256, 256, 3],
       displayName: "style_image",
       description: "RGB 256x256 image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -124,9 +125,9 @@ const stylePredict: Model = {
       dimensions: [1, 1, 1, 100],
       displayName: "style_vector",
       description: "Vectorized style of the input image",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const styleTransfer: Model = {
@@ -146,15 +147,15 @@ const styleTransfer: Model = {
       dimensions: [1, 384, 384, 3],
       displayName: "content_image",
       description: "Image to transform with style_vector",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1, 1, 1, 100],
       displayName: "mobilenet_conv/Conv/BiasAdd",
       description: "Vectorized style of the input image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -162,9 +163,9 @@ const styleTransfer: Model = {
       dimensions: [1, 384, 384, 3],
       displayName: "stylize_normalized_image",
       description: "RGB 384x384 image",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const personDetection: Model = {
@@ -180,8 +181,8 @@ const personDetection: Model = {
       dimensions: [1, 96, 96, 1],
       displayName: "input",
       description: "A grayscale 96x96 image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -190,9 +191,9 @@ const personDetection: Model = {
       displayName:
         "MobilenetV1/Logits/Conv2d_1c_1x1/act_quant/FakeQuantWithMinMaxVars",
       description: "prediction score for labels (Unknown, Person, Not_person) ",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const inception: Model = {
@@ -209,8 +210,8 @@ const inception: Model = {
       dimensions: [1, 299, 299, 3],
       displayName: "input",
       description: "299x299 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -218,9 +219,9 @@ const inception: Model = {
       dimensions: [1, 1001],
       displayName: "prediction_vectors",
       description: "prediction score for labels",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const food: Model = {
@@ -238,8 +239,8 @@ const food: Model = {
       dimensions: [1, 192, 192, 3],
       displayName: "image",
       description: "192x192 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -247,9 +248,9 @@ const food: Model = {
       dimensions: [1, 2024],
       displayName: "MobilenetV1/Predictions/Softmax",
       description: "prediction score for labels",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const microspeech: Model = {
@@ -267,8 +268,8 @@ const microspeech: Model = {
       dimensions: [1, 1960],
       displayName: "Reshape",
       description: "Spectrum",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -276,9 +277,9 @@ const microspeech: Model = {
       dimensions: [1, 6],
       displayName: "labels_softmax",
       description: "prediction score for labels",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const bird_classification: Model = {
@@ -297,8 +298,8 @@ const bird_classification: Model = {
       dimensions: [1, 224, 224, 3],
       displayName: "input",
       description: "a 22x224 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -306,9 +307,9 @@ const bird_classification: Model = {
       dimensions: [1, 965],
       displayName: "output",
       description: "prediction score for labels",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const cartoonGAN: Model = {
@@ -327,8 +328,8 @@ const cartoonGAN: Model = {
       dimensions: [1, 512, 512, 3],
       displayName: "input",
       description: "a 512x512 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -336,9 +337,9 @@ const cartoonGAN: Model = {
       dimensions: [1, 512, 512, 3],
       displayName: "output",
       description: "512x512 RGB image",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const deepLab: Model = {
@@ -357,8 +358,8 @@ const deepLab: Model = {
       displayName: "input",
       description:
         "Input image to be segmented. The expected image is 257 x 257, with three channels (red, blue, and green) per pixel. Each element in the tensor is a value between -1 and 1.",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -366,9 +367,9 @@ const deepLab: Model = {
       dimensions: [1, 257, 257, 21],
       displayName: "output",
       description: "Masks over the target objects with high accuracy.",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const eastTextDetector: Model = {
@@ -388,8 +389,8 @@ const eastTextDetector: Model = {
       dimensions: [1, 320, 320, 3],
       displayName: "input",
       description: "320x320 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -397,7 +398,7 @@ const eastTextDetector: Model = {
       dimensions: [1, 80, 80, 1],
       displayName: "feature_fusion/Conv_7/Sigmoid",
       description: "80x80 GrayScale image",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
@@ -405,9 +406,9 @@ const eastTextDetector: Model = {
       displayName: "feature_fusion/concat_3",
       description:
         "rank 5 tensor with bounding box coordinates and output probabilities of text",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const efficientDet: Model = {
@@ -427,8 +428,8 @@ const efficientDet: Model = {
       dimensions: [1, 640, 640, 3],
       displayName: "input",
       description: "a 640x640 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -436,30 +437,30 @@ const efficientDet: Model = {
       dimensions: [1, 25, 4],
       displayName: "detection_boxes",
       description: "bounding box coordinates",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1, 25],
       displayName: "detection_scores",
       description: "class index from the label file",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1, 25],
       displayName: "detection_classes",
       description: "bounding probabilities",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1],
       displayName: "num_detections",
       description: "number of detections",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const efficientNet: Model = {
@@ -480,8 +481,8 @@ const efficientNet: Model = {
       displayName: "input",
       description:
         " a 240 x 240 RGB image with three channels (red, blue, and green) per pixel. ",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -489,9 +490,9 @@ const efficientNet: Model = {
       dimensions: [1, 1000],
       displayName: "feature_fusion/Conv_7/Sigmoid",
       description: "Probabilities of the 1000 labels respectively",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const esrGAN: Model = {
@@ -511,8 +512,8 @@ const esrGAN: Model = {
       dimensions: [1, 50, 50, 3],
       displayName: "input",
       description: "a 50x50 low-resolution RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -520,9 +521,9 @@ const esrGAN: Model = {
       dimensions: [1, 200, 200, 3],
       displayName: "LightEnhancer",
       description: "a high resolution 200x200 RGB image",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const gestureRecognition: Model = {
@@ -542,8 +543,8 @@ const gestureRecognition: Model = {
       dimensions: [1, 224, 224, 3],
       displayName: "input",
       description: "224x224 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -551,9 +552,9 @@ const gestureRecognition: Model = {
       dimensions: [1, 2],
       displayName: "output",
       description: "Confidence scores for each label",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const midas: Model = {
@@ -573,8 +574,8 @@ const midas: Model = {
       dimensions: [1, 256, 256, 3],
       displayName: "input",
       description: "a 256x256 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -582,9 +583,9 @@ const midas: Model = {
       dimensions: [1, 256, 256, 1],
       displayName: "LightEnhance",
       description: "inverse depth maps",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const mirnet: Model = {
@@ -604,8 +605,8 @@ const mirnet: Model = {
       displayName: "input",
       description:
         "The expected image is 400 x 400, with three channels (red, blue, and green) per pixel. Each value in the tensor is between 0 and 1.",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -613,9 +614,9 @@ const mirnet: Model = {
       dimensions: [1, 400, 400, 3],
       displayName: "LightEnhancer",
       description: "Image enhanced",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const mobileObjectLocalizer: Model = {
@@ -632,8 +633,8 @@ const mobileObjectLocalizer: Model = {
       dimensions: [1, 192, 192, 3],
       displayName: "input",
       description: "a 192x192 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -641,30 +642,30 @@ const mobileObjectLocalizer: Model = {
       dimensions: [1, 100, 4],
       displayName: "detection_boxes",
       description: "Bounding box for each detection",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1, 100],
       displayName: "detection_classes",
       description: " Object class for each detection",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1, 100],
       displayName: "detection_scores",
       description: "Confidence scores for each detection",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
       dimensions: [1],
       displayName: "num_detections",
       description: "Total number of detections",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const mobilenet: Model = {
@@ -684,8 +685,8 @@ const mobilenet: Model = {
       dimensions: [1, 224, 224, 3],
       displayName: "input",
       description: "224x224 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -693,9 +694,9 @@ const mobilenet: Model = {
       dimensions: [1, 1001],
       displayName: "output",
       description: "Confidence scores for each label",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const movenetSingleposeLightning: Model = {
@@ -716,8 +717,8 @@ const movenetSingleposeLightning: Model = {
       dimensions: [1, 192, 192, 3],
       displayName: "input",
       description: "an 1992x192 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -725,9 +726,9 @@ const movenetSingleposeLightning: Model = {
       dimensions: [1, 1, 17, 3],
       displayName: "output",
       description: "co-ordinates of all 17 labels",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const plantClassifier: Model = {
@@ -745,8 +746,8 @@ const plantClassifier: Model = {
       dimensions: [1, 224, 224, 3],
       displayName: "input",
       description: "a 224x224 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -754,9 +755,9 @@ const plantClassifier: Model = {
       dimensions: [1, 2102],
       displayName: "output",
       description: "Confidence scores for each label",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const poseNet: Model = {
@@ -778,8 +779,8 @@ const poseNet: Model = {
       displayName: "input",
       description:
         "	Input image to be classified. The expected image is 353 x 257, with three channels (red, blue, and green) per pixel.",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -788,7 +789,7 @@ const poseNet: Model = {
       displayName: "heatmaps",
       description:
         "a tensor represents the heatmap of each keypoints detected by this model. Each position in that heatmap has a confidence score, which is the probability that a part of that keypoint type exists in that position.",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
@@ -796,7 +797,7 @@ const poseNet: Model = {
       displayName: "offsets",
       description:
         "The Offset vectors are used to predict the exact location of the keypoints as they give the distance vectors from the corresponding heatmap point.",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
@@ -804,7 +805,7 @@ const poseNet: Model = {
       displayName: "forward_displacements",
       description:
         "Forward displacements are used to traverse along a part-based graph (edges) to locate a target keypoint from a known parent source keypoint.",
-      dimensionType: "fixed"
+      dimensionType: "fixed",
     },
     {
       elementType: "f32",
@@ -812,9 +813,9 @@ const poseNet: Model = {
       displayName: "backward_displacements",
       description:
         "Backward displacements are used to traverse along a part-based graph (edges) to locate a target keypoint from a known child source keypoint.",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 const yolo: Model = {
@@ -834,8 +835,8 @@ const yolo: Model = {
       dimensions: [1, 320, 320, 3],
       displayName: "input",
       description: "a 320x320 RGB image",
-      dimensionType: "fixed"
-    }
+      dimensionType: "fixed",
+    },
   ],
   outputs: [
     {
@@ -844,9 +845,9 @@ const yolo: Model = {
       displayName: "output",
       description:
         "remove duplicate detection for a single objects with [...80 labels + bounding box co-ordinate + confidence value]",
-      dimensionType: "fixed"
-    }
-  ]
+      dimensionType: "fixed",
+    },
+  ],
 };
 
 export default function models(): Record<string, Model> {
@@ -873,6 +874,6 @@ export default function models(): Record<string, Model> {
     // poseNet,
     stylePredict,
     styleTransfer,
-    yolo
+    yolo,
   };
 }

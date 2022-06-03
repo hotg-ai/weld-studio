@@ -2,8 +2,8 @@ import _ from "lodash";
 import { Connection, Handle, Position, updateEdge } from "react-flow-renderer";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { ClearSelectedNode, SelectNode } from "../../../redux/builderSlice";
-import { expressValidationHinting, openNotification } from "../../../utils";
-import { Component, Tensor } from ".";
+import { openNotification } from "../../../utils";
+import { Component, TensorDescriptionModel } from ".";
 import { isConnectionValid } from "../utils/FlowValidator";
 import {
   ColorFromComponentTypeHex,
@@ -39,7 +39,7 @@ type PortsData = {
   name: string;
   label: string;
   type: "input" | "output";
-  tensor: Tensor;
+  tensor: TensorDescriptionModel;
 };
 
 enum PortModelAlignment {
@@ -63,7 +63,7 @@ export type FlowNodePort = {
   extras?: any;
   id: string;
   locked?: boolean;
-  tensor: Tensor;
+  tensor: TensorDescriptionModel;
 };
 
 export type FlowNodeData = {
@@ -111,12 +111,12 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
           error.target.type === "node"
         ) {
           dispatch(SelectNode({ id: error.target?.id }));
-          expressValidationHinting(
-            result.error,
-            undefined,
-            dispatch,
-            forgeLogs
-          );
+          // expressValidationHinting(
+          //   result.error,
+          //   undefined,
+          //   dispatch,
+          //   forgeLogs
+          // );
         }
         openNotification(
           error.code.toString(),

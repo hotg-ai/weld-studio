@@ -1,12 +1,38 @@
 import capabilities from "./capabilities";
+import { ElementTypesTensor } from "./metadata";
 import models from "./models";
 import outputs from "./outputs";
+
+import {
+  Metadata,
+  ArgumentMetadata,
+  TensorHint,
+  ArgumentHint,
+  MediaHint,
+  Runtime,
+  Rune,
+  TensorMetadata,
+  Dimensions,
+  Tensor,
+  TensorDescriptor,
+  SupportedArgumentType,
+  Tensors,
+} from "@hotg-ai/rune";
+import { values } from "lodash";
+
+// export function isComponentProcBlock(item?: any): item is ProcBlock {
+//   return item && !item.value;
+// }
 
 export function prefixKeys(
   items: Record<string, Component>
 ): Record<string, Component> {
   const properties = Object.entries(items).map(
-    ([key, value]) => [`${value.type}/${key}`, value] as const
+    ([key, value]) =>
+      // if (isComponentProcBlock(value))
+      //   return [`${"proc-block"}/${key}`, value] as const;
+      // else return
+      [`${value.type || ""}/${key}`, value] as const
   );
   return Object.fromEntries(properties);
 }
@@ -32,7 +58,7 @@ export function builtinComponents(): Record<string, Component> {
 /**
  * Generic Component
  */
-export type Component = Capability | Model | ProcBlock | Output;
+export type Component = Capability | Model | ProcBlockComponent | Output;
 
 /**
  * Common fields shared by all nodes.
@@ -93,13 +119,13 @@ export type Model = Common & {
    * Which format is this model stored in?
    */
   readonly format: ModelFormat;
-  readonly inputs: Tensor[];
-  readonly outputs: Tensor[];
+  readonly inputs: TensorDescriptionModel[];
+  readonly outputs: TensorDescriptionModel[];
 };
 
 export type ModelFormat = "tensorflow-lite";
 
-export type ProcBlock = Common & {
+export type ProcBlockComponent = Common & {
   type: "proc-block";
   /** Properties that may be passed to this proc block. */
   readonly properties: Record<string, Property>;
@@ -121,15 +147,15 @@ export type ProcBlock = Common & {
      * What type of value does this tensor contain?
      */
     // elementType: string,
-    inputs: Tensor[],
+    inputs: TensorDescriptionModel[],
 
     properties: PropertyValues
   ) => ProcBlockResult;
   // TODO: The inputs and outputs for a proc-block node should actually be
   // calculated at runtime. However, we need to get things working *now* so
   // we'll hard-code one known good set of inputs/outputs that users can adapt.
-  exampleInputs: Tensor[];
-  exampleOutputs: Tensor[];
+  exampleInputs: TensorDescriptionModel[];
+  exampleOutputs: TensorDescriptionModel[];
 };
 
 export type Output = Common & {
@@ -147,11 +173,11 @@ export type Output = Common & {
      * What type of value does this tensor contain?
      */
     // elementType: string,
-    inputs: Tensor[],
+    inputs: TensorDescriptionModel[],
 
     properties: PropertyValues
   ) => ProcBlockResult;
-  readonly exampleInputs: Tensor[];
+  readonly exampleInputs: TensorDescriptionModel[];
 };
 
 /**
@@ -160,7 +186,9 @@ export type Output = Common & {
  *
  * Implementations may assume that all properties have been validated already.
  */
-export type CapabilityOutputFunc = (properties: PropertyValues) => Tensor[];
+export type CapabilityOutputFunc = (
+  properties: PropertyValues
+) => TensorDescriptionModel[];
 
 /**
  * The property values associated with a node at runtime.
@@ -300,7 +328,7 @@ export function IsElementType(name: string): name is ElementType {
 // };
 
 // A description of a tensor.
-export type Tensor = {
+export type TensorDescriptionModel = {
   /**
    * What type of value does this tensor contain?
    */
@@ -323,13 +351,6 @@ export type Tensor = {
   readonly description?: string;
 };
 
-export type ElementTypesTensor = {
-  /**
-   * A default type of Element Type which will not change
-   */
-  readonly elementTypes: ElementType[];
-};
-
 /**
  * The length of a particular dimension in a tensor.
  *
@@ -338,7 +359,10 @@ export type ElementTypesTensor = {
 export type Dimension = number | null;
 
 export type ProcBlockResult = ProcBlockOutput | ProcBlockError;
-export type ProcBlockOutput = { error: null; tensors: Tensor[] };
+export type ProcBlockOutput = {
+  error: null;
+  tensors: TensorDescriptionModel[];
+};
 export type ProcBlockError =
   | ProcBlockErrorIncorrectValue
   | ProcBlockErrorExpectedOneOf;

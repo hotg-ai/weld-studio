@@ -2,7 +2,13 @@ import { Edge, Node, Position } from "react-flow-renderer";
 import { LoadedProject } from "../../../redux/actions/project";
 import { FlowElements } from "../../../redux/reactFlowSlice";
 import { ProjectInfo } from "../../../redux/reducers/builder";
-import { Capability, Component, Model, ProcBlock, Tensor } from "../model";
+import {
+  Capability,
+  Component,
+  Model,
+  ProcBlockComponent,
+  TensorDescriptionModel,
+} from "../model";
 import { FlowNodeData } from "../model/FlowNodeComponent";
 import {
   LayerLinkModel,
@@ -17,7 +23,7 @@ export type CanvasNodePort = {
   name: string;
   label: string;
   type: string;
-  tensor?: Tensor;
+  tensor?: TensorDescriptionModel;
 };
 
 export type CanvasNodeData = {
@@ -163,8 +169,8 @@ export const getDimensions = (
   componentID: string,
   port: Port,
   components: Record<string, Component>
-): Tensor => {
-  const result: Tensor = { ...port.tensor };
+): TensorDescriptionModel => {
+  const result: TensorDescriptionModel = { ...port.tensor };
 
   if (!components[componentID])
     throw new Error(`${componentID} is not a known/registered Component ID`);
@@ -180,7 +186,7 @@ export const getDimensions = (
   }
 
   if (component.type == "proc-block") {
-    component = component as ProcBlock;
+    component = component as ProcBlockComponent;
     if (port.in) {
       return {
         ...result,

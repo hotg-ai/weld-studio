@@ -51,10 +51,10 @@ const Dataset = ({
       const pb = await loadProcBlocks();
       console.log("ALL PROC BLOCKS", pb);
       const pbs = Object.entries(pb).map(
-        ([name, meta]) =>
+        ([name, procBlock]) =>
           [
             `proc-block/${name}`,
-            metadataToComponent(name, meta),
+            metadataToComponent(name, procBlock),
           ] as const
       );
       console.log("PBS", pbs);

@@ -12,7 +12,7 @@ import {
   outputProperties,
   Property,
   PropertyValues,
-  Tensor,
+  TensorDescriptionModel,
 } from "./model";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { ClearSelectedNode, SelectNode } from "../../redux/builderSlice";
@@ -35,7 +35,6 @@ import ReactFlow, {
 import { FlowNodeData, FlowNodeComponent } from "./model/FlowNodeComponent";
 import { flowCanvasToDiagram } from "./utils/FlowUtils";
 import { isDiagramValid } from "./utils/FlowValidator";
-import { expressValidationHinting } from "../../utils";
 import CustomEdge from "./CustomEdge";
 
 type OwnProps = {};
@@ -69,7 +68,7 @@ export function defaultPropertyValues(
   return values;
 }
 
-export function inputs(component: Component): Tensor[] {
+export function inputs(component: Component): TensorDescriptionModel[] {
   switch (component.type) {
     case "capability":
       return [];
@@ -88,7 +87,7 @@ export function inputs(component: Component): Tensor[] {
 export function outputs(
   component: Component,
   propertyValues: PropertyValues
-): Tensor[] {
+): TensorDescriptionModel[] {
   switch (component.type) {
     case "capability":
       return component.outputs(propertyValues);
@@ -126,8 +125,6 @@ export default function StudioCanvas({}: OwnProps) {
       setNodes(d.nodes);
       setEdges(d.edges);
       const result = isDiagramValid(diagram, components);
-      if (result.error)
-        expressValidationHinting(result.error, undefined, dispatch, [], false);
     }
   }, [loadedProject.state]);
 

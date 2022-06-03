@@ -1,9 +1,8 @@
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import { AppDispatch, AppStoreState } from "../../../redux/store";
-// import { ProcBlockMetadata } from "../../../components/Analysis/model/metadata";
 import { RuneCanvas } from "../../../components/Analysis/utils/FlowUtils";
 import { BuildInfo, BuildStatus } from "../build";
-import { Metadata } from "@hotg-ai/rune";
+import { Metadata, ProcBlock } from "@hotg-ai/rune";
 
 type NotLoaded = {
   state: "not-loaded";
@@ -32,7 +31,7 @@ export type LoadProjectParams = {
 export type LoadedProject = {
   state: "loaded";
   info: ProjectInfo;
-  procBlocks: Record<string, Metadata>;
+  procBlocks: Record<string, ProcBlock>;
   diagram?: RuneCanvas;
   buildLogs?: Record<string, BuildInfo>;
   latestBuild?: BuildStatus;

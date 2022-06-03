@@ -2,11 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isMap, isObject, uniqueId } from "lodash";
 import pino from "pino";
 
-import moment from "moment";
-import {
-  // extractMetadata,
-  ProcBlockMetadata,
-} from "../../../components/Analysis/model/metadata";
 import {
   RuneCanvas,
   storm2flow,
@@ -189,25 +184,19 @@ export const loadProject = createAsyncThunk<
  * Load all known proc-blocks from the backend and extract their metadata.
  *
  */
-export async function loadProcBlocks(): Promise<Record<string, Metadata>> {
-  const components: Record<string, Metadata> = {};
+export async function loadProcBlocks(): Promise<Record<string, ProcBlock>> {
+  const procBlocks: Record<string, ProcBlock> = {};
 
-  const procBlocks: any[] = await invoke("known_proc_blocks");
-  const promises = procBlocks.map(async (pb) => {
+  const allProckBlocks: any[] = await invoke("known_proc_blocks");
+  const promises = allProckBlocks.map(async (pb) => {
     try {
-      const procBlock = await loadProcBlock(pb["publicUrl"]);
-      components[pb["name"]] = procBlock.metadata();
-      console.log(
-        procBlock.graph({
-          input: "input",
-        })
-      );
+      procBlocks[pb["name"]] = await loadProcBlock(pb["publicUrl"]);
     } catch (e) {
       console.log("Didn't load procblock", e);
     }
   });
   await Promise.all(promises);
-  return components;
+  return procBlocks;
 }
 
 export async function loadProcBlock(filename: string): Promise<ProcBlock> {
@@ -242,7 +231,7 @@ async function readManifest(baseURL: string): Promise<string[]> {
   return body;
 }
 
-const readMetadata = async (): Promise<Record<string, ProcBlockMetadata>> => {
+const readMetadata = async (): Promise<Record<string, Metadata>> => {
   const response = await fetch(
     `https://func.hotg.ai/function/sbfs/pb/metadata.json`
   );
@@ -252,7 +241,7 @@ const readMetadata = async (): Promise<Record<string, ProcBlockMetadata>> => {
     throw new Error(`${status} ${statusText}`);
   }
 
-  const body: Record<string, ProcBlockMetadata> = await response.json();
+  const body: Record<string, Metadata> = await response.json();
 
   if (!isObject(body)) {
     throw new Error("Unable to parse the manifest file");

@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { DeserializeEvent } from "@projectstorm/react-canvas-core";
-import { DefaultPortModel, DefaultPortModelOptions, RightAngleLinkModel } from "@projectstorm/react-diagrams";
-import { Tensor } from ".";
+import {
+  DefaultPortModel,
+  DefaultPortModelOptions,
+  RightAngleLinkModel,
+} from "@projectstorm/react-diagrams";
+import { TensorDescriptionModel as Tensor } from ".";
 
 export interface ForgeNodePortOptions extends DefaultPortModelOptions {
   idx: number;

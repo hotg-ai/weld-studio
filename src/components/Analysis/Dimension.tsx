@@ -1,21 +1,19 @@
 import _, { trim } from "lodash";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { Col, Select, Tooltip } from "antd";
-import { Tensor, ElementType } from "./model";
+import { TensorDescriptionModel, ElementType } from "./model";
 import { QuestionMark } from "../../assets";
 import { Node } from "react-flow-renderer";
 import { calculateSizebyDataType } from "./Properties";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-// import { StormApplication } from "../Analysis/StormApplication";
 import { PortErrorComponent } from "../Analysis/model/Storm";
-import { detectInvalidNodesPort, expressValidationHinting } from "../../utils";
 import { isDiagramValid } from "./utils/FlowValidator";
 const { Option } = Select;
 type Props = {
   name: string;
-  tensor: Tensor;
-  setTensor: (tensor: Tensor) => void;
+  tensor: TensorDescriptionModel;
+  setTensor: (tensor: TensorDescriptionModel) => void;
   acceptedTypes: ElementType[] | ElementType;
   errors?: PortErrorComponent; // node, component, error message
   kind?: "input" | "output";
@@ -61,8 +59,6 @@ export default function Dimension({
   useEffect(() => {
     if (dimensions && dimensionText) {
       const result = isDiagramValid(diagram, components);
-      if (result.error)
-        expressValidationHinting(result.error, undefined, dispatch, [], false);
     }
   }, [dimensionText]);
 
