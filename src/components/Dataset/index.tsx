@@ -20,12 +20,12 @@ type IntegerColumnType = {
 
 type DoubleColumnType = {
   type: "DOUBLE";
-  value: Float64Array;
+  value: Float32Array;
 };
 
 type VarcharColumnType = {
   type: "VARCHAR";
-  value: string;
+  value: string[];
 };
 
 type TableColumnType = IntegerColumnType | DoubleColumnType | VarcharColumnType;
@@ -173,8 +173,8 @@ const Dataset = ({
               to={{ pathname: `/analysis/${id}` }}
               state={{
                 dataColumns: data && data.length ? Object.keys(data[0]) : {},
-                data: data,
-                dataTypes,
+                data: data || [],
+                dataTypes: dataTypes || {},
               }}
             >
               <button>

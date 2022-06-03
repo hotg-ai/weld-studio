@@ -45,8 +45,9 @@ function Analysis() {
   const { id } = useParams();
 
   const buildAndRun = async (
-    diagram: FlowElements
-    // data: any[]
+    diagram: FlowElements,
+    datasetTypes: DatasetTypes,
+    data: any[]
   ): Promise<string> => {
     const result = await storm2rune(
       JSON.parse(
@@ -134,10 +135,16 @@ function Analysis() {
           <div className="sidebar_right">
             <button
               onClick={async () => {
-                const result = await buildAndRun(diagram);
-                if (result) {
-                  console.log("RESULT", result);
-                }
+                console.log("DATA TYPES", dataTypes);
+                invoke("reune")
+                  .then(console.log)
+                  .catch((error) => {
+                    console.log("RUN ERROR", error);
+                  });
+                // const result = await buildAndRun(diagram, dataTypes, tableData);
+                // if (result) {
+                //   console.log("RESULT", result);
+                // }
               }}
             >
               {/* <img src="/assets/model.svg" alt="<" /> */}
@@ -152,17 +159,6 @@ function Analysis() {
                 <img src="/assets/properties.svg" alt="" />
                 <span>Properties</span>
               </div>
-              {/* <div className="inputs__container">
-                <label>
-                  Data Type: <input type="text" />
-                </label>
-                <label>
-                  Parameter: <input type="text" />
-                </label>
-                <label>
-                  Nullable: <input type="checkbox" />
-                </label>
-              </div> */}
               <InputDimensions disabled />
               <Properties disabled />
               <OutputDimensions disabled />
