@@ -90,12 +90,12 @@ const Dataset = ({
         if (table.column_types[idx] === "DOUBLE")
           dataTypes[table.table_name][item] = {
             type: "DOUBLE",
-            value: new Float64Array(),
+            value: new Float32Array(),
           };
         if (table.column_types[idx] === "VARCHAR")
           dataTypes[table.table_name][item] = {
             type: "VARCHAR",
-            value: "",
+            value: [""],
           };
       }
     });

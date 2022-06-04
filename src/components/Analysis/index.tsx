@@ -75,10 +75,19 @@ function Analysis() {
     //   return row[""];
     // })
 
+    let input_tensors = {
+      "column1": {
+        "element-type": "DOUBLE",
+        "dimensions": [1,1],
+        "buffer": Uint8Array.from([1,2,3,4,5])
+      }
+    }
+
+
     invoke("compile", { runefile: result })
       .then((zune) => {
         console.log("ZUNE BUILT", zune);
-        invoke("run", { zune: zune })
+        invoke("reune", { zune: zune, input_tensors: input_tensors })
           .then(console.log)
           .catch((error) => {
             console.log("RUN ERROR", error);

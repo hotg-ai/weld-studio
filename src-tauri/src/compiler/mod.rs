@@ -1,6 +1,7 @@
 mod database;
 
 use std::sync::Arc;
+use std::collections::HashMap;
 
 use hotg_rune_compiler::{
     asset_loader::AssetLoader, codegen::Codegen, im::Vector, parse::Frontend, BuildConfig,
@@ -44,53 +45,115 @@ pub async fn compile(
     }
 }
 
-use serde::ser::{Serialize, Serializer, SerializeStruct};
-
-pub struct MyTensor(TensorResult);
-
-impl Serialize for MyTensor {
-  fn serialize<S: Serializer>(&self, ser: S) -> Result<S::Ok, S::Error> {
-    let MyTensor(TensorResult { element_type, dimensions, buffer }) = self;
-
-    let mut ser = ser.serialize_struct("TensorResult", 3)?;
-      ser.serialize_field("element-type", &format!("{:?}", element_type))?;
-      ser.serialize_field("buffer", buffer)?;
-      ser.serialize_field("dimensions", dimensions)?;
-      ser.end()
-  }
+#[derive(serde::Serialize, serde::Deserialize)]
+pub enum MyTensorDimensions {
+    Dynamic,
+    Fixed(Vec<u32>)
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+pub enum MyElementType {
+    U8,
+    I8,
+    U16,
+    I16,
+    U32,
+    I32,
+    F32,
+    U64,
+    I64,
+    F64,
+    /// A string as UTF-8 encoded bytes.
+    Utf8,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct MyTensor {
+    element_type: MyElementType,
+    dimensions: Vec<u32>,
+    buffer: Vec<u8>
+}
+
+impl From<&TensorResult> for MyTensor {
+    fn from(item: &TensorResult) -> Self {
+        MyTensor {
+            element_type: my_element_type(&item.element_type),
+            dimensions: item.dimensions.clone(),
+            buffer: item.buffer.clone()
+
+        }
+    }
+}
+
+impl From<&MyTensor> for TensorResult {
+    fn from(item: &MyTensor) -> Self {
+        TensorResult {
+            element_type: element_type(&item.element_type),
+            dimensions: item.dimensions.clone(),
+            buffer: item.buffer.clone()
+        }
+    }
+}
+
+fn my_element_type(x: &ElementType) -> MyElementType {
+    match x {
+        U8 => MyElementType::U8,
+        I8 => MyElementType::I8,
+        U16 => MyElementType::U16,
+        I16 => MyElementType::I16,
+        U32 => MyElementType::U32,
+        I32 => MyElementType::I32,
+        F32 => MyElementType::F32,
+        U64 => MyElementType::U64,
+        I64 => MyElementType::I64,
+        F64 => MyElementType::F64,
+        /// A string as UTF-8 encoded bytes. => MyElementType::/// A string as UTF-8 encoded bytes.
+        Utf8 => MyElementType::Utf8,
+    }
+}
+
+fn element_type(x: &MyElementType) -> ElementType {
+    match x {
+        U8 => ElementType::U8,
+        I8 => ElementType::I8,
+        U16 => ElementType::U16,
+        I16 => ElementType::I16,
+        U32 => ElementType::U32,
+        I32 => ElementType::I32,
+        F32 => ElementType::F32,
+        U64 => ElementType::U64,
+        I64 => ElementType::I64,
+        F64 => ElementType::F64,
+        /// A string as UTF-8 encoded bytes. => MyElementType::/// A string as UTF-8 encoded bytes.
+        Utf8 => ElementType::Utf8,
+    }
+}
+
+
 #[tauri::command]
-pub async fn reune() -> Option<MyTensor> {
-    let sine_zune = include_bytes!("/home/blackrat/Downloads/sine.rune");
+pub async fn reune(zune: &[u8],
+    input_tensors: HashMap<String, MyTensor>) -> Result<MyTensor, String> {
+
     let mut zune_engine =
-        ZuneEngine::load(sine_zune).expect("Unable to initialize Zune Engine!");
-    // let mut zune_engine = ZuneEngine::load(zune).expect("Unable to initialize Zune Engine!");
+        ZuneEngine::load(zune).map_err(|_| "Unable to initialize Zune Engine!")?;
 
-    println!("input nodes {:?}", zune_engine.input_nodes());
-    println!("output nodes {:?}", zune_engine.output_nodes());
+    for (name, tensor) in &input_tensors {
+        let input_tensor_node_names = zune_engine
+            .get_input_tensor_names(name)
+            .map_err(|_| format!("Unable to find column: {}", name).to_string())?;
+        let default_tensor_name = &input_tensor_node_names[0];
+        zune_engine.set_input_tensor(name, default_tensor_name, &tensor.into());
+    }
 
-    let input_tensor = TensorResult {
-        element_type: ElementType::F32,
-        dimensions: vec![1, 1],
-        buffer: vec![0, 0, 0, 0],
-    };
+    zune_engine.predict().map_err(|e| e.to_string())?;
 
-    zune_engine.set_input_tensor("rand", "input", &input_tensor);
 
-    println!(
-        "input tensor rand => {:?}",
-        zune_engine.get_input_tensor("rand", "input")
-    );
+    let output_node = zune_engine.output_nodes()[0].to_string();
+    let output_node_input_name = zune_engine.get_input_tensor_names(&output_node).map_err(|e| e.to_string())?;
+    let output_node_input_name = &output_node_input_name[0];
+    let result = &zune_engine
+                    .get_input_tensor(&output_node, output_node_input_name)
+                    .ok_or_else(|| String::from("Unable to fetch the result"))?;
 
-    zune_engine.predict().expect("Failed to run predict!");
-
-    println!(
-        "output tensor for sine: => {:?}",
-        zune_engine.get_output_tensor("sine", "Identity")
-    );
-
-    zune_engine.get_output_tensor("sine", "Identity").map(MyTensor)
-
-    result
+    Ok(result.into())
 }
