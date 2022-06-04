@@ -6,8 +6,8 @@
   min-height: 100vh;
 }
 
-.react-flow__edge{
-/* display: none; */
+.react-flow__edge {
+  /* display: none; */
 }
 
 .sidebar_left {
@@ -16,6 +16,7 @@
   width: 22%;
   background: #e6e6e6;
   padding: 20px 30px;
+  overflow: scroll;
 }
 .sidebar_left > button {
   background-color: transparent;
@@ -117,10 +118,10 @@
   --cblo: rgba(0, 0, 0, 0.6);
 }
 
-.StudioBody--right__form__title{
-display: none;
+.StudioBody--right__form__title {
+  display: none;
 }
-.ant-tooltip-open{
+.ant-tooltip-open {
   display: none;
 }
 
@@ -329,8 +330,8 @@ input:checked + .slider:before {
   border: none;
   transition: all 0.3s ease;
   cursor: pointer;
-  margin: .5rem 0;
-  display:table-cell;
+  margin: 0.5rem 0;
+  display: table-cell;
 }
 .studio__container .sidebar_right button:hover {
   background: #4bdac0f1;
@@ -346,7 +347,7 @@ input:checked + .slider:before {
   /* align-items: flex-start;
   width: 100%; */
 }
-.studio__container .sidebar_right .properties__container img{
+.studio__container .sidebar_right .properties__container img {
   display: none;
 }
 

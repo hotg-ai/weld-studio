@@ -20,12 +20,12 @@ type IntegerColumnType = {
 
 type DoubleColumnType = {
   type: "DOUBLE";
-  value: Float64Array;
+  value: Float32Array;
 };
 
 type VarcharColumnType = {
   type: "VARCHAR";
-  value: string;
+  value: string[];
 };
 
 type TableColumnType = IntegerColumnType | DoubleColumnType | VarcharColumnType;
@@ -48,10 +48,15 @@ const Dataset = ({
   useEffect(() => {
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
-      const pbs = Object.entries(pb).map(
-        ([name, procBlock]) =>
-          [`proc-block/${name}`, metadataToComponent(name, procBlock)] as const
-      );
+      const allProckBlocks: any[] = await invoke("known_proc_blocks");
+      const pbs = Object.entries(pb).map(([name, procBlock]) => {
+        const match = allProckBlocks.filter((p) => p["name"] === name);
+        const matchUrl = match[0]["publicUrl"];
+        return [
+          `proc-block/${name}`,
+          metadataToComponent(name, procBlock, matchUrl),
+        ] as const;
+      });
       await dispatch(
         UpdateComponents({
           ...Object.fromEntries(pbs),
@@ -168,8 +173,8 @@ const Dataset = ({
               to={{ pathname: `/analysis/${id}` }}
               state={{
                 dataColumns: data && data.length ? Object.keys(data[0]) : {},
-                data: data,
-                dataTypes,
+                data: data || [],
+                dataTypes: dataTypes || {},
               }}
             >
               <button>

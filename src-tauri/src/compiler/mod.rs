@@ -44,9 +44,28 @@ pub async fn compile(
     }
 }
 
+use serde::ser::{Serialize, Serializer, SerializeStruct};
+
+pub struct MyTensor(TensorResult);
+
+impl Serialize for MyTensor {
+  fn serialize<S: Serializer>(&self, ser: S) -> Result<S::Ok, S::Error> {
+    let MyTensor(TensorResult { element_type, dimensions, buffer }) = self;
+
+    let mut ser = ser.serialize_struct("TensorResult", 3)?;
+      ser.serialize_field("element-type", &format!("{:?}", element_type))?;
+      ser.serialize_field("buffer", buffer)?;
+      ser.serialize_field("dimensions", dimensions)?;
+      ser.end()
+  }
+}
+
 #[tauri::command]
-pub async fn run(zune: &[u8]) -> Option<TensorResult> {
-    let mut zune_engine = ZuneEngine::load(zune).expect("Unable to initialize Zune Engine!");
+pub async fn reune() -> Option<MyTensor> {
+    let sine_zune = include_bytes!("/home/blackrat/Downloads/sine.rune");
+    let mut zune_engine =
+        ZuneEngine::load(sine_zune).expect("Unable to initialize Zune Engine!");
+    // let mut zune_engine = ZuneEngine::load(zune).expect("Unable to initialize Zune Engine!");
 
     println!("input nodes {:?}", zune_engine.input_nodes());
     println!("output nodes {:?}", zune_engine.output_nodes());
@@ -71,7 +90,7 @@ pub async fn run(zune: &[u8]) -> Option<TensorResult> {
         zune_engine.get_output_tensor("sine", "Identity")
     );
 
-    let result = zune_engine.get_output_tensor("sine", "Identity");
+    zune_engine.get_output_tensor("sine", "Identity").map(MyTensor)
 
     result
 }
