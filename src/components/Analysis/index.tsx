@@ -76,13 +76,12 @@ function Analysis() {
     // })
 
     let input_tensors = {
-      "column1": {
+      column1: {
         "element-type": "DOUBLE",
-        "dimensions": [1,1],
-        "buffer": Uint8Array.from([1,2,3,4,5])
-      }
-    }
-
+        dimensions: [1, 1],
+        buffer: Uint8Array.from([1, 2, 3, 4, 5]),
+      },
+    };
 
     invoke("compile", { runefile: result })
       .then((zune) => {
@@ -143,15 +142,15 @@ function Analysis() {
             <button
               onClick={async () => {
                 console.log("DATA TYPES", dataTypes);
-                invoke("reune")
-                  .then(console.log)
-                  .catch((error) => {
-                    console.log("RUN ERROR", error);
-                  });
-                // const result = await buildAndRun(diagram, dataTypes, tableData);
-                // if (result) {
-                //   console.log("RESULT", result);
-                // }
+                // invoke("reune")
+                //   .then(console.log)
+                //   .catch((error) => {
+                //     console.log("RUN ERROR", error);
+                //   });
+                const result = await buildAndRun(diagram, dataTypes, tableData);
+                if (result) {
+                  console.log("RESULT", result);
+                }
               }}
             >
               {/* <img src="/assets/model.svg" alt="<" /> */}
