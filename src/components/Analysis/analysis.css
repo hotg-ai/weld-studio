@@ -293,7 +293,7 @@ input:checked + .slider:before {
   align-items: flex-start;
   justify-content: flex-start;
   width: 78%;
-  min-height: 100vh;
+  height: calc(100vh - 35px);
 }
 .studio__container {
   width: 100%;
@@ -310,6 +310,7 @@ input:checked + .slider:before {
   width: 30%;
   background-color: #faf8ff;
   height: 65vh;
+  overflow-y: scroll;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -378,7 +379,7 @@ input:checked + .slider:before {
 .studio-table__container {
   overflow-y: scroll;
   width: 100%;
-  height: 35vh;
+  height: 30vh;
 }
 .studio-table__container table thead tr th:first-child,
 .studio-table__container table thead tr th:last-child {

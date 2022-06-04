@@ -192,7 +192,7 @@ export async function loadProcBlocks(): Promise<Record<string, ProcBlock>> {
     try {
       procBlocks[pb["name"]] = await loadProcBlock(pb["publicUrl"]);
     } catch (e) {
-      console.log("Didn't load procblock", e);
+      console.log(`Didn't load proc-block ${pb["publicUrl"]} `, e);
     }
   });
   await Promise.all(promises);
