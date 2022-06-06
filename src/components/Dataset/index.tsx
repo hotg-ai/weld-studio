@@ -49,8 +49,10 @@ const Dataset = ({
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
       const pbs = Object.entries(pb).map(
-        ([name, procBlock]) =>
-          [`proc-block/${name}`, metadataToComponent(name, procBlock)] as const
+        ([name, procBlock]) => {
+          //console.log(procBlock.metadata)
+          return [`proc-block/${name}`, metadataToComponent(name, procBlock)] as const
+        }
       );
       await dispatch(
         UpdateComponents({

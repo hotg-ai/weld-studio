@@ -132,7 +132,7 @@ async fn load_csv(
     // let schema = csv.schema();
 
     let create_table = format!(
-        "create table \"{}\"  as select * from read_csv_auto('{}');",
+        "create table \"{}\"  as select * from read_csv_auto('{}', SAMPLE_SIZE=-1);",
         table_name, invoke_message[0]
     );
 
