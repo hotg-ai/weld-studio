@@ -291,9 +291,11 @@ const generateCapabilities = (
   dataTypes: DatasetTypes
 ): Record<string, Capability> => {
   let result: Record<string, Capability> = {};
-  Object.values(dataTypes).forEach((v) => {
-    Object.entries(v).forEach(([column, value]) => {
-      if (dataColumns.filter((col) => col === column).length > 0) {
+  
+  Object.values(dataColumns).forEach((column) => {
+    // Object.entries(v).forEach(([column, value]) => {
+    //   console.log(dataColumns, column)
+    //   if (true || dataColumns.filter((col) => col === column).length > 0) {
         column = column.replaceAll('"', "");
         result[column] = {
           type: "capability",
@@ -334,9 +336,11 @@ const generateCapabilities = (
             ];
           },
         };
-      }
-    });
-  });
+      });
+    // });
+  // });
+
+  console.log("GENERATED CAPABILTIES", result);
   return result;
 };
 
