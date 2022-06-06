@@ -80,19 +80,19 @@ function Analysis() {
         element_type: "F64",
         dimensions: [1, 1],
         // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
-        buffer: Array.from(Float64Array.from([1, 2, 3])),
+        buffer: Object.values(Float64Array.from([1, 2, 3, 4, 5])),
       },
       Symbol: {
         element_type: "F64",
         dimensions: [1, 1],
         // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
-        buffer: Array.from(Float64Array.from([1, 2, 3])),
+        buffer: Object.values(Float64Array.from([1, 2, 3, 4, 5])),
       },
       VaR: {
         element_type: "F64",
         dimensions: [1, 1],
         // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
-        buffer: Array.from(Float64Array.from([1, 2, 3])),
+        buffer: Object.values(Float64Array.from([1, 2, 3, 4, 5])),
       },
     };
 

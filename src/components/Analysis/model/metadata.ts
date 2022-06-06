@@ -55,6 +55,8 @@ export function metadataToComponent(
     inputs,
     outputs,
   } = procBlock.metadata();
+
+  console.log("METADATA", name, procBlock.metadata());
   return {
     type: "proc-block",
     displayName: name,
@@ -194,6 +196,7 @@ function deriveExampleFromTensorHints(
 }
 
 function convertArguments(args: ArgumentMetadata[]): Record<string, Property> {
+  console.log("properties/arguments", args);
   const properties: Record<string, Property> = {};
 
   for (const arg of args) {

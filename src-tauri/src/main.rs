@@ -30,7 +30,10 @@ use std::sync::{
 use arrow::record_batch::RecordBatch;
 use duckdb::{params, Connection, Result};
 
-use crate::{compiler::{compile, reune}, wapm::known_proc_blocks};
+use crate::{
+    compiler::{compile, reune},
+    wapm::known_proc_blocks,
+};
 // use serde::*;
 
 #[derive(Debug)]
