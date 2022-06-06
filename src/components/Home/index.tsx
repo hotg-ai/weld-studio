@@ -312,6 +312,9 @@ function Home({setQueryError, setIsLoadingTable} : {setQueryError: (error: strin
             }}>
               Add Dataset
             </button>
+            <button onClick={ () => history('/python')}>
+              Python
+            </button>
      
           </div>
         </div>

@@ -43,6 +43,9 @@ struct DefragStudioState {
     pub conn: Mutex<Connection>,
 }
 
+use pyo3::prelude::*;
+use pyo3::types::IntoPyDict;
+
 fn main() -> Result<(), Error> {
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var(
@@ -101,6 +104,7 @@ fn main() -> Result<(), Error> {
         .invoke_handler(tauri::generate_handler![
             load_csv,
             run_sql,
+            run_python,
             get_tables,
             compile,
             known_proc_blocks
@@ -193,6 +197,27 @@ async fn get_tables(
 #[tracing::instrument(skip(cancel), err)]
 async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Result<(), String> {
     cancelled.0.store(cancel, Ordering::Relaxed);
+    Ok(())
+}
+
+#[tauri::command]
+#[tracing::instrument(skip(state), err)]
+async fn run_python(
+    python: String,
+    state: tauri::State<'_, DefragStudioState>,
+) -> Result<(), String> {
+    let res: Result<(), String> = Python::with_gil(|py| {
+        let sys = py.import("sys").unwrap();
+        let version: String = sys.getattr("version").unwrap().extract().unwrap();
+
+        let locals = [("os", py.import("os").unwrap())].into_py_dict(py);
+        let code = "os.getenv('USER') or os.getenv('USERNAME') or 'Unknown'";
+        let user: String = py.eval(code, None, Some(&locals)).unwrap().extract().unwrap();
+
+        tracing::info!("Hello {}, I'm Python {}", user, version);
+        Ok(())
+    });
+
     Ok(())
 }
 
