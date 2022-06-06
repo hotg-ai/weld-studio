@@ -131,11 +131,11 @@ fn element_type(x: &MyElementType) -> ElementType {
 
 
 #[tauri::command]
-pub async fn reune(zune: &[u8],
+pub async fn reune(zune: Vec<u8>,
     input_tensors: HashMap<String, MyTensor>) -> Result<MyTensor, String> {
 
     let mut zune_engine =
-        ZuneEngine::load(zune).map_err(|_| "Unable to initialize Zune Engine!")?;
+        ZuneEngine::load(&zune).map_err(|_| "Unable to initialize Zune Engine!")?;
 
     for (name, tensor) in &input_tensors {
         let input_tensor_node_names = zune_engine

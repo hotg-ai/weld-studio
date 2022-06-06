@@ -89,6 +89,7 @@ export type Node = {
   ports?: Port[];
   id: string;
   name: string;
+  label?: string;
   componentIdentifier: string;
   propertiesValueMap?: Record<string, string | number>;
 };

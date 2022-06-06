@@ -136,11 +136,12 @@ function loadStage(node: Node, graph: Graph): Stage {
 }
 
 function generateNodeKey(node: Node): string {
-  return `${node.type}_${node.id}`;
+  return `${node.label || node.name}`;
 }
 
 function generateNodePortKey(node: Node, index: number): string {
-  return `${node.type}_${node.id}.${index}`;
+  // return `${node.type}_${node.id}.${index}`;
+  return `${node.label}.${index}`;
 }
 
 function sanitizeName(id: string): string {
@@ -245,6 +246,7 @@ class Graph {
               name: node.data?.name || "",
               componentIdentifier: node.data?.componentIdentifier || "",
               propertiesValueMap: node.data?.propertiesValueMap,
+              label: node.data.label,
             };
           }
         );

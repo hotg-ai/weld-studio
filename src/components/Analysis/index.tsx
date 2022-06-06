@@ -76,17 +76,30 @@ function Analysis() {
     // })
 
     let input_tensors = {
-      column1: {
-        "element-type": "DOUBLE",
+      MarketPrice: {
+        element_type: "F64",
         dimensions: [1, 1],
-        buffer: Uint8Array.from([1, 2, 3, 4, 5]),
+        // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
+        buffer: Array.from(Float64Array.from([1, 2, 3])),
+      },
+      Symbol: {
+        element_type: "F64",
+        dimensions: [1, 1],
+        // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
+        buffer: Array.from(Float64Array.from([1, 2, 3])),
+      },
+      VaR: {
+        element_type: "F64",
+        dimensions: [1, 1],
+        // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
+        buffer: Array.from(Float64Array.from([1, 2, 3])),
       },
     };
 
     invoke("compile", { runefile: result })
       .then((zune) => {
         console.log("ZUNE BUILT", zune);
-        invoke("reune", { zune: zune, input_tensors: input_tensors })
+        invoke("reune", { zune: zune, inputTensors: input_tensors })
           .then(console.log)
           .catch((error) => {
             console.log("RUN ERROR", error);
