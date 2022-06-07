@@ -141,7 +141,6 @@ export default function Dimension({
           </Col>
           <Col span={12}>
             <Select
-              disabled={true}
               style={{
                 color: legiblyDisabled ? "rgba(255, 255, 255, 1)" : "",
               }}
@@ -196,7 +195,6 @@ export default function Dimension({
           </Col>
           <Col span={12}>
             <input
-              disabled={true}
               style={{
                 color: legiblyDisabled ? "rgba(255, 255, 255, 1)" : "",
               }}

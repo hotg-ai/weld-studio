@@ -56,12 +56,6 @@ export function metadataToComponent(
     outputs,
   } = procBlock.metadata();
 
-  console.log(
-    "METADATA",
-    name,
-    procBlock.metadata(),
-    JSON.stringify(procBlock.metadata())
-  );
   return {
     type: "proc-block",
     displayName: name,
