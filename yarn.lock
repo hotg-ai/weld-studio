@@ -1414,10 +1414,10 @@
   resolved "https://registry.yarnpkg.com/@hotg-ai/rune-wit-files/-/rune-wit-files-0.3.2.tgz#c83dd0dc6daa68a407b47b58153963666d2767e7"
   integrity sha512-bTwAzrnE1YCAPr3ODWpyBE994Hruo9LW/sLxMP9GjoRXXuenpiR5CXoU7p1wj5BpYtdcJS8M3eX5dW+y4uPPmA==
 
-"@hotg-ai/rune@0.12.0-rc.0":
-  version "0.12.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@hotg-ai/rune/-/rune-0.12.0-rc.0.tgz#6714d33192e13503b0f9a68f6f82d441acf00732"
-  integrity sha512-o5eTzx9QIGn3ZZkrTq9Ger2UdFM0LdN7MmsJVg6A9DjrpzAXRYhNWFdzFAD15LznckebMsDDsYDc311EPgvfjA==
+"@hotg-ai/rune@0.12.0-rc.1":
+  version "0.12.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@hotg-ai/rune/-/rune-0.12.0-rc.1.tgz#5edcf79dbb148f9a57e83a0df490d75daa11e1dc"
+  integrity sha512-BFFQKhLnkO4YVsLXOl/DN1/BU3VMhZfj0KlZUtHiyqI4wjv+3vcMCWtFpGzXlzyvETCriMYmRHd2nP9k+0qc6w==
   dependencies:
     "@hotg-ai/rune-wit-files" "^0.3.1"
     js-yaml "^4.1.0"

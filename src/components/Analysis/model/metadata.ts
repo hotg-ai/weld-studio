@@ -56,7 +56,12 @@ export function metadataToComponent(
     outputs,
   } = procBlock.metadata();
 
-  console.log("METADATA", name, procBlock.metadata());
+  console.log(
+    "METADATA",
+    name,
+    procBlock.metadata(),
+    JSON.stringify(procBlock.metadata())
+  );
   return {
     type: "proc-block",
     displayName: name,
@@ -196,12 +201,15 @@ function deriveExampleFromTensorHints(
 }
 
 function convertArguments(args: ArgumentMetadata[]): Record<string, Property> {
-  console.log("properties/arguments", args);
   const properties: Record<string, Property> = {};
 
   for (const arg of args) {
     const { hints, name, defaultValue, description } = arg;
-    const prop: PropertyWithDefaultValue = convertDefaults(hints, defaultValue);
+    const prop: PropertyWithDefaultValue = convertDefaults(
+      hints,
+      defaultValue,
+      description
+    );
 
     const property: Property = {
       required: defaultValue ? defaultValue.length > 0 : false,
@@ -211,40 +219,84 @@ function convertArguments(args: ArgumentMetadata[]): Record<string, Property> {
 
     properties[name] = property;
   }
-
+  console.log("properties/arguments", args, properties);
   return properties;
 }
 
 function convertDefaults(
   typeHint: ArgumentHint[] | undefined,
-  defaultValue: string | undefined
+  defaultValue: string | undefined,
+  description: string | undefined
 ): Property {
   switch (typeHint[0].type) {
-    case "string-enum":
+    // let property: Property = {
+    //   required: true,
+    //   defaultValue,
+    //   description
+    // }
+    //"string-enum" | "number-in-range" | "non-negative-number" | "supported-argument-type"
+    case "string-enum": {
       let enumValues: KnownType[] = [];
       typeHint[0].possibleValues.forEach((value) =>
         enumValues.push({
           name: value,
-          value: parseFloat(value),
+          value: parseInt(value),
         })
       );
       return {
         type: "string-enum",
         enumValues,
-        defaultValue: enumValues[0].name,
+        defaultValue,
         required: true,
+        description,
       };
-    // case "number-in-range":
-    //   return {
-    //     valueConstraint: {
-    //       type: "range",
-    //     },
-    //     type: "integer",
-    //     defaultValue: defaultValue ? parseInt(defaultValue) : 0,
-    //   };
-    // case "non-negative-number":
-    //   return { type: "integer", defaultValue: defaultValue || "" };
-    // case "supported-argument-type":
-    //   return { type: "longstring", defaultValue: defaultValue || "" };
+      break;
+    }
+    case "non-negative-number": {
+      return {
+        type: "float",
+        defaultValue: parseFloat(defaultValue),
+        description,
+        required: true,
+        valueConstraint: {
+          type: "range",
+          min: 0,
+        },
+      };
+      break;
+    }
+    case "number-in-range": {
+      return {
+        type: "float",
+        defaultValue: parseFloat(
+          defaultValue || typeHint[0].min || typeHint[0].max
+        ),
+        description,
+        required: true,
+        valueConstraint: {
+          type: "range",
+          min: parseFloat(typeHint[0].min),
+          max: parseFloat(typeHint[0].max),
+        },
+      };
+      break;
+    }
+    case "supported-argument-type": {
+      return {
+        type: typeHint[0].argumentType === 2 ? "float" : "integer",
+        defaultValue:
+          typeHint[0].argumentType === 2
+            ? parseFloat(defaultValue)
+            : parseInt(defaultValue),
+        required: true,
+        description,
+        valueConstraint: {
+          type: "range",
+          min: typeHint[0].argumentType === 0 ? 0 : undefined,
+          max: undefined,
+        },
+      };
+      break;
+    }
   }
 }

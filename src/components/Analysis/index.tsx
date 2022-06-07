@@ -178,9 +178,9 @@ function Analysis() {
                 <img src="/assets/properties.svg" alt="" />
                 <span>Properties</span>
               </div>
-              <InputDimensions disabled />
-              <Properties disabled />
-              <OutputDimensions disabled />
+              <InputDimensions />
+              <Properties />
+              <OutputDimensions />
             </div>
           </div>
         </div>

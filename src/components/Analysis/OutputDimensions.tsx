@@ -9,10 +9,6 @@ import { RefreshDimensions } from "../../redux/builderSlice";
 import { FlowElements } from "../../redux/reactFlowSlice";
 import _ from "lodash";
 
-type Props = {
-  disabled: boolean;
-};
-
 /**
  * Get all output ports, ordered by their index.
  */
@@ -36,7 +32,7 @@ export function outputPorts(
 }
 
 // eslint-disable-next-line
-export default function OutputDimensions({ disabled = false }: Props) {
+export default function OutputDimensions() {
   const dispatch = useAppDispatch();
   const components = useAppSelector((s) => s.builder.components);
   const selected = useAppSelector((s) => s.builder.selected?.id);

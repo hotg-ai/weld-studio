@@ -23,10 +23,6 @@ import { Node } from "react-flow-renderer";
 import { Port } from "./model/Storm";
 const { Option } = Select;
 
-export type Props = {
-  disabled: boolean;
-};
-
 type InputType = {
   fileName: string | null;
   name: string;
@@ -76,7 +72,7 @@ function NumberInput({
       style={{
         color: name === "source" ? "rgba(255, 255, 255, 1)" : "",
       }}
-      disabled={true}
+      // disabled={true}
     />
   );
 }
@@ -89,7 +85,6 @@ function StringInput({
   value,
   onUpload,
   progressState,
-  disabled = false,
   ports,
   error,
 }: InputType) {
@@ -115,10 +110,8 @@ function StringInput({
             set(e.target.value.trim());
           }}
           value={value || ""}
-          disabled={true}
           style={{
-            color:
-              disabled && name === "source" ? "rgba(255, 255, 255, 1)" : "",
+            color: name === "source" ? "rgba(255, 255, 255, 1)" : "",
           }}
         />
       </Col>
@@ -170,7 +163,6 @@ function SelectInput({
     return (
       <Col span={12}>
         <Select
-          disabled={true}
           defaultValue={property.enumValues[0].name}
           value={value}
           id={`${name}-element-type`}
@@ -247,7 +239,9 @@ function PropertyInput(props: InputType) {
             Property
           </label>
         </Col>
-        {property.type && property.type.endsWith("string") && name !== "model-format" ? (
+        {property.type &&
+        property.type.endsWith("string") &&
+        name !== "model-format" ? (
           <StringInput {...props} />
         ) : property.type === "string-enum" || name === "model-format" ? (
           // <StringInput {...props} />
@@ -290,7 +284,7 @@ function componentProperties(component: Component): Record<string, Property> {
   }
 }
 
-export default function PropertiesForm({ disabled = false }: Props) {
+export default function PropertiesForm() {
   const dispatch = useAppDispatch();
   const id = useAppSelector((s) => s.builder.selected?.id);
   const components = useAppSelector((s) => s.builder.components);
@@ -415,7 +409,7 @@ export default function PropertiesForm({ disabled = false }: Props) {
         onUpload={onResourceUpload}
         progressState={progressState}
         ports={OutputPorts}
-        disabled={legiblyDisabled}
+        // disabled={legiblyDisabled}
         error={selectedNode.data.propertiesErrorMap}
       />
     );

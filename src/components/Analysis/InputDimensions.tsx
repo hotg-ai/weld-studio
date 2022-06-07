@@ -5,12 +5,8 @@ import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Port } from "./model/Storm";
 import { FlowElements } from "../../redux/reactFlowSlice";
 
-type Props = {
-  disabled: boolean;
-};
-
 // eslint-disable-next-line
-export default function InputDimensions({ disabled = false }: Props) {
+export default function InputDimensions() {
   const components = useAppSelector((s) => s.builder.components);
   const selected = useAppSelector((s) => s.builder.selected?.id);
   const diagram = useAppSelector((s) => s.flow);
