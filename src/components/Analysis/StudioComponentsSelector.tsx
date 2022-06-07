@@ -226,7 +226,13 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                       onClick={() => toggleActiveCollapseKeys(type)}
                       className="itemCollapseName"
                     >
-                      {type === "input" ? "Data Columns" : type === "proc-block" ? "Analysis Blocks" : type === "output" ? "Terminator" : type}
+                      {type === "input"
+                        ? "Data Columns"
+                        : type === "proc-block"
+                        ? "Analysis Blocks"
+                        : type === "output"
+                        ? "Terminator"
+                        : type}
                       {type === "input" && (
                         <button
                           onClick={(e) => {
@@ -291,56 +297,55 @@ const generateCapabilities = (
   dataTypes: DatasetTypes
 ): Record<string, Capability> => {
   let result: Record<string, Capability> = {};
-  
+
   Object.values(dataColumns).forEach((column) => {
     // Object.entries(v).forEach(([column, value]) => {
     //   console.log(dataColumns, column)
     //   if (true || dataColumns.filter((col) => col === column).length > 0) {
-        column = column.replaceAll('"', "");
-        result[column] = {
-          type: "capability",
-          displayName: column,
-          identifier: "RAW",
-          source: "custom",
-          properties: {
-            length: {
-              type: "integer",
-              defaultValue: 1,
-              required: true,
-              description: "Length of raw data in bytes",
-            },
-            source: {
-              type: "integer",
-              required: true,
-              defaultValue: 0,
-              description:
-                "Specify which input to use when multiple inputs are provided",
-            },
-          },
-          description: "",
-          acceptedOutputElementTypes: [{ elementTypes: ["f32"] }],
-          outputs: (p) => {
-            const { length } = p;
-            if (typeof length !== "number") {
-              throw new Error();
-            }
+    column = column.replaceAll('"', "");
+    result[column] = {
+      type: "capability",
+      displayName: column,
+      identifier: "RAW",
+      source: "custom",
+      properties: {
+        length: {
+          type: "integer",
+          defaultValue: 1,
+          required: true,
+          description: "Length of raw data in bytes",
+        },
+        source: {
+          type: "integer",
+          required: true,
+          defaultValue: 0,
+          description:
+            "Specify which input to use when multiple inputs are provided",
+        },
+      },
+      description: "",
+      acceptedOutputElementTypes: [{ elementTypes: ["f32"] }],
+      outputs: (p) => {
+        const { length } = p;
+        if (typeof length !== "number") {
+          throw new Error();
+        }
 
-            return [
-              {
-                elementType: "u8",
-                dimensions: [length],
-                displayName: "data",
-                description: `Raw output from ${column} Column`,
-                dimensionType: "fixed",
-              },
-            ];
+        return [
+          {
+            elementType: "u8",
+            dimensions: [length],
+            displayName: "data",
+            description: `Raw output from ${column} Column`,
+            dimensionType: "fixed",
           },
-        };
-      });
-    // });
+        ];
+      },
+    };
+  });
+  // });
   // });
 
-  console.log("GENERATED CAPABILTIES", result);
   return result;
 };
 

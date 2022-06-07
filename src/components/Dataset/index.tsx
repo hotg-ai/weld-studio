@@ -172,7 +172,8 @@ const Dataset = ({
             <Link
               to={{ pathname: `/analysis/${id}` }}
               state={{
-                dataColumns: data && data.length ? Object.keys(data[0]) : {},
+                dataColumns:
+                  data && data.length > 0 ? Object.keys(data[0]) : {},
                 data: data || [],
                 dataTypes: dataTypes || {},
               }}
@@ -182,7 +183,7 @@ const Dataset = ({
               </button>
             </Link>
             <div>
-              {data.length > 0 ? (
+              {data && data.length > 0 ? (
                 <h5>
                   {data.length} Rows, {Object.keys(data[0]).length} Columns
                 </h5>
@@ -202,7 +203,7 @@ const Dataset = ({
         </div> */}
 
           <div className="selectedColumns__container">
-            {data.length > 0 ? (
+            {data && data.length > 0 ? (
               <Dropdown title="Query Result">
                 {Object.keys(data[0]).map((item, idx) => {
                   return (

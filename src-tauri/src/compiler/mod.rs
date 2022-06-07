@@ -139,10 +139,13 @@ pub async fn reune(
     let mut zune_engine = ZuneEngine::load(&zune).context("Unable to initialize Zune Engine!")?;
 
     for (name, tensor) in &input_tensors {
+        tracing::info!("Input Name: {name}");
         let input_tensor_node_names = zune_engine
             .get_input_tensor_names(name)
             .with_context(|| format!("Unable to find column: {name}"))?;
+        
         let default_tensor_name = &input_tensor_node_names[0];
+        
         zune_engine.set_input_tensor(name, default_tensor_name, &tensor.into());
     }
 

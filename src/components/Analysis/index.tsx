@@ -1,7 +1,7 @@
 import { Collapse } from "antd";
 import useSelection from "antd/lib/table/hooks/useSelection";
 import { invoke } from "@tauri-apps/api/tauri";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { storm2rune } from "src/canvas2rune";
 import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
@@ -17,6 +17,10 @@ import Properties from "./Properties";
 import StudioCanvas from "./StudioCanvas";
 import { ComponentsSelector } from "./StudioComponentsSelector";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
+import { FlowNodeData } from "./model/FlowNodeComponent";
+import { Node } from "react-flow-renderer";
+import { TensorDescriptionModel } from "./model";
+import _ from "lodash";
 
 function Analysis() {
   const diagram = useAppSelector((s) => s.flow);
@@ -39,6 +43,26 @@ function Analysis() {
   });
 
   const [tableData, setTableData] = useState(data);
+
+  useEffect(() => {
+    let newTable = data;
+
+    const capabilities = diagram.nodes.filter(
+      (node) => node.data.type === "capability"
+    );
+
+    let labels: string[] = capabilities.map((cap) => cap.data.label);
+
+    newTable = newTable.map((o) => {
+      let row = labels.reduce((acc, curr) => {
+        if (o[curr]) acc[curr] = o[curr];
+        return acc;
+      }, {});
+      if (!_.isEmpty(row)) return row;
+    });
+
+    setTableData(newTable || []);
+  }, [diagram]);
 
   const { id } = useParams();
 
@@ -71,43 +95,112 @@ function Analysis() {
       ) as SerializedFlowDiagram
     );
 
-    // const input = data.map((row) => {
-    //   return row[""];
-    // })
-
-    let input_tensors = {
-      MarketPrice: {
-        element_type: "F64",
-        dimensions: [1, 1],
-        // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
-        buffer: Object.values(Float64Array.from([1, 2, 3, 4, 5])),
-      },
-      Symbol: {
-        element_type: "F64",
-        dimensions: [1, 1],
-        // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
-        buffer: Object.values(Float64Array.from([1, 2, 3, 4, 5])),
-      },
-      VaR: {
-        element_type: "F64",
-        dimensions: [1, 1],
-        // buffer: Uint8Array.from([1, 2, 3, 4, 5]),
-        buffer: Object.values(Float64Array.from([1, 2, 3, 4, 5])),
-      },
+    const getDataArrayFromType = (data, type) => {
+      switch (type) {
+        case "utf8":
+          return data;
+          break;
+        case "u8":
+          return Uint8Array.from(data);
+          break;
+        case "u16":
+          return Uint32Array.from(data);
+          break;
+        case "u32":
+          return Uint32Array.from(data);
+          break;
+        case "u64":
+          return BigUint64Array.from(data);
+          break;
+        case "i8":
+          return Int8Array.from(data);
+          break;
+        case "i16":
+          return Int16Array.from(data);
+          break;
+        case "i32":
+          return Int32Array.from(data);
+          break;
+        case "i64":
+          return BigInt64Array.from(data);
+          break;
+        case "f32":
+          return Float32Array.from(data);
+          break;
+        case "f64":
+          return Float64Array.from(data);
+          break;
+      }
     };
 
-    invoke("compile", { runefile: result })
-      .then((zune) => {
-        console.log("ZUNE BUILT", zune);
-        invoke("reune", { zune: zune, inputTensors: input_tensors })
-          .then(console.log)
-          .catch((error) => {
-            console.log("RUN ERROR", error);
-          });
-      })
-      .catch((error) => {
-        console.log("COMPILE ERROR", error);
+    const getConnectedInputTensor = (
+      capability: Node<FlowNodeData>,
+      diagram: FlowElements
+    ): TensorDescriptionModel | undefined => {
+      if (!data || data.length < 1) return undefined;
+      if (!data || data.length === 0) return undefined;
+      const connectedEdge = diagram.edges.filter(
+        (edge) => edge.source === capability.id
+      );
+
+      if (connectedEdge.length > 0) {
+        const connectedNode = diagram.nodes.filter(
+          (node) => node.id === connectedEdge[0].target
+        );
+        if (connectedNode.length > 0) {
+          return connectedNode[0].data.inputs.filter(
+            (input) => input.id === connectedEdge[0].targetHandle
+          )[0].tensor;
+        }
+      }
+      return undefined;
+    };
+
+    let columns = [];
+    if (data[0]) columns = Object.keys(data[0]);
+    let dataMap = {};
+    data.map((row) => {
+      columns.map((column) => {
+        if (dataMap[column]) dataMap[column].push(row[column]);
+        else dataMap[column] = [row[column]];
       });
+    });
+
+    let input_tensors = {};
+
+    const capabilities = diagram.nodes.filter(
+      (node) => node.data.type === "capability"
+    );
+
+    capabilities.map((node) => {
+      const tensor = getConnectedInputTensor(node, diagram);
+      if (tensor)
+        input_tensors[tensor.displayName] = {
+          element_type: tensor.elementType.toUpperCase(),
+          dimensions: tensor.dimensions,
+          buffer: Object.values(
+            getDataArrayFromType(dataMap[node.data.label], tensor.elementType)
+          ),
+        };
+    });
+
+    try {
+      const zune = await invoke("compile", { runefile: result });
+      if (zune) {
+        console.log("ZUNE BUILT", zune);
+        try {
+          const result = await invoke("reune", {
+            zune: zune,
+            inputTensors: input_tensors,
+          });
+          if (result) console.log(result);
+        } catch (error) {
+          console.log("RUN ERROR", error);
+        }
+      }
+    } catch (error) {
+      console.log("COMPILE ERROR", error);
+    }
     return result;
   };
 

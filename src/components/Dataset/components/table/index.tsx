@@ -2,8 +2,10 @@ import React from "react";
 import "./table.css";
 
 const Table = ({ data }: { data: any[] }) => {
-  if (!data || data.length === 0) return;
-  let header = Object.keys(data[0]);
+  let header = [];
+  if (data && data.length > 0) {
+    if (data[0]) header = Object.keys(data[0]);
+  } else return null;
   return (
     <table>
       <thead>
