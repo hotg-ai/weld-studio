@@ -198,7 +198,12 @@ function Analysis() {
             zune: zune,
             inputTensors: input_tensors,
           });
-          if (result) console.log(result);
+          if (result)
+            console.log(
+              "FO REAL RESULT",
+              result,
+              new Float32Array(result.buffer.buffer, 0, 1)
+            );
         } catch (error) {
           console.log("RUN ERROR", error);
         }
