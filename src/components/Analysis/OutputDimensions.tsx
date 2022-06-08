@@ -23,9 +23,11 @@ export function outputPorts(
   const model: Node<FlowNodeData> = diagram.nodes.filter(
     (e) => e.id === selected
   )[0] as Node<FlowNodeData>;
-  if (!model.data) {
+
+  if (!model || !model.data) {
     return { ports: [], model: undefined };
   }
+
   const ports = _.sortBy(model.data.outputs, ["idx"]) || [];
   // const ports = model.data.outputs.sort((a, b) => a.idx - b.idx)
   return { ports, model };
@@ -48,7 +50,7 @@ export default function OutputDimensions() {
 
   const { ports, model } = outputPorts(diagram, selected);
 
-  if (!model || !model?.data) return null;
+  if (!model || (model && !model.data)) return null;
   const component = components[(model.data as FlowNodeData).componentID];
   // const acceptedTypes = component.acceptedOutputElementTypes?.map(
   //   item => item.elementTypes

@@ -26,7 +26,7 @@ export const storm2rune = async (
   // FIXME: This is an abomination and needs to be gotten rid of once we
   // get rid of C++ based rune_vm in the iOS and Android apps
   Object.keys(pipeline).forEach(async (stage) => {
-    console.log("PIPELINE STAGES", stage);
+    // console.log("PIPELINE STAGES", stage);
     const pipelineStageArgs = pipeline[stage].args;
     if (pipelineStageArgs) {
       Object.keys(pipelineStageArgs).forEach(async (arg) => {
@@ -138,7 +138,7 @@ function loadStage(node: Node, graph: Graph): Stage {
 
 function generateNodeKey(node: Node): string {
   // return `${node.type}_${node.id}`;
-  console.log("NOOODE ===>>>", node);
+  // console.log("NOOODE ===>>>", node);
   return `${node.label || node.name}`;
 }
 

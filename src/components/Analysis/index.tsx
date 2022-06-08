@@ -54,11 +54,13 @@ function Analysis() {
     let labels: string[] = capabilities.map((cap) => cap.data.label);
 
     newTable = newTable.map((o) => {
-      let row = labels.reduce((acc, curr) => {
-        if (o[curr]) acc[curr] = o[curr];
-        return acc;
-      }, {});
-      if (!_.isEmpty(row)) return row;
+      if (labels && labels.length > 0) {
+        let row = labels.reduce((acc, curr) => {
+          acc[curr] = o[curr];
+          return acc;
+        }, {});
+        if (!_.isEmpty(row)) return row;
+      }
     });
 
     setTableData(newTable || []);
@@ -71,7 +73,7 @@ function Analysis() {
     datasetTypes: DatasetTypes,
     data: any[]
   ): Promise<string> => {
-    const result = await storm2rune(
+    const rune = await storm2rune(
       JSON.parse(
         JSON.stringify(
           diagramToRuneCanvas(
@@ -175,21 +177,24 @@ function Analysis() {
     capabilities.map((node) => {
       const tensor = getConnectedInputTensor(node, diagram);
       if (tensor)
-        input_tensors[tensor.displayName] = {
+        input_tensors[node.data.label] = {
           element_type: tensor.elementType.toUpperCase(),
           dimensions: tensor.dimensions,
           buffer: Object.values(
-            getDataArrayFromType(dataMap[node.data.label], tensor.elementType)
+            Uint8Array.from(
+              getDataArrayFromType(dataMap[node.data.label], tensor.elementType)
+            )
           ),
         };
     });
-
+    let result;
+    console.log("RUNEFILE, INPUT", rune, input_tensors);
     try {
-      const zune = await invoke("compile", { runefile: result });
+      const zune = await invoke("compile", { runefile: rune });
       if (zune) {
         console.log("ZUNE BUILT", zune);
         try {
-          const result = await invoke("reune", {
+          result = await invoke("reune", {
             zune: zune,
             inputTensors: input_tensors,
           });

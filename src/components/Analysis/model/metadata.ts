@@ -213,7 +213,7 @@ function convertArguments(args: ArgumentMetadata[]): Record<string, Property> {
 
     properties[name] = property;
   }
-  console.log("properties/arguments", args, properties);
+  // console.log("properties/arguments", args, properties);
   return properties;
 }
 

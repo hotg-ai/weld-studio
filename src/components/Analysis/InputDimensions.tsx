@@ -25,6 +25,9 @@ export default function InputDimensions() {
       (e) => e.id === selected
     )[0] as Node<FlowNodeData>;
 
+    if (!model || !model.data) {
+      return { ports: [], model: undefined };
+    }
     const ports = model.data?.inputs.sort((a, b) => a.idx - b.idx) || [];
 
     return { ports, model };
