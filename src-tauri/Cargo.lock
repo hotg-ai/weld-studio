@@ -1835,7 +1835,7 @@ dependencies = [
 [[package]]
 name = "hotg-rune-compiler"
 version = "0.11.3"
-source = "git+https://github.com/hotg-ai/rune?branch=zune#8d672c40765b7ffd193ea526e12a7ac7c0ba3fe1"
+source = "git+https://github.com/hotg-ai/rune?rev=45c6dc6467b6f994169a6582556f1d39cf30c122#45c6dc6467b6f994169a6582556f1d39cf30c122"
 dependencies = [
  "graphql_client",
  "indexmap",
@@ -1857,7 +1857,7 @@ dependencies = [
 [[package]]
 name = "hotg-rune-core"
 version = "0.11.3"
-source = "git+https://github.com/hotg-ai/rune?branch=zune#8d672c40765b7ffd193ea526e12a7ac7c0ba3fe1"
+source = "git+https://github.com/hotg-ai/rune?rev=45c6dc6467b6f994169a6582556f1d39cf30c122#45c6dc6467b6f994169a6582556f1d39cf30c122"
 dependencies = [
  "log",
  "serde",
@@ -1866,7 +1866,7 @@ dependencies = [
 [[package]]
 name = "hotg-rune-runtime"
 version = "0.11.3"
-source = "git+https://github.com/hotg-ai/rune?branch=zune#8d672c40765b7ffd193ea526e12a7ac7c0ba3fe1"
+source = "git+https://github.com/hotg-ai/rune?rev=45c6dc6467b6f994169a6582556f1d39cf30c122#45c6dc6467b6f994169a6582556f1d39cf30c122"
 dependencies = [
  "anyhow",
  "csv",
