@@ -135,6 +135,49 @@ function Analysis() {
       }
     };
 
+    const convertTensorResult = (result: {
+      element_type: string;
+      dimensions: number[];
+      buffer: any;
+    }) => {
+      const { element_type, dimensions, buffer } = result;
+      switch (element_type.toLowerCase()) {
+        case "utf8":
+          return data;
+          break;
+        case "u8":
+          return new Uint8Array(buffer.buffer, 0, 1);
+          break;
+        case "u16":
+          return new Uint32Array(buffer.buffer, 0, 1);
+          break;
+        case "u32":
+          return new Uint32Array(buffer.buffer, 0, 1);
+          break;
+        case "u64":
+          return new BigUint64Array(buffer.buffer, 0, 1);
+          break;
+        case "i8":
+          return new Int8Array(buffer.buffer, 0, 1);
+          break;
+        case "i16":
+          return new Int16Array(buffer.buffer, 0, 1);
+          break;
+        case "i32":
+          return new Int32Array(buffer.buffer, 0, 1);
+          break;
+        case "i64":
+          return new BigInt64Array(buffer.buffer, 0, 1);
+          break;
+        case "f32":
+          return new Float32Array(buffer.buffer, 0, 100);
+          break;
+        case "f64":
+          return new Float64Array(buffer.buffer, 0, 1);
+          break;
+      }
+    };
+
     const getConnectedInputTensor = (
       capability: Node<FlowNodeData>,
       diagram: FlowElements
@@ -202,7 +245,9 @@ function Analysis() {
             console.log(
               "FO REAL RESULT",
               result,
-              new Float32Array(result.buffer.buffer, 0, 1)
+              result.buffer,
+              JSON.stringify(result),
+              convertTensorResult(result)
             );
         } catch (error) {
           console.log("RUN ERROR", error);
