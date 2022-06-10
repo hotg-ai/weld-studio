@@ -21,6 +21,7 @@ type AppState = {
   data: any[];
   sql: string | undefined;
   python: string | undefined;
+  pythonRes: string | undefined;
   queryError: string | undefined;
   tables: TableData[];
   isLoadingTable: boolean;
@@ -33,6 +34,7 @@ class App extends React.Component<{}, AppState> {
     sql: undefined,
     python: undefined,
     queryError: undefined,
+    pythonRes: undefined,
     tables: [],
     isLoadingTable: false,
     isQueryLoading: false,
@@ -102,15 +104,17 @@ class App extends React.Component<{}, AppState> {
     if (this.state.isQueryLoading) return;
 
     this.setState({ isQueryLoading: true });
-    this.setState({ python, queryError: undefined });
+    this.setState({ python, queryError: undefined, pythonRes: "" });
     invoke("run_python", { python })
-      .then((result) => {
+      .then((result: string) => {
+        console.log("ASDSSS: ", result)
         //let result_typed = result as { records: boolean[] };
         //setData(result_typed.records)
+        this.setState({pythonRes: result})
       })
       .catch((e) => {
         //Note: e is an object and we can't put the entire object in jsx as queryError,So we need to set queryError to the message property of the e object.
-        this.setState({ queryError: e }, () => {
+        this.setState({ queryError: e, isQueryLoading: false, pythonRes: "" }, () => {
           console.log(this.state);
         });
       })
@@ -206,7 +210,7 @@ class App extends React.Component<{}, AppState> {
                 }
               />
               <Route path="/analysis/:id" element={<Anaysis />} />
-              <Route path="/python" element={<Python  isQueryLoading={isQueryLoading}  queryError={queryError} setPython={(python: string) => this.executePython(python)} python={this.state.python} />} />
+              <Route path="/python" element={<Python  isQueryLoading={isQueryLoading} result={this.state.pythonRes} queryError={queryError} setPython={(python: string) => this.executePython(python)} python={this.state.python} />} />
               <Route
                 path="/"
                 element={

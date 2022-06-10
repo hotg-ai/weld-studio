@@ -44,7 +44,7 @@ struct DefragStudioState {
 }
 
 use pyo3::prelude::*;
-use pyo3::types::IntoPyDict;
+// use pyo3::types::IntoPyDict;
 
 fn main() -> Result<(), Error> {
     if std::env::var_os("RUST_LOG").is_none() {
@@ -201,24 +201,22 @@ async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Result<
 }
 
 #[tauri::command]
-#[tracing::instrument(skip(state), err)]
+#[tracing::instrument(skip(_state), err)]
 async fn run_python(
     python: String,
-    state: tauri::State<'_, DefragStudioState>,
-) -> Result<(), String> {
-    let res: Result<(), String> = Python::with_gil(|py| {
-        let sys = py.import("sys").unwrap();
-        let version: String = sys.getattr("version").unwrap().extract().unwrap();
-
-        let locals = [("os", py.import("os").unwrap())].into_py_dict(py);
-        let code = "os.getenv('USER') or os.getenv('USERNAME') or 'Unknown'";
-        let user: String = py.eval(code, None, Some(&locals)).unwrap().extract().unwrap();
-
-        tracing::info!("Hello {}, I'm Python {}", user, version);
-        Ok(())
-    });
-
-    Ok(())
+    _state: tauri::State<'_, DefragStudioState>,
+) -> Result<String, String> {
+    Python::with_gil(|py| {
+        let _sys = py.import("sys").map_err(|e| e.to_string())?;
+       
+        let code = &python[..];
+        tracing::info!("Running python code: {}", code);
+        let module = PyModule::from_code(py, code, "script", "script").map_err(|e| e.to_string())?;
+        let result = module.dict().get_item("main").ok_or("Main function not found")?;
+        tracing::info!(?result);
+        let result = result.to_string();
+        Ok(result)
+    })
 }
 
 #[tauri::command]

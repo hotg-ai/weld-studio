@@ -107,6 +107,7 @@ dependencies = [
  "hotg-rune-runtime",
  "pyo3",
  "queryst",
+ "rayon",
  "reqwest",
  "salsa",
  "serde",
