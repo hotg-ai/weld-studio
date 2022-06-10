@@ -8,12 +8,15 @@ pub mod wapm;
 
 use anyhow::{Context, Error};
 use change_case::snake_case;
-use hotg_rune_compiler::{BuildConfig, FeatureFlags};
+use hotg_rune_compiler::{
+    asset_loader::{AssetLoader, DefaultAssetLoader},
+    BuildConfig, FeatureFlags,
+};
 use tracing;
 use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
-use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use std::{path::Path, sync::Arc};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 use arrow::json;
 use serde_json;
@@ -27,10 +30,7 @@ use std::sync::{
 use arrow::record_batch::RecordBatch;
 use duckdb::{params, Connection, Result};
 
-use crate::{
-    compiler::{compile, Cache, CachingStrategy},
-    wapm::known_proc_blocks,
-};
+use crate::{compiler::compile, wapm::known_proc_blocks};
 // use serde::*;
 
 #[derive(Debug)]
@@ -43,6 +43,8 @@ struct DefragStudioState {
     pub conn: Mutex<Connection>,
 }
 
+use pyo3::prelude::*;
+// use pyo3::types::IntoPyDict;
 
 fn main() -> Result<(), Error> {
     if std::env::var_os("RUST_LOG").is_none() {
@@ -62,7 +64,6 @@ fn main() -> Result<(), Error> {
     };
     tracing::info!("Initializing Defrag Studio");
 
-
     let submenu = Submenu::new(
         "Edit",
         Menu::new()
@@ -72,11 +73,13 @@ fn main() -> Result<(), Error> {
             .add_native_item(MenuItem::SelectAll)
             .add_native_item(MenuItem::Undo)
             .add_native_item(MenuItem::Redo)
-            .add_native_item(MenuItem::Quit)
+            .add_native_item(MenuItem::Quit),
     );
     let menu = Menu::new()
         .add_item(CustomMenuItem::new("hide", "Hide"))
         .add_submenu(submenu);
+    let assets: Arc<dyn AssetLoader + Send + Sync> =
+        Arc::new(DefaultAssetLoader::default().cached());
 
     tauri::Builder::default()
         .manage(state)
@@ -92,7 +95,7 @@ fn main() -> Result<(), Error> {
             }
             _ => {}
         })
-        .manage(Arc::new(Cache::with_strategy(CachingStrategy::Url)))
+        .manage(assets)
         .manage(reqwest::Client::new())
         .manage(BuildConfig {
             current_directory: std::env::current_dir()?,
@@ -101,6 +104,7 @@ fn main() -> Result<(), Error> {
         .invoke_handler(tauri::generate_handler![
             load_csv,
             run_sql,
+            run_python,
             get_tables,
             compile,
             known_proc_blocks
@@ -132,7 +136,7 @@ async fn load_csv(
     // let schema = csv.schema();
 
     let create_table = format!(
-        "create table \"{}\"  as select * from read_csv_auto('{}');",
+        "create table \"{}\"  as select * from read_csv_auto('{}', SAMPLE_SIZE=-1);",
         table_name, invoke_message[0]
     );
 
@@ -194,6 +198,25 @@ async fn get_tables(
 async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Result<(), String> {
     cancelled.0.store(cancel, Ordering::Relaxed);
     Ok(())
+}
+
+#[tauri::command]
+#[tracing::instrument(skip(_state), err)]
+async fn run_python(
+    python: String,
+    _state: tauri::State<'_, DefragStudioState>,
+) -> Result<String, String> {
+    Python::with_gil(|py| {
+        let _sys = py.import("sys").map_err(|e| e.to_string())?;
+       
+        let code = &python[..];
+        tracing::info!("Running python code: {}", code);
+        let module = PyModule::from_code(py, code, "script", "script").map_err(|e| e.to_string())?;
+        let result = module.dict().get_item("main").ok_or("Main function not found")?;
+        tracing::info!(?result);
+        let result = result.to_string();
+        Ok(result)
+    })
 }
 
 #[tauri::command]

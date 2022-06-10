@@ -18,12 +18,13 @@ tauri-build = { version = "1.0.0-rc.8", features = [] }
 anyhow = "1.0.57"
 arrow = { version = "12.0.0", features = ["prettyprint"] }
 change-case = "0.2.0"
-hotg-rune-compiler = { git = "https://github.com/hotg-ai/rune", branch = "refactor/query-based-compiler", version = "0.11.3" }
+hotg-rune-compiler = { git = "https://github.com/hotg-ai/rune", branch = "zune" }
+hotg-rune-runtime = { git = "https://github.com/hotg-ai/rune", branch = "zune", features = ["builtins", "wasmer", "zune"] }
 queryst = "2.1.0"
 reqwest = { version = "0.11.10", features = ["blocking"] }
 salsa = "0.16.1"
 serde = { version = "1.0.137", features = ["derive"] }
-serde_json = "1.0"
+serde_json = "1.0.81"
 strum = { version = "0.24.0", features = ["derive"] }
 tauri = { version = "1.0.0-rc.9", features = ["api-all"] }
 tokio = { version = "1.18.0", features = ["rt-multi-thread"] }
@@ -31,10 +32,15 @@ tracing = { version = "0.1.34", features = ["attributes"] }
 tracing-subscriber = { version = "0.3.11", features = ["env-filter", "json", "time", "local-time"] }
 uriparse = "0.6.4"
 graphql_client = { version = "0.10.0", features = ["reqwest"] }
+rayon = "1.5.3"
 
 [dependencies.duckdb]
 version = "0.3.4"
 features = ["bundled"]
+
+[dependencies.pyo3]
+version = "0.16.5"
+features = ["auto-initialize"]
 
 
 [features]

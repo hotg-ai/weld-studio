@@ -1,0 +1,22 @@
+<svg id="podcast" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="22" height="22" viewBox="0 0 22 22">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" y1="1" x2="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ffbef9"/>
+      <stop offset="1" stop-color="#fff1ff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.5" y1="1" x2="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ffb2f7"/>
+      <stop offset="1" stop-color="#9d60ff"/>
+    </linearGradient>
+  </defs>
+  <g id="Group_384" data-name="Group 384">
+    <g id="Group_383" data-name="Group 383">
+      <path id="Path_14454" data-name="Path 14454" d="M21.355,0H.645A.645.645,0,0,0,0,.645V2.621A1.289,1.289,0,0,0,1.289,3.91V20.668H20.711V3.91A1.289,1.289,0,0,0,22,2.621V.645A.645.645,0,0,0,21.355,0Z" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+  <g id="Group_386" data-name="Group 386" transform="translate(0 2.621)">
+    <g id="Group_385" data-name="Group 385">
+      <path id="Path_14455" data-name="Path 14455" d="M0,61V79.734a.638.638,0,0,0,.645.645H21.355A.638.638,0,0,0,22,79.734V61Zm11,2.578a4.517,4.517,0,0,1,4.512,4.512,4.45,4.45,0,0,1-.606,2.256.639.639,0,0,1-.554.322.582.582,0,0,1-.322-.09A.636.636,0,0,1,13.8,69.7a3.341,3.341,0,0,0,.425-1.611,3.223,3.223,0,0,0-6.445,0A3.341,3.341,0,0,0,8.2,69.7a.641.641,0,0,1-1.109.645,4.45,4.45,0,0,1-.606-2.256A4.517,4.517,0,0,1,11,63.578Zm1.934,8.379v1.289a.638.638,0,0,1-.645.645H9.711a.638.638,0,0,1-.645-.645V71.957A1.931,1.931,0,0,1,11,70.023a1.934,1.934,0,1,1,1.934-1.934A1.931,1.931,0,0,1,11,70.023,1.931,1.931,0,0,1,12.934,71.957Zm5.8,4.512H6.488v.645a.645.645,0,0,1-1.289,0v-.645H3.266a.645.645,0,0,1,0-1.289H5.2v-.645a.645.645,0,0,1,1.289,0v.645H18.734a.645.645,0,0,1,0,1.289Z" transform="translate(0 -61)" fill="url(#linear-gradient-2)"/>
+    </g>
+  </g>
+</svg>
