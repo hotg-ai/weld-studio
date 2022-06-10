@@ -50,7 +50,7 @@ fn main() -> Result<(), Error> {
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var(
             "RUST_LOG",
-            "info,app=debug,hotg_rune_compiler=debug,salsa=warn",
+            "warn,app=debug,hotg_rune_compiler=debug,hotg_rune_runtime=debug",
         );
     }
 

@@ -141,39 +141,40 @@ function Analysis() {
       buffer: any;
     }) => {
       const { element_type, dimensions, buffer } = result;
+      const data = new Uint8Array(buffer);
       switch (element_type.toLowerCase()) {
         case "utf8":
           return data;
           break;
         case "u8":
-          return new Uint8Array(buffer.buffer, 0, 1);
+          return new Uint8Array(data.buffer);
           break;
         case "u16":
-          return new Uint32Array(buffer.buffer, 0, 1);
+          return new Uint16Array(data.buffer);
           break;
         case "u32":
-          return new Uint32Array(buffer.buffer, 0, 1);
+          return new Uint32Array(data.buffer);
           break;
         case "u64":
-          return new BigUint64Array(buffer.buffer, 0, 1);
+          return new BigUint64Array(data.buffer);
           break;
         case "i8":
-          return new Int8Array(buffer.buffer, 0, 1);
+          return new Int8Array(data.buffer);
           break;
         case "i16":
-          return new Int16Array(buffer.buffer, 0, 1);
+          return new Int16Array(data.buffer);
           break;
         case "i32":
-          return new Int32Array(buffer.buffer, 0, 1);
+          return new Int32Array(data.buffer);
           break;
         case "i64":
-          return new BigInt64Array(buffer.buffer, 0, 1);
+          return new BigInt64Array(data.buffer);
           break;
         case "f32":
-          return new Float32Array(buffer.buffer, 0, 100);
+          return new Float32Array(data.buffer);
           break;
         case "f64":
-          return new Float64Array(buffer.buffer, 0, 1);
+          return new Float64Array(data.buffer);
           break;
       }
     };
@@ -219,16 +220,20 @@ function Analysis() {
 
     capabilities.map((node) => {
       const tensor = getConnectedInputTensor(node, diagram);
-      if (tensor)
+      if (tensor) {
+        const data = getDataArrayFromType(
+          dataMap[node.data.label],
+          tensor.elementType
+        );
+        const { buffer, byteLength } = data;
+        const bufferAsU8 = new Uint8Array(buffer, 0, byteLength);
+        console.log("INPUT DATA ", dataMap[node.data.label], bufferAsU8);
         input_tensors[node.data.label] = {
           element_type: tensor.elementType.toUpperCase(),
           dimensions: tensor.dimensions,
-          buffer: Object.values(
-            Uint8Array.from(
-              getDataArrayFromType(dataMap[node.data.label], tensor.elementType)
-            )
-          ),
+          buffer: Object.values(bufferAsU8),
         };
+      }
     });
     let result;
     console.log("RUNEFILE, INPUT", rune, input_tensors);
@@ -241,14 +246,24 @@ function Analysis() {
             zune: zune,
             inputTensors: input_tensors,
           });
-          if (result)
-            console.log(
-              "FO REAL RESULT",
-              result,
-              result.buffer,
-              JSON.stringify(result),
-              convertTensorResult(result)
-            );
+          if (result) {
+            const tensorResult = convertTensorResult(result);
+            console.log("FO REAL RESULT", result, tensorResult);
+            const newTable = tableData.map((row, index) => {
+              // if (labels && labels.length > 0) {
+              //   let row = labels.reduce((acc, curr) => {
+              //     acc[curr] = o[curr];
+              //     return acc;
+              //   }, {});
+              //   if (!_.isEmpty(row)) return row;
+              // }
+              return {
+                ...row,
+                Result: tensorResult[index] ? tensorResult[index] : "",
+              };
+            });
+            setTableData(newTable);
+          }
         } catch (error) {
           console.log("RUN ERROR", error);
         }

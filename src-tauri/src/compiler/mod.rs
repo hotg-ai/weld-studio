@@ -76,27 +76,27 @@ pub struct MyTensor {
     buffer: Vec<u8>,
 }
 
-impl From<&TensorResult> for MyTensor {
-    fn from(item: &TensorResult) -> Self {
+impl From<TensorResult> for MyTensor {
+    fn from(item: TensorResult) -> Self {
         MyTensor {
-            element_type: my_element_type(&item.element_type),
-            dimensions: item.dimensions.clone(),
-            buffer: item.buffer.clone(),
+            element_type: my_element_type(item.element_type),
+            dimensions: item.dimensions,
+            buffer: item.buffer,
         }
     }
 }
 
-impl From<&MyTensor> for TensorResult {
-    fn from(item: &MyTensor) -> Self {
+impl From<MyTensor> for TensorResult {
+    fn from(item: MyTensor) -> Self {
         TensorResult {
-            element_type: element_type(&item.element_type),
-            dimensions: item.dimensions.clone(),
-            buffer: item.buffer.clone(),
+            element_type: element_type(item.element_type),
+            dimensions: item.dimensions,
+            buffer: item.buffer,
         }
     }
 }
 
-fn my_element_type(x: &ElementType) -> MyElementType {
+fn my_element_type(x: ElementType) -> MyElementType {
     match x {
         ElementType::U8 => MyElementType::U8,
         ElementType::I8 => MyElementType::I8,
@@ -113,7 +113,7 @@ fn my_element_type(x: &ElementType) -> MyElementType {
     }
 }
 
-fn element_type(x: &MyElementType) -> ElementType {
+fn element_type(x: MyElementType) -> ElementType {
     match x {
         MyElementType::U8 => ElementType::U8,
         MyElementType::I8 => ElementType::I8,
@@ -138,15 +138,16 @@ pub async fn reune(
 ) -> Result<MyTensor, SeriazableError> {
     let mut zune_engine = ZuneEngine::load(&zune).context("Unable to initialize Zune Engine!")?;
 
-    for (name, tensor) in &input_tensors {
-        tracing::info!("Input Name: {name}");
+    for (name, tensor) in input_tensors {
+        let json = serde_json::to_string(&tensor).unwrap();
+        tracing::info!("Input Name: {name} {json}");
         let input_tensor_node_names = zune_engine
-            .get_input_tensor_names(name)
+            .get_input_tensor_names(&name)
             .with_context(|| format!("Unable to find column: {name}"))?;
         
         let default_tensor_name = &input_tensor_node_names[0];
         
-        zune_engine.set_input_tensor(name, default_tensor_name, &tensor.into());
+        zune_engine.set_input_tensor(&name, default_tensor_name, &tensor.into());
     }
 
     zune_engine.predict().context("Prediction Failed")?;
@@ -154,10 +155,10 @@ pub async fn reune(
     let output_node = zune_engine.output_nodes()[0].to_string();
     let output_node_input_name = zune_engine.get_input_tensor_names(&output_node)?;
     let output_node_input_name = &output_node_input_name[0];
-    let result = &zune_engine
+    let result = zune_engine
         .get_input_tensor(&output_node, output_node_input_name)
         .context("Unable to fetch the result")?;
-
+    dbg!(&result);
     Ok(result.into())
 }
 
