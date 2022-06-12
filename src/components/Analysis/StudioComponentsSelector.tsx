@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
+import { arrowDataTypeToEelementType } from "./utils/ArrowConvert";
 import {
   // Upload,
   // Button,
@@ -25,6 +26,7 @@ import Modal from "../Dataset/components/modal";
 import TextArea from "antd/lib/input/TextArea";
 import { DatasetTypes } from "../Dataset";
 import { UpdateComponents } from "src/redux/builderSlice";
+import { FieldSchema } from "../../types";
 import outputs from "./model/outputs";
 export type ComponentListItemProps = {
   id: string;
@@ -293,20 +295,19 @@ function filter<V>(
 }
 
 const generateCapabilities = (
-  dataColumns: string[],
-  dataTypes: DatasetTypes,
+  querySchema: {"fields": FieldSchema[]},
   length: number
 ): Record<string, Capability> => {
   let result: Record<string, Capability> = {};
 
-  Object.values(dataColumns).forEach((column) => {
+  querySchema.fields.forEach((column) => {
     // Object.entries(v).forEach(([column, value]) => {
     //   console.log(dataColumns, column)
     //   if (true || dataColumns.filter((col) => col === column).length > 0) {
-    column = column.replaceAll('"', "");
-    result[column] = {
+   let columnName = column.name.replaceAll('"', "");
+    result[columnName] = {
       type: "capability",
-      displayName: column,
+      displayName: columnName,
       identifier: "RAW",
       source: "custom",
       properties: {
@@ -325,7 +326,9 @@ const generateCapabilities = (
         // },
       },
       description: "",
-      acceptedOutputElementTypes: [{ elementTypes: ["utf8", "f32", "f64"] }],
+      // @ts-ignore
+      acceptedOutputElementTypes: [{ elementTypes: [arrowDataTypeToEelementType(column.data_type)] }],
+      // @ts-ignore
       outputs: (p) => {
         const { length } = p;
         if (typeof length !== "number") {
@@ -334,8 +337,8 @@ const generateCapabilities = (
 
         return [
           {
-            elementType: "u8",
-            dimensions: [length],
+            elementType: arrowDataTypeToEelementType(column.data_type),
+            dimensions: [1, length],
             displayName: "data",
             description: `Raw output from ${column} Column`,
             dimensionType: "fixed",
@@ -350,7 +353,7 @@ const generateCapabilities = (
   return result;
 };
 
-export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
+export const ComponentsSelector = ({ data, dataColumns, dataTypes, querySchema }) => {
 
   const dispatch = useAppDispatch();
   const components = useAppSelector((s) => s.builder.components);
@@ -364,7 +367,7 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
   useMemo(() => {
     dispatch(
       UpdateComponents({
-        ...prefixKeys(generateCapabilities(dataColumns, dataTypes, (data as any[]).length)),
+        ...prefixKeys(generateCapabilities(querySchema, (data as any[]).length)),
         ...prefixKeys(outputs()),
       })
     );

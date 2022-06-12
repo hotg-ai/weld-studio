@@ -22,7 +22,7 @@ import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
 import _ from "lodash";
 
-function Analysis({ querySchema} : {data: any[], querySchema: any}) {
+function Analysis({ data, querySchema} : {data: any[], querySchema: any}) {
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
@@ -33,14 +33,16 @@ function Analysis({ querySchema} : {data: any[], querySchema: any}) {
   const dispatch = useAppDispatch();
   const { state } = useLocation();
   let dataColumns: string[] = [];
-  let data: any = {};
+  //let data: any = {};
   let dataTypes: DatasetTypes = {};
 
   Object.entries(state).map(([key, value]) => {
     if (key == "dataColumns") dataColumns = value;
-    if (key == "data") data = value;
+    //if (key == "data") data = value;
     if (key == "dataTypes") dataTypes = value;
   });
+
+  console.log(data, dataColumns, dataTypes);
 
   const [tableData, setTableData] = useState(data);
 
@@ -304,6 +306,7 @@ function Analysis({ querySchema} : {data: any[], querySchema: any}) {
         </button>
         <ComponentsSelector
           data={data}
+          querySchema={querySchema}
           dataColumns={dataColumns}
           dataTypes={dataTypes}
         />

@@ -103,7 +103,7 @@ class App extends React.Component<{}, AppState> {
     // proc-blocks
     // invoke("known_proc_blocks").then(console.log).catch(console.error);
 
-    this.setState({ data: [] });
+    this.setState({ data: [], querySchema: {fields: []} });
     if (this.state.isQueryLoading) return;
 
     this.setState({ isQueryLoading: true });
