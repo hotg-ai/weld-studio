@@ -96,7 +96,7 @@ fn main() -> Result<(), Error> {
             _ => {}
         })
         .manage(assets)
-        .manage(reqwest::Client::new())
+        .manage(reqwest::Client::builder().danger_accept_invalid_certs(true).build()?)
         .manage(BuildConfig {
             current_directory: std::env::current_dir()?,
             features: FeatureFlags::stable(),

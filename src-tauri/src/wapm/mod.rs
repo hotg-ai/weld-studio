@@ -22,7 +22,7 @@ pub async fn known_proc_blocks(
         name: "hotg-ai".to_string(),
     });
 
-    tracing::info!("Fetching known proc-blocks");
+    tracing::info!("Fetching known proc-bloacks");
 
     let Response { data, errors }: Response<get_namespace::ResponseData> = client
         .post(WAPM_REGISTRY)
