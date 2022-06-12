@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
-import { arrowDataTypeToEelementType } from "./utils/ArrowConvert";
+import { arrowDataTypeToElementType } from "./utils/ArrowConvert";
 import {
   // Upload,
   // Button,
@@ -327,7 +327,7 @@ const generateCapabilities = (
       },
       description: "",
       // @ts-ignore
-      acceptedOutputElementTypes: [{ elementTypes: [arrowDataTypeToEelementType(column.data_type)] }],
+      acceptedOutputElementTypes: [{ elementTypes: [arrowDataTypeToElementType(column.data_type)] }],
       // @ts-ignore
       outputs: (p) => {
         const { length } = p;
@@ -337,7 +337,7 @@ const generateCapabilities = (
 
         return [
           {
-            elementType: arrowDataTypeToEelementType(column.data_type),
+            elementType: arrowDataTypeToElementType(column.data_type),
             dimensions: [1, length],
             displayName: "data",
             description: `Raw output from ${column} Column`,
