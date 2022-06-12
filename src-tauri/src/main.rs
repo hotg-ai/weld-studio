@@ -213,7 +213,7 @@ async fn run_sql(
     if is_running {
         cancel.0.store(true, Ordering::Relaxed);
         running.0.store(false, Ordering::Relaxed);
-        tracing::info!("Running csv");
+        tracing::info!("Running qsl");
     }
     let conn = state
         .conn
@@ -236,16 +236,30 @@ async fn run_sql(
     cancel.0.store(false, Ordering::Relaxed);
     running.0.store(true, Ordering::Relaxed);
     let mut sum: i64 = 0;
+
+    let mut send_schema: bool = true;
+
     for batch in batches {
         let cancelled: bool = cancel.0.load(Ordering::Relaxed);
         tracing::info!("Cancelled: {}", cancelled);
         if !cancelled {
             let _span = tracing::info_span!("batch", size = batch.num_rows()).entered();
 
+
+            if send_schema {
+                window
+                .emit("load_arrow_row_batch_schema", serde_json::json!(&batch.schema()))
+                .map_err(|e| e.to_string())?;
+                send_schema = false;
+            }
+
             let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
                 json::writer::record_batches_to_json_rows(&vec![batch][..])
                     .map_err(|e| e.to_string())?;
             sum = sum + json_rows.len() as i64;
+
+      
+            
             window
                 .emit("load_arrow_row_batch", json_rows)
                 .map_err(|e| e.to_string())?

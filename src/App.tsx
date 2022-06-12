@@ -12,12 +12,13 @@ import Anaysis from "./components/Analysis";
 import { invoke } from "@tauri-apps/api/tauri";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
-import { TableData, FileDropEvent } from "./types";
+import { TableData, FileDropEvent, FieldSchema } from "./types";
 
 import ClipLoader from "react-spinners/ClipLoader";
 
 type AppState = {
   data: any[];
+  querySchema: {fields: FieldSchema[]}
   sql: string | undefined;
   queryError: string | undefined;
   tables: TableData[];
@@ -28,6 +29,7 @@ type AppState = {
 class App extends React.Component<{}, AppState> {
   state: AppState = {
     data: [],
+    querySchema: {fields: []},
     sql: undefined,
     queryError: undefined,
     tables: [],
@@ -63,6 +65,12 @@ class App extends React.Component<{}, AppState> {
     ).then((u) => {
       if (u) this.unsubscribers.push(u);
     });
+
+    listen("load_arrow_row_batch_schema", ({ payload }: { payload: {fields: FieldSchema[]} }) =>
+    this.eventHandlerLoadArrowRowBatchSchema(payload)
+  ).then((u) => {
+    if (u) this.unsubscribers.push(u);
+  });
 
     listen("query_started", () => this.setState({ isQueryLoading: true })).then(
       (u) => {
@@ -120,6 +128,15 @@ class App extends React.Component<{}, AppState> {
     this.setState({ data: newData });
   }
 
+  eventHandlerLoadArrowRowBatchSchema(schema: {fields: FieldSchema[]}) {
+    //     console.log("DATAxxx is ", data.length)
+    //console.log("Schema", schema);
+    this.setState({querySchema: schema})
+    // const newData = [...this.state.data, ...chunk];
+    // this.setState({ schema: newSchema });
+  }
+
+
   eventHandlerLoadCSVComplete(payload: any[]) {
     this.setState({ isLoadingTable: false });
     this.getTables();
@@ -145,7 +162,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   render() {
-    const { isLoadingTable, data, queryError, sql, tables, isQueryLoading } =
+    const { isLoadingTable, data, queryError, querySchema, sql, tables, isQueryLoading } =
       this.state;
     return (
       <div className="App">
@@ -167,6 +184,7 @@ class App extends React.Component<{}, AppState> {
                 element={
                   <Dataset
                     data={data}
+                    querySchema={querySchema}
                     queryError={queryError}
                     sql={sql}
                     setSql={(sql: string) => this.executeQuery(sql)}
@@ -175,7 +193,8 @@ class App extends React.Component<{}, AppState> {
                   />
                 }
               />
-              <Route path="/analysis/:id" element={<Anaysis />} />
+              <Route path="/analysis/:id" element={<Anaysis 
+                    querySchema={querySchema} data={data} />} />
               <Route
                 path="/"
                 element={

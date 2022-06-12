@@ -300,7 +300,7 @@ export const isTensorIncompatible = (
   const targetNode: Node<FlowNodeData> = diagram.nodes.filter(
     (node) => node.id === connection.target
   )[0];
-
+  console.log("VALIDATING", connection,  diagram.nodes, sourceNode, targetNode);
   const sourcePortTensor = sourceNode.data.outputs.filter(
     (port) => port.id === connection.sourceHandle
   )[0].tensor;

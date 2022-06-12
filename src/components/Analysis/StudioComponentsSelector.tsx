@@ -294,7 +294,8 @@ function filter<V>(
 
 const generateCapabilities = (
   dataColumns: string[],
-  dataTypes: DatasetTypes
+  dataTypes: DatasetTypes,
+  length: number
 ): Record<string, Capability> => {
   let result: Record<string, Capability> = {};
 
@@ -311,20 +312,20 @@ const generateCapabilities = (
       properties: {
         length: {
           type: "integer",
-          defaultValue: 1,
+          defaultValue: length,
           required: true,
           description: "Length of raw data in bytes",
         },
-        source: {
-          type: "integer",
-          required: true,
-          defaultValue: 0,
-          description:
-            "Specify which input to use when multiple inputs are provided",
-        },
+        // source: {
+        //   type: "integer",
+        //   required: true,
+        //   defaultValue: 0,
+        //   description:
+        //     "Specify which input to use when multiple inputs are provided",
+        // },
       },
       description: "",
-      acceptedOutputElementTypes: [{ elementTypes: ["f32"] }],
+      acceptedOutputElementTypes: [{ elementTypes: ["utf8", "f32", "f64"] }],
       outputs: (p) => {
         const { length } = p;
         if (typeof length !== "number") {
@@ -350,6 +351,7 @@ const generateCapabilities = (
 };
 
 export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
+
   const dispatch = useAppDispatch();
   const components = useAppSelector((s) => s.builder.components);
   const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
@@ -362,7 +364,7 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes }) => {
   useMemo(() => {
     dispatch(
       UpdateComponents({
-        ...prefixKeys(generateCapabilities(dataColumns, dataTypes)),
+        ...prefixKeys(generateCapabilities(dataColumns, dataTypes, (data as any[]).length)),
         ...prefixKeys(outputs()),
       })
     );

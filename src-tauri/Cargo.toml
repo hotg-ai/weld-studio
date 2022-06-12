@@ -18,8 +18,8 @@ tauri-build = { version = "1.0.0-rc.8", features = [] }
 anyhow = "1.0.57"
 arrow = { version = "12.0.0", features = ["prettyprint"] }
 change-case = "0.2.0"
-hotg-rune-compiler = { git = "https://github.com/hotg-ai/rune", rev = "3482c7c44b785073de99df85fc1f0c5070a05008" }
-hotg-rune-runtime = { git = "https://github.com/hotg-ai/rune", rev = "3482c7c44b785073de99df85fc1f0c5070a05008", features = ["builtins", "wasmer", "zune"] }
+hotg-rune-compiler = { git = "https://github.com/hotg-ai/rune", rev = "49b7346a0202c117c10fee8ec518a2f4fc2f10a6" }
+hotg-rune-runtime = { git = "https://github.com/hotg-ai/rune", rev = "49b7346a0202c117c10fee8ec518a2f4fc2f10a6", features = ["builtins", "wasmer", "zune"] }
 queryst = "2.1.0"
 reqwest = { version = "0.11.10", features = ["blocking"] }
 salsa = "0.16.1"

@@ -13,6 +13,7 @@ import { loadProcBlocks } from "src/redux/actions/project/loadProject";
 import { UpdateComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
 import _ from "lodash";
+import { FieldSchema } from "../../types";
 type IntegerColumnType = {
   type: "INTEGER";
   value: Uint16Array;
@@ -36,10 +37,19 @@ const Dataset = ({
   setSql,
   sql,
   data,
+  querySchema,
   queryError,
   tables,
   isQueryLoading,
-}: any) => {
+}: {
+  setSql: (sql: string) => void;
+  sql: string | undefined;
+  data: any[];
+  querySchema: { fields: FieldSchema[] };
+  queryError: string | undefined;
+  tables: TableData[];
+  isQueryLoading: boolean;
+}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
   const { id } = useParams();
@@ -205,11 +215,13 @@ const Dataset = ({
           <div className="selectedColumns__container">
             {data && data.length > 0 ? (
               <Dropdown title="Query Result">
-                {Object.keys(data[0]).map((item, idx) => {
+                {querySchema.fields.map((field: FieldSchema, idx: number) => {
+                 
                   return (
                     <DropdownOption key={idx}>
                       <div className="dropdownOption__Content">
-                        <span>{item}</span>
+                        <span>{field.name}: {field.data_type}</span>
+                        {/* <span>{JSON.stringify(field)}</span> */}
                         {/* <ProgressBar percent={item.percent} /> */}
                       </div>
                     </DropdownOption>

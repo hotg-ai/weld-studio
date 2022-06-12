@@ -8,7 +8,7 @@ interface props {
 }
 
 export function Dropdown({ disabled = false, title, children }: props) {
-  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(true);
 
   function toggleDropdown() {
     if (!disabled) {
