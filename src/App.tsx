@@ -223,6 +223,10 @@ class App extends React.Component<{}, AppState> {
                     datasetRegistry={this.state.datasetRegistry}
                     querySchema={querySchema}
                     data={data}
+                    queryError={queryError}
+                    isLoadingTable={isLoadingTable}
+                    setIsLoadingTable={(isLoadingTable: boolean) => this.setState({isLoadingTable}, () => console.log("SETTING IS LOADING TABLE", isLoadingTable))}
+                    setQueryError={(error: string) => this.setState({queryError: error})} 
                   />
                 }
               />

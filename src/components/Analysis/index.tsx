@@ -21,7 +21,7 @@ import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
 import _ from "lodash";
-
+import ClipLoader from "react-spinners/ClipLoader";
 import { QueryData } from "../../types";
 import { Tensor } from "@hotg-ai/rune";
 import { convertElementType, modelToTensorElementType } from "./model/metadata";
@@ -30,10 +30,19 @@ function Analysis({
   data,
   querySchema,
   datasetRegistry,
+  setQueryError,
+  queryError,
+  setIsLoadingTable,
+  isLoadingTable,
 }: {
   data: any[];
   querySchema: any;
   datasetRegistry: Record<string, QueryData>;
+  setQueryError: (error: string | undefined) => void;
+  queryError: string | undefined;
+  setIsLoadingTable: (isLoading: boolean) => void;
+  isLoadingTable: boolean;
+
 }) {
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
@@ -349,6 +358,7 @@ function Analysis({
           </div>
           <div className="sidebar_right">
             <button
+             // disabled={!isLoadingTable}
               onClick={async () => {
                 console.log("DATA TYPES", dataTypes);
                 // invoke("reune")
@@ -356,19 +366,29 @@ function Analysis({
                 //   .catch((error) => {
                 //     console.log("RUN ERROR", error);
                 //   });
-                const result = await buildAndRun(diagram, dataTypes, tableData);
-                if (result) {
-                  console.log("RESULT", result);
-                }
+                setQueryError(undefined)
+                setIsLoadingTable(true)
+                
+                buildAndRun(diagram, dataTypes, tableData).then((result) => {
+                  if (result) {
+                    console.log("RESULT", result);
+                  }
+                  setIsLoadingTable(false)
+                }).catch((e) => {
+                    setQueryError("Error running model");
+                    setIsLoadingTable(false)
+                })
+           
               }}
             >
               {/* <img src="/assets/model.svg" alt="<" /> */}
-              <span>{"</> "}Build &amp; Run</span>
+              {isLoadingTable ? <ClipLoader color="purple" loading={isLoadingTable} size={25} /> :  <span>{"</> "}Build &amp; Run</span> }
             </button>
             <button onClick={() => setCustomModalVisible(true)}>
               {/* <img src="/assets/share.svg" alt="<" /> */}
               <span>Save and Share</span>
             </button>
+            {queryError ? <span>{queryError}</span> : <></>}
             <div className="properties__container">
               <div className="title">
                 <img src="/assets/properties.svg" alt="" />
