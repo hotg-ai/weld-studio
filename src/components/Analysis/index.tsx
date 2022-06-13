@@ -310,6 +310,7 @@ function Analysis({ data, querySchema, datasetRegistry} : {data: any[], querySch
         </button>
         <ComponentsSelector
           data={data}
+          datasetRegistry={datasetRegistry}
           querySchema={querySchema}
           dataColumns={dataColumns}
           dataTypes={dataTypes}

@@ -41,6 +41,7 @@ const Dataset = ({
   data,
   querySchema,
   queryError,
+  datasetRegistry,
   tables,
   isQueryLoading,
   setQueryData,
@@ -52,6 +53,7 @@ const Dataset = ({
   querySchema: { fields: FieldSchema[] };
   queryError: string | undefined;
   tables: TableData[];
+  datasetRegistry: Record<string, QueryData>;
   isQueryLoading: boolean;
   setQueryData: (name: string, query_data: QueryData) => void;
   setQueryError: (error: string) => void;
@@ -193,7 +195,7 @@ const Dataset = ({
             <div className="code__container-header">
               <div className="title">
                 <img src="/assets/codeIcon.svg" alt="" />
-                 <span><input className="code__container-datasetname-input" type="text" onChange={(c) => setDatasetName(c.target.value)}  value={datasetName} /></span>
+                <span><input className="code__container-datasetname-input" type="text" onChange={(c) => setDatasetName(c.target.value)} value={datasetName} /></span>
               </div>
               <ClipLoader color="purple" loading={isQueryLoading} size={25} />
             </div>
@@ -221,7 +223,7 @@ const Dataset = ({
               </button>
 
             </Link>
-            <button onClick={ () => {
+            <button onClick={() => {
 
               const name = datasetName;
               const dataset = createQueryDataset();
@@ -250,9 +252,26 @@ const Dataset = ({
           </div>
         </div> */}
 
+
           <div className="selectedColumns__container">
+          <Dropdown title="Datasets">
+              {Object.keys(datasetRegistry).map((name: string) => {
+                const dataset = datasetRegistry[name];
+                return <DropdownOption title={name}>
+                  <div className="dropdownOption__Content" onClick={() => { 
+                    setSql(dataset.query)
+                    setDatasetName(name)
+                  }}>
+                    <span key={name} ><b>{name}</b> | <div style={{maxWidth: "200px", overflow:"clip"}}>{dataset.query}</div></span>
+                    {/* <span>{JSON.stringify(field)}</span> */}
+                    {/* <ProgressBar percent={item.percent} /> */}
+                  </div>
+                </DropdownOption>
+
+              })}
+            </Dropdown>
             {data && data.length > 0 ? (
-              <Dropdown title="Query Result">
+              <Dropdown title="Query Result Schema">
                 {querySchema.fields.map((field: FieldSchema, idx: number) => {
 
                   return (
@@ -269,6 +288,7 @@ const Dataset = ({
             ) : (
               <></>
             )}
+          
           </div>
         </div>
 

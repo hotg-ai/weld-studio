@@ -299,7 +299,41 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
 
   let result: Record<string, Capability> = {};
 
+  for (const [name, dataset] of Object.entries(datasetRegistry)) {
 
+    result[name] = {
+      type: "capability",
+      displayName: `[Dataset] ${name}`,
+      identifier: "RAW",
+      source: "custom",
+      properties: {
+        length: {
+          type: "integer",
+          defaultValue: dataset.data.buffer.length,
+          required: false,
+          description: "Amount of data",
+        },
+      },
+      // @ts-ignore
+      outputs: (p) => {
+        const { length } = p;
+        if (typeof length !== "number") {
+          throw new Error();
+        }
+
+        return [
+          {
+            elementType:dataset.data.elementType,
+            dimensions: dataset.data.dimensions,
+            displayName: "data",
+            description: `Raw output from ${name} DataSret`,
+            dimensionType: "fixed",
+          },
+        ];
+      },
+    }
+
+  }
 
   return result
 
@@ -367,7 +401,7 @@ const generateCapabilities = (
   return result;
 };
 
-export const ComponentsSelector = ({ data, dataColumns, dataTypes, querySchema }) => {
+export const ComponentsSelector = ({ data, dataColumns, dataTypes, querySchema, datasetRegistry }) => {
 
   const dispatch = useAppDispatch();
   const components = useAppSelector((s) => s.builder.components);
@@ -382,6 +416,7 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes, querySchema }
     dispatch(
       UpdateComponents({
         ...prefixKeys(generateCapabilities(querySchema, (data as any[]).length)),
+        ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
         ...prefixKeys(outputs()),
       })
     );
