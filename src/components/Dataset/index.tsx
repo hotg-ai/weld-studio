@@ -412,7 +412,7 @@ interface TypedArray extends ArrayBuffer {
 }
 
 interface TypedArrayConstructor {
-  new (length: number): TypedArray;
+  new(length: number): TypedArray;
 }
 
 function mergeColumnsIntoTensor(
@@ -420,30 +420,17 @@ function mergeColumnsIntoTensor(
   columnNames: string[],
   elementType: ElementType
 ): Tensor | undefined {
-  const dimensions = Uint32Array.from([columnNames.length, data.length]);
-  const elementCount = dimensions.reduce((acc, elem) => acc * elem, 1);
-
+  const dimensions = Uint32Array.from([data.length, columnNames.length].filter(d => d != 1));
   const elements: number[] = [];
 
-  for (let i = 0; i < data.length; i++) {
-    for (let j = 0; j < columnNames.length; j++) {
-      const index = i * columnNames.length + j;
+  for (let j = 0; j < columnNames.length; j++) {
+    for (let i = 0; i < data.length; i++) {
       const element = data[i][columnNames[j]];
       if (typeof element != "number") {
         throw new Error();
       }
       elements.push(element);
     }
-  }
-
-  function populate(constructor: TypedArrayConstructor): Tensor {
-    const array = new constructor(elementCount);
-
-    return {
-      elementType,
-      dimensions,
-      buffer: new Uint8Array(array, 0, array.byteLength),
-    };
   }
 
   switch (elementType) {
