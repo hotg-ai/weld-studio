@@ -250,7 +250,7 @@ function Analysis({
         const descriptor = getConnectedInputTensor(node, diagram);
         const data = getDataArrayFromType(
           dataMap[node.data.label],
-          tensor.elementType
+          descriptor.elementType
         );
         const { buffer, byteLength } = data;
         const bufferAsU8 = new Uint8Array(buffer, 0, byteLength);
