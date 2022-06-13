@@ -179,6 +179,7 @@ function inputNodesOfPort(port: Port, graph: Graph): string[] {
 
   if (isFlowDiagram(graph.diagram)) {
     Object.entries(graph.diagram.links).forEach(([, link]: [string, Edge]) => {
+      console.log("LINK", link, port);
       if (port.id == link.targetHandle) {
         const source = graph.getNodeById(link.source);
         if (!source.ports) {

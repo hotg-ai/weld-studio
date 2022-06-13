@@ -305,7 +305,7 @@ const generateDatasetCapabilities = (
   for (const [name, dataset] of Object.entries(datasetRegistry)) {
     result[name] = {
       type: "capability",
-      displayName: name,
+      displayName: `Dataset_${name}`,
       identifier: "RAW",
       source: "custom",
       properties: {

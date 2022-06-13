@@ -235,11 +235,12 @@ function Analysis({
 
     capabilities.forEach((node) => {
       let tensor: Tensor;
-
+      console.log("FUCKIN", node.data.name)
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
         const dataSetData = datasetRegistry[name];
         tensor = dataSetData.tensor;
+        console.log("SETTING TENSOR", tensor, convertElementType(tensor.elementType).toUpperCase());
         input_tensors[node.data.label] = {
           element_type: convertElementType(tensor.elementType).toUpperCase(),
           dimensions: Object.values(tensor.dimensions),

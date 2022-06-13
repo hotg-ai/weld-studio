@@ -157,7 +157,10 @@ pub async fn reune(
         zune_engine.set_input_tensor(&name, default_tensor_name, &tensor);
     }
 
-    zune_engine.predict().context("Prediction Failed")?;
+    if let Err(e) = zune_engine.predict() {
+        tracing::error!(error = &*e as &dyn std::error::Error, "Unable to predict");
+        return Err(e.into());
+    }
 
     let output_node = zune_engine.output_nodes()[0].to_string();
     let output_node_input_name = zune_engine.get_input_tensor_names(&output_node)?;
