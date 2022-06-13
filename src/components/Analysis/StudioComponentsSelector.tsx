@@ -306,6 +306,7 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
       displayName: `[Dataset] ${name}`,
       identifier: "RAW",
       source: "custom",
+      label: name,  
       properties: {
         length: {
           type: "integer",
