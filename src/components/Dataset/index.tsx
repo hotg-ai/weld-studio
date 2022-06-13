@@ -81,7 +81,10 @@ const Dataset = ({
   }, []);
 
   const createQueryDataset: () => QueryData = () => {
-    console.log(data)
+    console.log({
+      "DATA": data,
+      fields: querySchema.fields,
+    })
     const dataset: QueryData = {
       fields: querySchema.fields,
       query: sql,

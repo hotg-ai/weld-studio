@@ -22,7 +22,9 @@ import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
 import _ from "lodash";
 
-function Analysis({ data, querySchema} : {data: any[], querySchema: any}) {
+import {QueryData} from "../../types";
+
+function Analysis({ data, querySchema, datasetRegistry} : {data: any[], querySchema: any, datasetRegistry: Record<string, QueryData>}) {
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);

@@ -199,6 +199,7 @@ class App extends React.Component<{}, AppState> {
                 }
               />
               <Route path="/analysis/:id" element={<Anaysis 
+                    datasetRegistry={this.state.datasetRegistry}
                     querySchema={querySchema} data={data} />} />
               <Route
                 path="/"
