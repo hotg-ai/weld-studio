@@ -41,7 +41,8 @@ export const arrowDataTypeToElementType = (arrowDataType: string): ElementType =
             return "u32";
         case "Uint64":
             return "u64";
-
+        case "Date32":
+            return "u32";
         case "Boolean":
             return "u8"
         default:

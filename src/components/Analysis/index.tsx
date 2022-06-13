@@ -204,6 +204,7 @@ function Analysis({ data, querySchema} : {data: any[], querySchema: any}) {
       return undefined;
     };
 
+    //TODO: Move to backend
     let columns = [];
     if (data[0]) columns = Object.keys(data[0]);
     let dataMap = {};
@@ -227,12 +228,13 @@ function Analysis({ data, querySchema} : {data: any[], querySchema: any}) {
           dataMap[node.data.label],
           tensor.elementType
         );
+       // console.log("OMG THIS IS A TENSOR", tensor);
         const { buffer, byteLength } = data;
         const bufferAsU8 = new Uint8Array(buffer, 0, byteLength);
-        console.log("INPUT DATA ", dataMap[node.data.label], bufferAsU8);
+       // console.log("INPUT DATA ", dataMap[node.data.label], bufferAsU8);
         input_tensors[node.data.label] = {
           element_type: tensor.elementType.toUpperCase(),
-          dimensions: tensor.dimensions,
+          dimensions: [data.length],
           buffer: Object.values(bufferAsU8),
         };
       }
@@ -250,7 +252,7 @@ function Analysis({ data, querySchema} : {data: any[], querySchema: any}) {
           });
           if (result) {
             const tensorResult = convertTensorResult(result);
-            console.log("FO REAL RESULT", result, tensorResult);
+            //console.log("FO REAL RESULT", result, tensorResult);
             const newTable = tableData.map((row, index) => {
               // if (labels && labels.length > 0) {
               //   let row = labels.reduce((acc, curr) => {
