@@ -52,14 +52,15 @@ const nodeType2Color = (
   | "gold"
   | "lime"
   | "#00b594"
-  | "#cb4ebc" => {
+  | "#cb4ebc"
+  | "#969696" => {
   switch (type) {
     case "capability":
       return "purple";
     case "model":
       return "#cb4ebc";
     case "proc-block":
-      return "cyan";
+      return "#969696";
     case "output":
       return "#00b594";
     default:
