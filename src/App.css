@@ -45,6 +45,6 @@
 }
 *::-webkit-scrollbar-thumb {
   width: 100%;
-  background: #dddddd;
+  background: #5F32B8 !important;
   border-radius: 5px;
 }
