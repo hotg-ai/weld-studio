@@ -194,6 +194,7 @@ class App extends React.Component<{}, AppState> {
                     setSql={(sql: string) => this.executeQuery(sql)}
                     tables={tables}
                     isQueryLoading={isQueryLoading}
+                    setQueryError={(error: string) => this.setState({queryError: error})}
                     setQueryData={(name: string, query_data: QueryData) => this.setState({ datasetRegistry: { ...this.state.datasetRegistry, [name]: query_data }  })}
                   />
                 }

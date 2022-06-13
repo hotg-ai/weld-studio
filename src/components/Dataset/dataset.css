@@ -301,3 +301,10 @@
 .dataset__sidebar__container.right .selectedColumns__container {
   padding: 20px 0 40px 0;
 }
+
+
+.code__container-datasetname-input {
+  border:none;
+  background-color: transparent;
+  outline: none;
+}

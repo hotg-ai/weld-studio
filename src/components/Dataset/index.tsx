@@ -44,6 +44,7 @@ const Dataset = ({
   tables,
   isQueryLoading,
   setQueryData,
+  setQueryError
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -53,11 +54,13 @@ const Dataset = ({
   tables: TableData[];
   isQueryLoading: boolean;
   setQueryData: (name: string, query_data: QueryData) => void;
+  setQueryError: (error: string) => void;
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const [datasetName, setDatasetName] = useState("untitled_dataset");
 
   useEffect(() => {
     const procBlocks = async () => {
@@ -190,7 +193,7 @@ const Dataset = ({
             <div className="code__container-header">
               <div className="title">
                 <img src="/assets/codeIcon.svg" alt="" />
-                {/* <span>Sample.SQL</span> */}
+                 <span><input className="code__container-datasetname-input" type="text" onChange={(c) => setDatasetName(c.target.value)}  value={datasetName} /></span>
               </div>
               <ClipLoader color="purple" loading={isQueryLoading} size={25} />
             </div>
@@ -220,8 +223,9 @@ const Dataset = ({
             </Link>
             <button onClick={ () => {
 
-              const name = "hello";
+              const name = datasetName;
               const dataset = createQueryDataset();
+              setQueryError("Registered DataSet: " + name);
               setQueryData(name, dataset)
             }}>
               <span> Add as Dataset</span>
