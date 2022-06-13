@@ -305,12 +305,11 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
       type: "capability",
       displayName: `[Dataset] ${name}`,
       identifier: "RAW",
-      source: "custom",
-      label: name,  
+      source: "custom", 
       properties: {
         length: {
           type: "integer",
-          defaultValue: dataset.data.buffer.length,
+          defaultValue: dataset.tensor.buffer.length,
           required: false,
           description: "Amount of data",
         },
@@ -324,10 +323,10 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
 
         return [
           {
-            elementType:dataset.data.elementType,
-            dimensions: dataset.data.dimensions,
+            elementType:dataset.tensor.elementType,
+            dimensions: dataset.tensor.dimensions,
             displayName: "data",
-            description: `Raw output from ${name} DataSret`,
+            description: `Raw output from ${name} DataSet`,
             dimensionType: "fixed",
           },
         ];

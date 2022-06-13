@@ -206,9 +206,16 @@ const Dataset = ({
             <button onClick={() => {
 
               const name = datasetName;
-              setQueryError("Registered DataSet: " + name);
-              const dataset = createQueryDataset(data, querySchema, sql);
-              setQueryData(name, dataset)
+              try {
+                const dataset = createQueryDataset(data, querySchema, sql);
+
+                setQueryData(name, dataset)
+
+                setQueryError("Registered DataSet: " + name);
+              } catch (e) {
+
+                setQueryError("Cannot create dataset: " + e);
+              }
             }}>
               <span> Add as Dataset</span>
             </button>
@@ -234,7 +241,7 @@ const Dataset = ({
 
 
           <div className="selectedColumns__container">
-          <Dropdown title="Datasets">
+            <Dropdown title="Datasets">
               {Object.keys(datasetRegistry).map((name: string) => {
                 const dataset = datasetRegistry[name];
                 return <DropdownOption title={name}>
@@ -242,7 +249,7 @@ const Dataset = ({
                     setSql(dataset.query)
                     setDatasetName(name)
                   }}>
-                    <span key={name} ><b>{name}</b> | <div style={{maxWidth: "200px", overflow:"clip"}}>{dataset.query}</div></span>
+                    <span key={name} ><b>{name}</b> | <div style={{ maxWidth: "200px", overflow: "clip" }}>{dataset.query}</div></span>
                     {/* <span>{JSON.stringify(field)}</span> */}
                     {/* <ProgressBar percent={item.percent} /> */}
                   </div>
@@ -335,19 +342,21 @@ function createQueryDataset(
   data: Array<Record<string, any>>,
   querySchema: QuerySchema,
   query: string,
-): QueryData | undefined {
+): QueryData {
 
   const dataType = commonDataType(querySchema);
   if (!dataType) {
     // We weren't able to determine the common data type (e.g. because one
     // column is a u32 while the rest are f64).
-    return undefined;
+    throw new Error("Could not determine common data type");
+
   }
 
   const tensor = mergeColumnsIntoTensor(data, querySchema.fields.map(f => f.name), dataType)
   if (!tensor) {
     // The data couldn't be merged (because it was a string, etc.).
-    return undefined;
+    throw new Error("Could not merge data");
+
   }
 
   return {
