@@ -288,7 +288,10 @@ function Analysis({
           // }
           return {
             ...row,
-            Result: tensorResult[index] ? tensorResult[index] : "",
+            Result:
+              tensorResult[index] && tensorResult[index] !== undefined
+                ? tensorResult[index]
+                : "",
           };
         });
         setTableData(newTable);
