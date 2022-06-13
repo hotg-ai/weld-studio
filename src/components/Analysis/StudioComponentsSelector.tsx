@@ -26,7 +26,7 @@ import Modal from "../Dataset/components/modal";
 import TextArea from "antd/lib/input/TextArea";
 import { DatasetTypes } from "../Dataset";
 import { UpdateComponents } from "src/redux/builderSlice";
-import { FieldSchema } from "../../types";
+import { FieldSchema, QueryData } from "../../types";
 import outputs from "./model/outputs";
 export type ComponentListItemProps = {
   id: string;
@@ -292,6 +292,17 @@ function filter<V>(
   const entries = Object.entries(items);
   const retained = entries.filter((pair) => predicate(pair[1]));
   return Object.fromEntries(retained);
+}
+
+
+const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> ): Record<string, Capability> => {
+
+  let result: Record<string, Capability> = {};
+
+
+
+  return result
+
 }
 
 const generateCapabilities = (

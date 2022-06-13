@@ -13,7 +13,7 @@
 .sidebar_left {
   max-height: calc(100vh - 35px);
   overflow-y: scroll;
-  width: 22%;
+  width: 20%;
   background: #e6e6e6;
   padding: 20px 30px;
   overflow: scroll;
@@ -293,7 +293,7 @@ input:checked + .slider:before {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  width: 78%;
+  width: 80%;
   height: calc(100vh - 35px);
 }
 .studio__container {
@@ -303,12 +303,12 @@ input:checked + .slider:before {
 }
 .studio__container .studio__content {
   background: #f5f5f5;
-  width: 70%;
+  width: 85%;
   height: 65vh;
   padding: 1rem;
 }
 .studio__container .sidebar_right {
-  width: 30%;
+  width: 25%;
   background-color: #faf8ff;
   height: 65vh;
   overflow-y: scroll;
