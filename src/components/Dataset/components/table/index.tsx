@@ -19,7 +19,11 @@ const Table = ({ data }: { data: any[] }) => {
             return (
               <tr key={idx}>
                 {header.map((h) =>
-                  d[h] !== undefined ? <td key={h}>{d[h]}</td> : <td key={h}></td>
+                  d[h] !== undefined ? (
+                    <td key={h}>{d[h]}</td>
+                  ) : (
+                    <td key={h}></td>
+                  )
                 )}
               </tr>
             );
