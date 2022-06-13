@@ -12,9 +12,11 @@ import Anaysis from "./components/Analysis";
 import { invoke } from "@tauri-apps/api/tauri";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
-import { TableData, FileDropEvent, FieldSchema } from "./types";
+import { TableData, FileDropEvent, FieldSchema, QueryData } from "./types";
 
 import ClipLoader from "react-spinners/ClipLoader";
+
+
 
 type AppState = {
   data: any[];
@@ -24,6 +26,7 @@ type AppState = {
   tables: TableData[];
   isLoadingTable: boolean;
   isQueryLoading: boolean;
+  datasetRegistry: Record<string, QueryData>;
 };
 
 class App extends React.Component<{}, AppState> {
@@ -35,6 +38,7 @@ class App extends React.Component<{}, AppState> {
     tables: [],
     isLoadingTable: false,
     isQueryLoading: false,
+    datasetRegistry: {},
   };
 
   unsubscribers: UnlistenFn[] = [];
@@ -190,6 +194,7 @@ class App extends React.Component<{}, AppState> {
                     setSql={(sql: string) => this.executeQuery(sql)}
                     tables={tables}
                     isQueryLoading={isQueryLoading}
+                    setQueryData={(name: string, query_data: QueryData) => this.setState({ datasetRegistry: { ...this.state.datasetRegistry, [name]: query_data }  })}
                   />
                 }
               />

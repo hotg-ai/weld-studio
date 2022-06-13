@@ -1,4 +1,6 @@
 
+import { Tensor } from "@hotg-ai/rune";
+
 export type FileDropEvent = {
     payload: string[]
 }
@@ -18,3 +20,9 @@ export type FieldSchema = {
 }
 
 
+// This dataset is `capability` block in the drag and drop editor 
+export type QueryData = {
+    query: string;
+    fields: FieldSchema[];
+    data: Tensor
+  }

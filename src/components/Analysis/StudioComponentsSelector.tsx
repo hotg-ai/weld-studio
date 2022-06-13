@@ -306,7 +306,7 @@ const generateCapabilities = (
     // Object.entries(v).forEach(([column, value]) => {
     //   console.log(dataColumns, column)
     //   if (true || dataColumns.filter((col) => col === column).length > 0) {
-      let data_type = typeof column.data_type == "string" ? column.data_type : Object.keys(column.data_type)[0]; 
+      
    let columnName = column.name.replaceAll('"', "");
     result[columnName] = {
       type: "capability",
@@ -330,7 +330,7 @@ const generateCapabilities = (
       },
       description: "",
       // @ts-ignore
-      acceptedOutputElementTypes: [{ elementTypes: [arrowDataTypeToElementType(data_type)] }],
+      acceptedOutputElementTypes: [{ elementTypes: [arrowDataTypeToElementType(column.data_type)] }],
       // @ts-ignore
       outputs: (p) => {
         const { length } = p;
@@ -340,7 +340,7 @@ const generateCapabilities = (
 
         return [
           {
-            elementType: arrowDataTypeToElementType(data_type),
+            elementType: arrowDataTypeToElementType(column.data_type),
             dimensions: [1, length],
             displayName: "data",
             description: `Raw output from ${column} Column`,

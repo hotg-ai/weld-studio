@@ -1,19 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/tauri";
+import { ask } from "@tauri-apps/api/dialog";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "../common/dropdown";
 import CodeEditor from "./components/editor";
 // import ProgressBar from "./components/progressBar";
 import Table from "./components/table";
 import "./dataset.css";
-import { TableData } from "../../types";
+import { QueryData, TableData } from "../../types";
 import { useAppDispatch } from "src/hooks/hooks";
 import { loadProcBlocks } from "src/redux/actions/project/loadProject";
 import { UpdateComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
 import _ from "lodash";
 import { FieldSchema } from "../../types";
+import { arrowDataTypeToRunicElementType } from "../Analysis/utils/ArrowConvert";
 type IntegerColumnType = {
   type: "INTEGER";
   value: Uint16Array;
@@ -41,6 +43,7 @@ const Dataset = ({
   queryError,
   tables,
   isQueryLoading,
+  setQueryData,
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -49,6 +52,7 @@ const Dataset = ({
   queryError: string | undefined;
   tables: TableData[];
   isQueryLoading: boolean;
+  setQueryData: (name: string, query_data: QueryData) => void;
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
@@ -75,6 +79,24 @@ const Dataset = ({
     };
     procBlocks().catch(console.error);
   }, []);
+
+  const createQueryDataset: () => QueryData = () => {
+    console.log(data)
+    const dataset: QueryData = {
+      fields: querySchema.fields,
+      query: sql,
+      // Make sure all the querySchema.fields have same type
+      data: {
+        elementType: arrowDataTypeToRunicElementType(querySchema.fields[0].data_type),
+        /**
+        * The tensor's dimensions.
+        */
+        dimensions: new Uint32Array([querySchema.fields.length, data.length]),
+        buffer: new Uint8Array(data) // convert to Uint8Array
+      }
+    }
+    return dataset;
+  }
 
   const copyLinkToClipboard = (text: string) => {
     navigator.clipboard
@@ -191,10 +213,16 @@ const Dataset = ({
               <button>
                 <span> Add Analysis</span>
               </button>
-              <button>
-                <span> Add as Dataset</span>
-              </button>
+
             </Link>
+            <button onClick={ () => {
+
+              const name = "hello";
+              const dataset = createQueryDataset();
+              setQueryData(name, dataset)
+            }}>
+              <span> Add as Dataset</span>
+            </button>
             <div>
               {data && data.length > 0 ? (
                 <h5>
@@ -219,7 +247,7 @@ const Dataset = ({
             {data && data.length > 0 ? (
               <Dropdown title="Query Result">
                 {querySchema.fields.map((field: FieldSchema, idx: number) => {
-                 
+
                   return (
                     <DropdownOption key={idx}>
                       <div className="dropdownOption__Content">
