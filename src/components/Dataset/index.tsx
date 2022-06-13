@@ -16,6 +16,7 @@ import { metadataToComponent } from "../Analysis/model/metadata";
 import _ from "lodash";
 import { FieldSchema } from "../../types";
 import { arrowDataTypeToRunicElementType } from "../Analysis/utils/ArrowConvert";
+import { ElementType, Tensor } from "@hotg-ai/rune";
 type IntegerColumnType = {
   type: "INTEGER";
   value: Uint16Array;
@@ -84,27 +85,6 @@ const Dataset = ({
     };
     procBlocks().catch(console.error);
   }, []);
-
-  const createQueryDataset: () => QueryData = () => {
-    console.log({
-      "DATA": data,
-      fields: querySchema.fields,
-    })
-    const dataset: QueryData = {
-      fields: querySchema.fields,
-      query: sql,
-      // Make sure all the querySchema.fields have same type
-      data: {
-        elementType: arrowDataTypeToRunicElementType(querySchema.fields[0].data_type),
-        /**
-        * The tensor's dimensions.
-        */
-        dimensions: new Uint32Array([querySchema.fields.length, data.length]),
-        buffer: new Uint8Array(data) // convert to Uint8Array
-      }
-    }
-    return dataset;
-  }
 
   const copyLinkToClipboard = (text: string) => {
     navigator.clipboard
@@ -226,8 +206,8 @@ const Dataset = ({
             <button onClick={() => {
 
               const name = datasetName;
-              const dataset = createQueryDataset();
               setQueryError("Registered DataSet: " + name);
+              const dataset = createQueryDataset(data, querySchema, sql);
               setQueryData(name, dataset)
             }}>
               <span> Add as Dataset</span>
@@ -258,7 +238,7 @@ const Dataset = ({
               {Object.keys(datasetRegistry).map((name: string) => {
                 const dataset = datasetRegistry[name];
                 return <DropdownOption title={name}>
-                  <div className="dropdownOption__Content" onClick={() => { 
+                  <div className="dropdownOption__Content" onClick={() => {
                     setSql(dataset.query)
                     setDatasetName(name)
                   }}>
@@ -288,7 +268,7 @@ const Dataset = ({
             ) : (
               <></>
             )}
-          
+
           </div>
         </div>
 
@@ -340,3 +320,120 @@ const Dataset = ({
 };
 
 export default Dataset;
+
+type QuerySchema = { fields: FieldSchema[] };
+
+/**
+ * Given the result of a query, try to merge it into a 2D tensor.
+ *
+ * @param data The records returned from DuckDB
+ * @param querySchema The schema for the data parameter
+ * @param query The SQL query that was executed
+ * @returns
+ */
+function createQueryDataset(
+  data: Array<Record<string, any>>,
+  querySchema: QuerySchema,
+  query: string,
+): QueryData | undefined {
+
+  const dataType = commonDataType(querySchema);
+  if (!dataType) {
+    // We weren't able to determine the common data type (e.g. because one
+    // column is a u32 while the rest are f64).
+    return undefined;
+  }
+
+  const tensor = mergeColumnsIntoTensor(data, querySchema.fields.map(f => f.name), dataType)
+  if (!tensor) {
+    // The data couldn't be merged (because it was a string, etc.).
+    return undefined;
+  }
+
+  return {
+    fields: querySchema.fields,
+    query,
+    tensor,
+  };
+}
+
+/**
+ * Try to find the common element type
+ * @param schema
+ * @returns
+ */
+function commonDataType(schema: QuerySchema): ElementType | undefined {
+  const [first, ...rest] = schema.fields;
+
+  if (rest.some(field => field.data_type != first.data_type)) {
+    // We've got a data frame where the columns have different types, so it's
+    // not possible to construct a tensor using all the column data.
+    return undefined;
+  }
+
+  return arrowDataTypeToRunicElementType(first.data_type);
+}
+
+interface TypedArray extends ArrayBuffer {
+  [index: number]: number | bigint;
+}
+
+interface TypedArrayConstructor {
+  new(length: number): TypedArray;
+}
+
+function mergeColumnsIntoTensor(
+  data: Array<Record<string, any>>,
+  columnNames: string[],
+  elementType: ElementType,
+): Tensor | undefined {
+  const dimensions = Uint32Array.from([columnNames.length, data.length]);
+  const elementCount = dimensions.reduce((acc, elem) => acc * elem, 1);
+
+  function populate(constructor: TypedArrayConstructor): Tensor {
+    const array = new constructor(elementCount);
+
+    for (let i = 0; i < data.length; i++) {
+      for (let j = 0; j < columnNames.length; j++) {
+        const index = i * columnNames.length + j;
+        const element = data[i][columnNames[j]];
+        if (typeof element != "number") {
+          throw new Error();
+        }
+        array[index] = element;
+      }
+    }
+
+    return {
+      elementType,
+      dimensions,
+      buffer: new Uint8Array(array, 0, array.byteLength),
+    };
+  }
+
+  switch (elementType) {
+    case ElementType.U8:
+      return populate(Uint8Array);
+    case ElementType.I8:
+      return populate(Int8Array);
+    case ElementType.U16:
+      return populate(Uint16Array);
+    case ElementType.I16:
+      return populate(Int16Array);
+    case ElementType.U32:
+      return populate(Uint32Array);
+    case ElementType.I32:
+      return populate(Int32Array);
+    case ElementType.F32:
+      return populate(Float32Array);
+    case ElementType.U64:
+      return populate(BigUint64Array);
+    case ElementType.I64:
+      return populate(BigInt64Array);
+    case ElementType.F64:
+      return populate(Float64Array);
+
+    default:
+      return undefined;
+  }
+}
