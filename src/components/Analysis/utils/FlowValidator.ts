@@ -294,12 +294,16 @@ export const isTensorIncompatible = (
     message: "Tensor Mismatch:",
     result: false,
   };
+  
   const sourceNode: Node<FlowNodeData> = diagram.nodes.filter(
     (node) => node.id === connection.source
   )[0];
   const targetNode: Node<FlowNodeData> = diagram.nodes.filter(
     (node) => node.id === connection.target
   )[0];
+  if (targetNode === undefined || sourceNode === undefined) {
+    return result;
+  }
   console.log("VALIDATING", connection,  diagram.nodes, sourceNode, targetNode);
   const sourcePortTensor = sourceNode.data.outputs.filter(
     (port) => port.id === connection.sourceHandle
@@ -481,6 +485,7 @@ export const isPropertyIncompatible = (
   const targetNode: Node<FlowNodeData> = diagram.nodes.filter(
     (node) => node.id === connection.target
   )[0];
+
   const sourcePortTensor = sourceNode.data.outputs.filter(
     (port) => port.id === connection.sourceHandle
   )[0].tensor;
