@@ -420,9 +420,9 @@ export const ComponentsSelector = ({
   useMemo(() => {
     dispatch(
       UpdateComponents({
-        ...prefixKeys(
-          generateCapabilities(querySchema, (data as any[]).length)
-        ),
+        // ...prefixKeys(
+        //   generateCapabilities(querySchema, (data as any[]).length)
+        // ),
         ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
         ...prefixKeys(outputs()),
       })
