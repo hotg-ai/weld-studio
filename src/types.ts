@@ -11,7 +11,7 @@ export type TableData = {
 
 export type FieldSchema = {
     name: string;
-    data_type: string;
+    data_type: string | Record<string, null>;
     nullable: boolean;
     dict_id: number;
     dict_is_ordered: boolean;

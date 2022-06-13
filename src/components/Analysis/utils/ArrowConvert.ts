@@ -45,6 +45,8 @@ export const arrowDataTypeToElementType = (arrowDataType: string): ElementType =
             return "u32";
         case "Boolean":
             return "u8"
+        case "Timestamp":
+            return "u64";
         default:
             throw new Error(`Unknown arrow data type: ${arrowDataType}`);
     }

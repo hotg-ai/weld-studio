@@ -191,6 +191,9 @@ const Dataset = ({
               <button>
                 <span> Add Analysis</span>
               </button>
+              <button>
+                <span> Add as Dataset</span>
+              </button>
             </Link>
             <div>
               {data && data.length > 0 ? (
@@ -220,7 +223,7 @@ const Dataset = ({
                   return (
                     <DropdownOption key={idx}>
                       <div className="dropdownOption__Content">
-                        <span>{field.name}: {field.data_type}</span>
+                        <span>{field.name}: {typeof field.data_type == "string" ? field.data_type : Object.keys(field.data_type)[0]}</span>
                         {/* <span>{JSON.stringify(field)}</span> */}
                         {/* <ProgressBar percent={item.percent} /> */}
                       </div>

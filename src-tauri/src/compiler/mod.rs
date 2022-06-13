@@ -146,8 +146,9 @@ pub async fn reune(
             .with_context(|| format!("Unable to find column: {name}"))?;
         
         let default_tensor_name = &input_tensor_node_names[0];
-        
-        zune_engine.set_input_tensor(&name, default_tensor_name, &tensor.into());
+        let tensor = TensorResult::from(tensor);
+        dbg!(&tensor, &name, &default_tensor_name);
+        zune_engine.set_input_tensor(&name, default_tensor_name, &tensor);
     }
 
     zune_engine.predict().context("Prediction Failed")?;
