@@ -42,8 +42,8 @@ function Analysis({
   queryError: string | undefined;
   setIsLoadingTable: (isLoading: boolean) => void;
   isLoadingTable: boolean;
-
 }) {
+  console.log("REGISTRY", datasetRegistry);
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
@@ -63,7 +63,7 @@ function Analysis({
     if (key == "dataTypes") dataTypes = value;
   });
 
-  console.log(data, dataColumns, dataTypes);
+  // console.log(data, dataColumns, dataTypes);
 
   const [tableData, setTableData] = useState(data);
 
@@ -74,13 +74,24 @@ function Analysis({
       (node) => node.data.type === "capability"
     );
 
-    let labels: string[] = capabilities.map((cap) => cap.data.label);
+    let labels: string[] = capabilities.map((cap) => cap.data.name);
+    // console.log("labels", labels);
 
-    newTable = newTable.map((o) => {
+    newTable = newTable.map((o, index) => {
       if (labels && labels.length > 0) {
         let row = labels.reduce((acc, curr) => {
-          console.log("labels", acc, curr);
-          acc[curr] = o[curr];
+          if (curr.startsWith("Dataset_")) {
+            const name = curr.replace("Dataset_", "");
+            Object.entries(datasetRegistry[name].data[index]).forEach(
+              ([k, v]) => {
+                if (!acc[name]) acc[name] = "";
+                acc[name] = acc[name] + `"${k}": ${v}, `;
+              }
+            );
+            // acc[name] = datasetRegistry[name].data.
+          } else {
+            acc[curr] = o[curr];
+          }
           return acc;
         }, {});
         if (!_.isEmpty(row)) return row;
@@ -245,12 +256,16 @@ function Analysis({
 
     capabilities.forEach((node) => {
       let tensor: Tensor;
-      console.log("FUCKIN", node.data.name)
+      console.log("FUCKIN", node.data.name);
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
         const dataSetData = datasetRegistry[name];
         tensor = dataSetData.tensor;
-        console.log("SETTING TENSOR", tensor, convertElementType(tensor.elementType).toUpperCase());
+        console.log(
+          "SETTING TENSOR",
+          tensor,
+          convertElementType(tensor.elementType).toUpperCase()
+        );
         input_tensors[node.data.label] = {
           element_type: convertElementType(tensor.elementType).toUpperCase(),
           dimensions: Object.values(tensor.dimensions),
@@ -359,7 +374,7 @@ function Analysis({
           </div>
           <div className="sidebar_right">
             <button
-             // disabled={!isLoadingTable}
+              // disabled={!isLoadingTable}
               onClick={async () => {
                 console.log("DATA TYPES", dataTypes);
                 // invoke("reune")
@@ -367,23 +382,28 @@ function Analysis({
                 //   .catch((error) => {
                 //     console.log("RUN ERROR", error);
                 //   });
-                setQueryError(undefined)
-                setIsLoadingTable(true)
-                
-                buildAndRun(diagram, dataTypes, tableData).then((result) => {
-                  if (result) {
-                    console.log("RESULT", result);
-                  }
-                  setIsLoadingTable(false)
-                }).catch((e) => {
+                setQueryError(undefined);
+                setIsLoadingTable(true);
+
+                buildAndRun(diagram, dataTypes, tableData)
+                  .then((result) => {
+                    if (result) {
+                      console.log("RESULT", result);
+                    }
+                    setIsLoadingTable(false);
+                  })
+                  .catch((e) => {
                     setQueryError("Error running model");
-                    setIsLoadingTable(false)
-                })
-           
+                    setIsLoadingTable(false);
+                  });
               }}
             >
               {/* <img src="/assets/model.svg" alt="<" /> */}
-              {isLoadingTable ? <ClipLoader color="purple" loading={isLoadingTable} size={25} /> :  <span>{"</> "}Build &amp; Run</span> }
+              {isLoadingTable ? (
+                <ClipLoader color="purple" loading={isLoadingTable} size={25} />
+              ) : (
+                <span>{"</> "}Build &amp; Run</span>
+              )}
             </button>
             <button onClick={() => setCustomModalVisible(true)}>
               {/* <img src="/assets/share.svg" alt="<" /> */}
