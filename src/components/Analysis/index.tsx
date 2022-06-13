@@ -358,7 +358,7 @@ function Analysis({
           </div>
           <div className="sidebar_right">
             <button
-             // disabled={!isLoadingTable}
+             //  disabled={!isLoadingTable}
               onClick={async () => {
                 console.log("DATA TYPES", dataTypes);
                 // invoke("reune")

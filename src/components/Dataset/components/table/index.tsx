@@ -17,10 +17,10 @@ const Table = ({ data }: { data: any[] }) => {
         <tbody>
           {data.map((d, idx) => {
             return (
-              <tr key={idx}>
+              <tr key={idx}>  
                 {header.map((h) =>
-                  d[h] !== undefined ? <td key={h}>{d[h]}</td> : <td key={h}></td>
-                )}
+                  d[h] !== undefined ? <td key={h}>{d[h]}</td> : <td key={h}><i>null</i></td>
+                )}  
               </tr>
             );
           })}
