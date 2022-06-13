@@ -217,12 +217,13 @@ function SelectInput({
 function PropertyInput(props: InputType) {
   const { name, property, error } = props;
   return (
-    <div>
+    <div className="StudioBody--right__form__infoProject--container">
       <div className="StudioBody--right__form__infoProject">
         <Col span={24}>
           <label
             htmlFor={`${name}-element-type`}
-            className="StudioBody--right__form__label"
+            className="StudioBody--right__form__label main--label"
+            // style={{color: "#000", fontWeight: "bold"}}
           >
             {_.startCase(name)}:
           </label>
@@ -235,7 +236,8 @@ function PropertyInput(props: InputType) {
         <Col span={12}>
           <label
             htmlFor={`${name}-element-type`}
-            className="StudioBody--right__form__label"
+            className="StudioBody--right__form__label sub--label"
+            // style={{color: "#55555", fontWeight: "thin"}}
           >
             Property
           </label>

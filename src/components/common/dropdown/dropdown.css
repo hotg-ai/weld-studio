@@ -41,7 +41,7 @@
   width: 6px;
 }
 .dropdown-content::-webkit-scrollbar-thumb {
-  background: #fff;
+  background: #5F32B8;
   width: 100%;
   border-radius: 10px;
 }

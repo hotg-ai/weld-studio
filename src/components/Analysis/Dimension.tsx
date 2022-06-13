@@ -112,12 +112,12 @@ export default function Dimension({
 
   if (node && node.data)
     return (
-      <div>
+      <div className="StudioBody--right__form__infoProject--container">
         <div className="StudioBody--right__form__infoProject">
           <Col span={24}>
             <label
               htmlFor={`${name}-element-type`}
-              className="StudioBody--right__form__label"
+              className="StudioBody--right__form__label main--label"
             >
               {_.startCase(name)}
             </label>
@@ -133,7 +133,7 @@ export default function Dimension({
             <div className={errors?.type !== undefined ? "dimention_err" : ""}>
               <label
                 htmlFor={`${name}-element-type`}
-                className="StudioBody--right__form__label"
+                className="StudioBody--right__form__label sub--label"
               >
                 Element Type
               </label>
@@ -187,7 +187,7 @@ export default function Dimension({
             <div className={errors?.dims !== undefined ? "dimention_err" : ""}>
               <label
                 htmlFor={`${name}-dimensions`}
-                className="StudioBody--right__form__label"
+                className="StudioBody--right__form__label dimention--label"
               >
                 Dimensions
               </label>
