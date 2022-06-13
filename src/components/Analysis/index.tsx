@@ -79,6 +79,7 @@ function Analysis({
     newTable = newTable.map((o) => {
       if (labels && labels.length > 0) {
         let row = labels.reduce((acc, curr) => {
+          console.log("labels", acc, curr);
           acc[curr] = o[curr];
           return acc;
         }, {});
