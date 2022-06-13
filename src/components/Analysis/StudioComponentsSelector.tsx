@@ -303,7 +303,7 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
 
     result[name] = {
       type: "capability",
-      displayName: `[Dataset] ${name}`,
+      displayName: `Dataset_${name}`,
       identifier: "RAW",
       source: "custom", 
       properties: {
@@ -324,7 +324,7 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
         return [
           {
             elementType:dataset.tensor.elementType,
-            dimensions: dataset.tensor.dimensions,
+            dimensions: Object.values(dataset.tensor.dimensions),
             displayName: "data",
             description: `Raw output from ${name} DataSet`,
             dimensionType: "fixed",
