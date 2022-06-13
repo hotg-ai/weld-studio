@@ -1,7 +1,5 @@
 import React from "react";
 
-
-
 import "./App.css";
 import Header from "./components/Header";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -16,11 +14,9 @@ import { TableData, FileDropEvent, FieldSchema, QueryData } from "./types";
 
 import ClipLoader from "react-spinners/ClipLoader";
 
-
-
 type AppState = {
   data: any[];
-  querySchema: {fields: FieldSchema[]}
+  querySchema: { fields: FieldSchema[] };
   sql: string | undefined;
   queryError: string | undefined;
   tables: TableData[];
@@ -32,7 +28,7 @@ type AppState = {
 class App extends React.Component<{}, AppState> {
   state: AppState = {
     data: [],
-    querySchema: {fields: []},
+    querySchema: { fields: [] },
     sql: undefined,
     queryError: undefined,
     tables: [],
@@ -43,10 +39,7 @@ class App extends React.Component<{}, AppState> {
 
   unsubscribers: UnlistenFn[] = [];
 
-  constructor(props: any) {
-    super(props);
-    this.getTables();
-
+  componentDidMount() {
     listen("tauri://file-drop", (e) => {
       this.eventHandlerFileDrop(e as FileDropEvent);
     }).then((u) => {
@@ -70,11 +63,13 @@ class App extends React.Component<{}, AppState> {
       if (u) this.unsubscribers.push(u);
     });
 
-    listen("load_arrow_row_batch_schema", ({ payload }: { payload: {fields: FieldSchema[]} }) =>
-    this.eventHandlerLoadArrowRowBatchSchema(payload)
-  ).then((u) => {
-    if (u) this.unsubscribers.push(u);
-  });
+    listen(
+      "load_arrow_row_batch_schema",
+      ({ payload }: { payload: { fields: FieldSchema[] } }) =>
+        this.eventHandlerLoadArrowRowBatchSchema(payload)
+    ).then((u) => {
+      if (u) this.unsubscribers.push(u);
+    });
 
     listen("query_started", () => this.setState({ isQueryLoading: true })).then(
       (u) => {
@@ -87,7 +82,13 @@ class App extends React.Component<{}, AppState> {
         if (u) this.unsubscribers.push(u);
       }
     );
+
+    this.getTables();
   }
+
+  // constructor(props: any) {
+  //   super(props);
+  // }
 
   componentWillUnmount() {
     this.unsubscribers.forEach((u) => u());
@@ -107,7 +108,7 @@ class App extends React.Component<{}, AppState> {
     // proc-blocks
     // invoke("known_proc_blocks").then(console.log).catch(console.error);
 
-    this.setState({ data: [], querySchema: {fields: []} });
+    this.setState({ data: [], querySchema: { fields: [] } });
     if (this.state.isQueryLoading) return;
 
     this.setState({ isQueryLoading: true });
@@ -132,14 +133,13 @@ class App extends React.Component<{}, AppState> {
     this.setState({ data: newData });
   }
 
-  eventHandlerLoadArrowRowBatchSchema(schema: {fields: FieldSchema[]}) {
+  eventHandlerLoadArrowRowBatchSchema(schema: { fields: FieldSchema[] }) {
     //     console.log("DATAxxx is ", data.length)
     //console.log("Schema", schema);
-    this.setState({querySchema: schema})
+    this.setState({ querySchema: schema });
     // const newData = [...this.state.data, ...chunk];
     // this.setState({ schema: newSchema });
   }
-
 
   eventHandlerLoadCSVComplete(payload: any[]) {
     this.setState({ isLoadingTable: false });
@@ -166,8 +166,15 @@ class App extends React.Component<{}, AppState> {
   }
 
   render() {
-    const { isLoadingTable, data, queryError, querySchema, sql, tables, isQueryLoading } =
-      this.state;
+    const {
+      isLoadingTable,
+      data,
+      queryError,
+      querySchema,
+      sql,
+      tables,
+      isQueryLoading,
+    } = this.state;
     return (
       <div className="App">
         <div
@@ -195,14 +202,30 @@ class App extends React.Component<{}, AppState> {
                     tables={tables}
                     isQueryLoading={isQueryLoading}
                     datasetRegistry={this.state.datasetRegistry}
-                    setQueryError={(error: string) => this.setState({queryError: error})}
-                    setQueryData={(name: string, query_data: QueryData) => this.setState({ datasetRegistry: { ...this.state.datasetRegistry, [name]: query_data }  })}
+                    setQueryError={(error: string) =>
+                      this.setState({ queryError: error })
+                    }
+                    setQueryData={(name: string, query_data: QueryData) =>
+                      this.setState({
+                        datasetRegistry: {
+                          ...this.state.datasetRegistry,
+                          [name]: query_data,
+                        },
+                      })
+                    }
                   />
                 }
               />
-              <Route path="/analysis/:id" element={<Anaysis 
+              <Route
+                path="/analysis/:id"
+                element={
+                  <Anaysis
                     datasetRegistry={this.state.datasetRegistry}
-                    querySchema={querySchema} data={data} />} />
+                    querySchema={querySchema}
+                    data={data}
+                  />
+                }
+              />
               <Route
                 path="/"
                 element={
@@ -214,7 +237,7 @@ class App extends React.Component<{}, AppState> {
                       this.setState({ isLoadingTable })
                     }
                   />
-                 
+
                   // <div style={{ height:"calc(100vh - 35px)", width: "calc(100vw - 5px)"}}>
                   //     <Flow />
                   // </div>
@@ -227,7 +250,5 @@ class App extends React.Component<{}, AppState> {
     );
   }
 }
-
-
 
 export default App;

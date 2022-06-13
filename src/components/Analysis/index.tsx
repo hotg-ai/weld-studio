@@ -22,9 +22,19 @@ import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
 import _ from "lodash";
 
-import {QueryData} from "../../types";
+import { QueryData } from "../../types";
+import { Tensor } from "@hotg-ai/rune";
+import { convertElementType, modelToTensorElementType } from "./model/metadata";
 
-function Analysis({ data, querySchema, datasetRegistry} : {data: any[], querySchema: any, datasetRegistry: Record<string, QueryData>}) {
+function Analysis({
+  data,
+  querySchema,
+  datasetRegistry,
+}: {
+  data: any[];
+  querySchema: any;
+  datasetRegistry: Record<string, QueryData>;
+}) {
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
@@ -223,19 +233,34 @@ function Analysis({ data, querySchema, datasetRegistry} : {data: any[], querySch
       (node) => node.data.type === "capability"
     );
 
-    capabilities.map((node) => {
-      const tensor = getConnectedInputTensor(node, diagram);
-      if (tensor) {
+    capabilities.forEach((node) => {
+      let tensor: Tensor;
+
+      if (node.data.name.startsWith("Dataset_")) {
+        const name = node.data.name.replace("Dataset_", "");
+        const data = datasetRegistry[name];
+        tensor = data.tensor;
+        input_tensors[node.data.label] = {
+          element_type: convertElementType(tensor.elementType).toUpperCase(),
+          dimensions: Object.values(tensor.dimensions),
+          buffer: Object.values(tensor.buffer),
+        };
+      } else {
+        const name = node.data.name;
+        const descriptor = getConnectedInputTensor(node, diagram);
         const data = getDataArrayFromType(
           dataMap[node.data.label],
           tensor.elementType
         );
-       // console.log("OMG THIS IS A TENSOR", tensor);
         const { buffer, byteLength } = data;
         const bufferAsU8 = new Uint8Array(buffer, 0, byteLength);
-       // console.log("INPUT DATA ", dataMap[node.data.label], bufferAsU8);
+        tensor = {
+          buffer,
+          elementType: modelToTensorElementType(descriptor.elementType),
+          dimensions: Uint32Array.from(descriptor.dimensions),
+        };
         input_tensors[node.data.label] = {
-          element_type: tensor.elementType.toUpperCase(),
+          element_type: descriptor.elementType.toUpperCase(),
           dimensions: [data.length],
           buffer: Object.values(bufferAsU8),
         };
@@ -245,34 +270,30 @@ function Analysis({ data, querySchema, datasetRegistry} : {data: any[], querySch
     console.log("RUNEFILE, INPUT", rune, input_tensors);
     try {
       const zune = await invoke("compile", { runefile: rune });
-      if (zune) {
-        console.log("ZUNE BUILT", zune);
-        try {
-          result = await invoke("reune", {
-            zune: zune,
-            inputTensors: input_tensors,
-          });
-          if (result) {
-            const tensorResult = convertTensorResult(result);
-            //console.log("FO REAL RESULT", result, tensorResult);
-            const newTable = tableData.map((row, index) => {
-              // if (labels && labels.length > 0) {
-              //   let row = labels.reduce((acc, curr) => {
-              //     acc[curr] = o[curr];
-              //     return acc;
-              //   }, {});
-              //   if (!_.isEmpty(row)) return row;
-              // }
-              return {
-                ...row,
-                Result: tensorResult[index] ? tensorResult[index] : "",
-              };
-            });
-            setTableData(newTable);
-          }
-        } catch (error) {
-          console.log("RUN ERROR", error);
-        }
+      console.log("ZUNE BUILT", zune);
+      try {
+        result = await invoke("reune", {
+          zune: zune,
+          inputTensors: input_tensors,
+        });
+        const tensorResult = convertTensorResult(result);
+        //console.log("FO REAL RESULT", result, tensorResult);
+        const newTable = tableData.map((row, index) => {
+          // if (labels && labels.length > 0) {
+          //   let row = labels.reduce((acc, curr) => {
+          //     acc[curr] = o[curr];
+          //     return acc;
+          //   }, {});
+          //   if (!_.isEmpty(row)) return row;
+          // }
+          return {
+            ...row,
+            Result: tensorResult[index] ? tensorResult[index] : "",
+          };
+        });
+        setTableData(newTable);
+      } catch (error) {
+        console.log("RUN ERROR", error);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);

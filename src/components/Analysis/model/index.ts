@@ -332,7 +332,7 @@ export type TensorDescriptionModel = {
   /**
    * What type of value does this tensor contain?
    */
-  readonly elementType?: ElementType;
+  readonly elementType: ElementType;
   /**
    * The tensor's shape.
    */

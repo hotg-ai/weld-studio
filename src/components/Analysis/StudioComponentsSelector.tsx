@@ -28,6 +28,8 @@ import { DatasetTypes } from "../Dataset";
 import { UpdateComponents } from "src/redux/builderSlice";
 import { FieldSchema, QueryData } from "../../types";
 import outputs from "./model/outputs";
+import { convertElementType } from "./model/metadata";
+
 export type ComponentListItemProps = {
   id: string;
   component: Component;
@@ -216,11 +218,12 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
       <div ref={nodesListRef} className="nodeList__container">
         <aside>
           {states.componentTypeKeys.length ? (
-            states.componentTypeKeys.map((type: string) => (
+            states.componentTypeKeys.map((type: string, index) => (
               <Collapse
                 className="StudioBody--left__cards"
                 ghost
                 activeKey={states.activeCollapseKeys}
+                key={`componentType-${index}`}
               >
                 <Collapse.Panel
                   header={
@@ -294,18 +297,17 @@ function filter<V>(
   return Object.fromEntries(retained);
 }
 
-
-const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> ): Record<string, Capability> => {
-
+const generateDatasetCapabilities = (
+  datasetRegistry: Record<string, QueryData>
+): Record<string, Capability> => {
   let result: Record<string, Capability> = {};
 
   for (const [name, dataset] of Object.entries(datasetRegistry)) {
-
     result[name] = {
       type: "capability",
       displayName: name,
       identifier: "RAW",
-      source: "custom", 
+      source: "custom",
       properties: {
         length: {
           type: "integer",
@@ -323,7 +325,7 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
 
         return [
           {
-            elementType:dataset.tensor.elementType,
+            elementType: convertElementType(dataset.tensor.elementType),
             dimensions: Object.values(dataset.tensor.dimensions),
             displayName: "data",
             description: `Raw output from ${name} DataSet`,
@@ -331,28 +333,24 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
           },
         ];
       },
-    }
-
+    };
   }
 
-  return result
-
-}
+  return result;
+};
 
 const generateCapabilities = (
-  querySchema: {"fields": FieldSchema[]},
+  querySchema: { fields: FieldSchema[] },
   length: number
 ): Record<string, Capability> => {
   let result: Record<string, Capability> = {};
-
- 
 
   querySchema.fields.forEach((column) => {
     // Object.entries(v).forEach(([column, value]) => {
     //   console.log(dataColumns, column)
     //   if (true || dataColumns.filter((col) => col === column).length > 0) {
-      
-   let columnName = column.name.replaceAll('"', "");
+
+    let columnName = column.name.replaceAll('"', "");
     result[columnName] = {
       type: "capability",
       displayName: columnName,
@@ -375,7 +373,9 @@ const generateCapabilities = (
       },
       description: "",
       // @ts-ignore
-      acceptedOutputElementTypes: [{ elementTypes: [arrowDataTypeToElementType(column.data_type)] }],
+      acceptedOutputElementTypes: [
+        { elementTypes: [arrowDataTypeToElementType(column.data_type)] },
+      ],
       // @ts-ignore
       outputs: (p) => {
         const { length } = p;
@@ -401,8 +401,13 @@ const generateCapabilities = (
   return result;
 };
 
-export const ComponentsSelector = ({ data, dataColumns, dataTypes, querySchema, datasetRegistry }) => {
-
+export const ComponentsSelector = ({
+  data,
+  dataColumns,
+  dataTypes,
+  querySchema,
+  datasetRegistry,
+}) => {
   const dispatch = useAppDispatch();
   const components = useAppSelector((s) => s.builder.components);
   const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
@@ -415,7 +420,9 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes, querySchema, 
   useMemo(() => {
     dispatch(
       UpdateComponents({
-      //  ...prefixKeys(generateCapabilities(querySchema, (data as any[]).length)),
+        ...prefixKeys(
+          generateCapabilities(querySchema, (data as any[]).length)
+        ),
         ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
         ...prefixKeys(outputs()),
       })

@@ -61,7 +61,8 @@ function NumberInput({
           : "StudioBody--right__form__input"
       }
       onChange={(e) => {
-        set(parseFloat(e.target.value));
+        const parse = parseFloat(e.target.value);
+        if (isFinite(parse)) set(parse);
       }}
       onKeyDownCapture={(e) => {
         if (e.key === "Backspace" || e.key === "Delete") {

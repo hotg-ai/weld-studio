@@ -113,7 +113,7 @@ function convertElementTypesTensor(tensor: TensorMetadata): ElementTypesTensor {
   return { elementTypes };
 }
 
-function convertElementType(ty: ElementType): ModelElementType {
+export function convertElementType(ty: ElementType): ModelElementType {
   switch (ty.toString()) {
     case "0":
       return "u8";
@@ -138,7 +138,44 @@ function convertElementType(ty: ElementType): ModelElementType {
     case "10":
       return "utf8";
   }
-  return "u8";
+}
+
+export function modelToTensorElementType(ty: ModelElementType): ElementType {
+  switch (ty.toString()) {
+    case "utf8":
+      return ElementType.Utf8;
+      break;
+    case "u8":
+      return ElementType.U8;
+      break;
+    case "u16":
+      return ElementType.U16;
+      break;
+    case "u32":
+      return ElementType.U32;
+      break;
+    case "u64":
+      return ElementType.U64;
+      break;
+    case "i8":
+      return ElementType.I8;
+      break;
+    case "i16":
+      return ElementType.I16;
+      break;
+    case "i32":
+      return ElementType.I32;
+      break;
+    case "i64":
+      return ElementType.I64;
+      break;
+    case "f32":
+      return ElementType.F32;
+      break;
+    case "f64":
+      return ElementType.F64;
+      break;
+  }
 }
 
 function convertTensors(inputs: TensorMetadata[]): TensorDescriptionModel[] {

@@ -137,17 +137,23 @@ pub async fn reune(
     input_tensors: HashMap<String, MyTensor>,
 ) -> Result<MyTensor, SeriazableError> {
     let mut zune_engine = ZuneEngine::load(&zune).context("Unable to initialize Zune Engine!")?;
-
+    tracing::info!(input_nodes = ?zune_engine.input_nodes(), output_nodes=?zune_engine.output_nodes());
     for (name, tensor) in input_tensors {
-        let json = serde_json::to_string(&tensor).unwrap();
-        tracing::info!("Input Name: {name} {json}");
+        tracing::info!("Input Name: {name}");
         let input_tensor_node_names = zune_engine
             .get_input_tensor_names(&name)
             .with_context(|| format!("Unable to find column: {name}"))?;
         
         let default_tensor_name = &input_tensor_node_names[0];
+
         let tensor = TensorResult::from(tensor);
-        dbg!(&tensor, &name, &default_tensor_name);
+        tracing::info!(
+            %name, 
+            tensor_name=default_tensor_name.as_str(),
+            ?tensor.element_type, 
+            ?tensor.dimensions,
+            "Setting an input tensor",
+          );
         zune_engine.set_input_tensor(&name, default_tensor_name, &tensor);
     }
 

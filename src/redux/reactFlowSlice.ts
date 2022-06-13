@@ -10,6 +10,7 @@ import { Port, PortErrorComponent } from "../components/Analysis/model/Storm";
 import { calculateSizebyDataType } from "../components/Analysis/Properties";
 import capabilities from "../components/Analysis/model/capabilities";
 import { isPropertyValueValid } from "../utils/FlowValidator";
+import { nodeModuleNameResolver } from "typescript";
 
 export type FlowElements = {
   nodes: Node<FlowNodeData>[];
@@ -148,132 +149,20 @@ export default function reactFlowDiagramReducer(
       }
       const name = action.payload.name;
       const v = action.payload.value;
-      if (action.payload.node.data.propertiesErrorMap)
-        errors = { ...action.payload.node.data.propertiesErrorMap };
+
       newState = {
         ...newState,
-        nodes: newState.nodes.map((el: Node<FlowNodeData>) => {
-          if (el.id === action.payload.node.id) {
-            ports = [...el.data.outputs];
-            const d = ports[0].tensor.dimensions;
-            dd = d;
-            if (name === "pixel_format") {
-              let enumValue: number | undefined = undefined;
-              const properties =
-                capabilities().image.properties["pixel_format"];
-              if (properties && properties.type === "string-enum") {
-                enumValue = properties.enumValues.filter(
-                  (item) => item.name === v
-                )[0].value;
+        nodes: newState.nodes.map((node: Node<FlowNodeData>) =>
+          node.id === action.payload.node.id
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  propertiesValueMap: properties,
+                },
               }
-              if (enumValue) {
-                dd = [d[0], d[1], d[2], enumValue];
-                const validity = isPropertyValueValid(
-                  el.id,
-                  name,
-                  enumValue,
-                  newState,
-                  components
-                );
-                if (!validity.valid) errors[name] = validity.validValue;
-                else errors[name] = undefined;
-              }
-            }
-            if (name === "width") {
-              dd = [d[0], action.payload.value, d[2], d[3]];
-              const validity = isPropertyValueValid(
-                el.id,
-                name,
-                action.payload.value,
-                newState,
-                components
-              );
-              if (!validity.valid) errors[name] = validity.validValue;
-              else errors[name] = undefined;
-            }
-            if (name === "height") {
-              dd = [d[0], d[1], action.payload.value, d[3]];
-              const validity = isPropertyValueValid(
-                el.id,
-                name,
-                action.payload.value,
-                newState,
-                components
-              );
-              if (!validity.valid) errors[name] = validity.validValue;
-              else errors[name] = undefined;
-            }
-            if (name === "sample_duration_ms") {
-              const hz = properties["hz"];
-              if (hz && typeof hz === "number") {
-                dd = [hz * (action.payload.value / 1000)];
-                const validity = isPropertyValueValid(
-                  el.id,
-                  name,
-                  hz * (action.payload.value / 1000),
-                  newState,
-                  components
-                );
-                if (!validity.valid) errors[name] = validity.validValue;
-                else errors[name] = undefined;
-              }
-            }
-            if (name === "hz") {
-              const duration = properties["sample_duration_ms"];
-              if (duration && typeof duration === "number") {
-                dd = [action.payload.value * (duration / 1000)];
-                const validity = isPropertyValueValid(
-                  el.id,
-                  name,
-                  action.payload.value * (duration / 1000),
-                  newState,
-                  components
-                );
-                if (!validity.valid) errors[name] = validity.validValue;
-                else errors[name] = undefined;
-              }
-            }
-            if (name === "n") {
-              dd = [d[0], action.payload.value, d[2], d[3]];
-              const validity = isPropertyValueValid(
-                el.id,
-                name,
-                action.payload.value,
-                newState,
-                components
-              );
-              if (!validity.valid) errors[name] = validity.validValue;
-              else errors[name] = undefined;
-            }
-            if (name === "length") {
-              const et = ports[0].tensor.elementType;
-              if (et) dd = [calculateSizebyDataType(et, action.payload.value)];
-              const validity = isPropertyValueValid(
-                el.id,
-                name,
-                action.payload.value,
-                newState,
-                components
-              );
-              if (!validity.valid) errors[name] = validity.validValue;
-              else errors[name] = undefined;
-            }
-            return {
-              ...el,
-              data: {
-                ...el.data,
-                propertiesValueMap: properties,
-                propertiesErrorMap: errors,
-                outputs: [
-                  {
-                    ...ports[0],
-                    tensor: { ...ports[0].tensor, dimensions: dd },
-                  },
-                ],
-              },
-            };
-          } else return el;
-        }),
+            : node
+        ),
       };
       break;
     case "UPDATE_TENSOR": {
