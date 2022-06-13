@@ -238,8 +238,8 @@ function Analysis({
 
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
-        const data = datasetRegistry[name];
-        tensor = data.tensor;
+        const dataSetData = datasetRegistry[name];
+        tensor = dataSetData.tensor;
         input_tensors[node.data.label] = {
           element_type: convertElementType(tensor.elementType).toUpperCase(),
           dimensions: Object.values(tensor.dimensions),
