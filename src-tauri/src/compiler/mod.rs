@@ -1,7 +1,7 @@
 mod database;
 
-use std::{collections::HashMap, fmt::Display};
 use std::sync::Arc;
+use std::{collections::HashMap, fmt::Display};
 
 use anyhow::{Context, Error};
 
@@ -143,17 +143,18 @@ pub async fn reune(
         let input_tensor_node_names = zune_engine
             .get_input_tensor_names(&name)
             .with_context(|| format!("Unable to find column: {name}"))?;
-        
+
         let default_tensor_name = &input_tensor_node_names[0];
 
         let tensor = TensorResult::from(tensor);
         tracing::info!(
-            %name, 
-            tensor_name=default_tensor_name.as_str(),
-            ?tensor.element_type, 
-            ?tensor.dimensions,
-            "Setting an input tensor",
-          );
+          %name,
+          tensor_name=default_tensor_name.as_str(),
+          ?tensor.element_type,
+          ?tensor.dimensions,
+          buffer_length = tensor.buffer.len(),
+          "Setting an input tensor",
+        );
         zune_engine.set_input_tensor(&name, default_tensor_name, &tensor);
     }
 
