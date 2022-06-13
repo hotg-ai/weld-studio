@@ -309,6 +309,7 @@ const generateDatasetCapabilities = (
       displayName: `Dataset_${name}`,
       identifier: "RAW",
       source: "custom",
+      description: `Dataset with query: ${dataset.query}`,
       properties: {
         length: {
           type: "integer",
