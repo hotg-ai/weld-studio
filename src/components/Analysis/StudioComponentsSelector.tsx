@@ -229,13 +229,13 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                       className="itemCollapseName"
                     >
                       {type === "input"
-                        ? "Data Columns"
+                        ? "Data Sets"
                         : type === "proc-block"
                         ? "Analysis Blocks"
                         : type === "output"
                         ? "Terminator"
                         : type}
-                      {type === "input" && (
+                      {/* {type === "input" && (
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -245,7 +245,7 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                           <PlusOutlined />
                           Add Schema
                         </button>
-                      )}
+                      )} */}
                     </div>
                   }
                   key={type}
@@ -303,7 +303,7 @@ const generateDatasetCapabilities = (datasetRegistry: Record<string, QueryData> 
 
     result[name] = {
       type: "capability",
-      displayName: `Dataset_${name}`,
+      displayName: name,
       identifier: "RAW",
       source: "custom", 
       properties: {
@@ -415,7 +415,7 @@ export const ComponentsSelector = ({ data, dataColumns, dataTypes, querySchema, 
   useMemo(() => {
     dispatch(
       UpdateComponents({
-        ...prefixKeys(generateCapabilities(querySchema, (data as any[]).length)),
+      //  ...prefixKeys(generateCapabilities(querySchema, (data as any[]).length)),
         ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
         ...prefixKeys(outputs()),
       })
