@@ -1,5 +1,4 @@
-import { Collapse } from "antd";
-import useSelection from "antd/lib/table/hooks/useSelection";
+
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
@@ -43,7 +42,7 @@ function Analysis({
   setIsLoadingTable: (isLoading: boolean) => void;
   isLoadingTable: boolean;
 }) {
-  console.log("REGISTRY", datasetRegistry);
+  //console.log("REGISTRY", datasetRegistry);
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
@@ -256,16 +255,15 @@ function Analysis({
 
     capabilities.forEach((node) => {
       let tensor: Tensor;
-      console.log("FUCKIN", node.data.name);
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
         const dataSetData = datasetRegistry[name];
         tensor = dataSetData.tensor;
-        console.log(
-          "SETTING TENSOR",
-          tensor,
-          convertElementType(tensor.elementType).toUpperCase()
-        );
+        // console.log(
+        //   "SETTING TENSOR",
+        //   tensor,
+        //   convertElementType(tensor.elementType).toUpperCase()
+        // );
         input_tensors[node.data.label] = {
           element_type: convertElementType(tensor.elementType).toUpperCase(),
           dimensions: Object.values(tensor.dimensions),

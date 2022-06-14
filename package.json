@@ -25,6 +25,7 @@
     "monaco-editor": "^0.33.0",
     "pino": "^7.11.0",
     "react": "18.1.0",
+    "react-base-table": "^1.13.2",
     "react-dom": "^18.1.0",
     "react-flow-renderer": "*",
     "react-monaco-editor": "^0.48.0",

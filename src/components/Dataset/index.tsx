@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/tauri";
-import { ask } from "@tauri-apps/api/dialog";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "../common/dropdown";
 import CodeEditor from "./components/editor";
@@ -138,7 +137,7 @@ const Dataset = ({
             </div>
 
             {tables.map((table: TableData, tidx: number) => (
-              <Dropdown key={`Dropdown-${tidx}`} title={table.table_name} selectBtnIcon="/assets/table.svg" onSelect={() => { setSql(`${sql} \nselect * from ${table.table_name} limit 10`);    }}>
+              <Dropdown key={`Dropdown-${tidx}`} title={table.table_name} selectBtnIcon="/assets/table.svg" onSelect={() => { setSql(`${sql ? sql + "\n" : ''} select * from ${table.table_name} limit 10`);    }}>
                 {table.column_names.map((item, idx) => {
                   return (
                     <DropdownOption key={`DropdownOption-${tidx}-${idx}`}>
