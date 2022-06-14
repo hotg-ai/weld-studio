@@ -422,8 +422,8 @@ function mergeColumnsIntoTensor(
   const dimensions = Uint32Array.from([data.length, columnNames.length].filter(d => d != 1));
   const elements: number[] = [];
 
+  for (let i = 0; i < data.length; i++) {
   for (let j = 0; j < columnNames.length; j++) {
-    for (let i = 0; i < data.length; i++) {
       const element = data[i][columnNames[j]];
       if (typeof element != "number") {
         throw new Error();
