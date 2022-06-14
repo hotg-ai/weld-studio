@@ -1,7 +1,7 @@
 mod database;
 
-use std::{collections::HashMap, fmt::Display};
 use std::sync::Arc;
+use std::{collections::HashMap, fmt::Display};
 
 use anyhow::{Context, Error};
 
@@ -143,17 +143,18 @@ pub async fn reune(
         let input_tensor_node_names = zune_engine
             .get_input_tensor_names(&name)
             .with_context(|| format!("Unable to find column: {name}"))?;
-        
+
         let default_tensor_name = &input_tensor_node_names[0];
 
         let tensor = TensorResult::from(tensor);
         tracing::info!(
-            %name, 
-            tensor_name=default_tensor_name.as_str(),
-            ?tensor.element_type, 
-            ?tensor.dimensions,
-            "Setting an input tensor",
-          );
+          %name,
+          tensor_name=default_tensor_name.as_str(),
+          ?tensor.element_type,
+          ?tensor.dimensions,
+          buffer_length = tensor.buffer.len(),
+          "Setting an input tensor",
+        );
         zune_engine.set_input_tensor(&name, default_tensor_name, &tensor);
     }
 
@@ -165,11 +166,20 @@ pub async fn reune(
     let output_node = zune_engine.output_nodes()[0].to_string();
     let output_node_input_name = zune_engine.get_input_tensor_names(&output_node)?;
     let output_node_input_name = &output_node_input_name[0];
-    let result = zune_engine
+    let tensor = zune_engine
         .get_input_tensor(&output_node, output_node_input_name)
         .context("Unable to fetch the result")?;
-    dbg!(&result);
-    Ok(result.into())
+
+    tracing::debug!(
+        node = %output_node,
+        tensor.name = %output_node_input_name,
+        ?tensor.element_type,
+        ?tensor.dimensions,
+        tensor.buffer_length = tensor.buffer.len(),
+        "Received the result",
+    );
+
+    Ok(tensor.into())
 }
 
 #[derive(Debug, serde::Serialize)]

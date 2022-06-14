@@ -908,6 +908,7 @@ input:checked + .slider:before {
   border: 1px solid #333;
   background: #f4f4f4;
   cursor: pointer;
+  margin: 10px;
 }
 
 .react-flow__edge-custom .body > image {

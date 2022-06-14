@@ -412,7 +412,7 @@ interface TypedArray extends ArrayBuffer {
 }
 
 interface TypedArrayConstructor {
-  new (length: number): TypedArray;
+  new(length: number): TypedArray;
 }
 
 function mergeColumnsIntoTensor(
@@ -420,51 +420,40 @@ function mergeColumnsIntoTensor(
   columnNames: string[],
   elementType: ElementType
 ): Tensor | undefined {
-  const dimensions = Uint32Array.from([columnNames.length, data.length]);
-  const elementCount = dimensions.reduce((acc, elem) => acc * elem, 1);
+  const dimensions = Uint32Array.from([data.length, columnNames.length].filter(d => d != 1));
+  const elements: number[] = [];
 
-  function populate(constructor: TypedArrayConstructor): Tensor {
-    const array = new constructor(elementCount);
-
+  for (let j = 0; j < columnNames.length; j++) {
     for (let i = 0; i < data.length; i++) {
-      for (let j = 0; j < columnNames.length; j++) {
-        const index = i * columnNames.length + j;
-        const element = data[i][columnNames[j]];
-        if (typeof element != "number") {
-          throw new Error();
-        }
-        array[index] = element;
+      const element = data[i][columnNames[j]];
+      if (typeof element != "number") {
+        throw new Error();
       }
+      elements.push(element);
     }
-
-    return {
-      elementType,
-      dimensions,
-      buffer: new Uint8Array(array, 0, array.byteLength),
-    };
   }
 
   switch (elementType) {
     case ElementType.U8:
-      return populate(Uint8Array);
+      return { elementType, dimensions, buffer: Uint8Array.from(elements) };
     case ElementType.I8:
-      return populate(Int8Array);
+      return { elementType, dimensions, buffer: new Uint8Array(Int8Array.from(elements).buffer) };
     case ElementType.U16:
-      return populate(Uint16Array);
+      return { elementType, dimensions, buffer: new Uint8Array(Uint16Array.from(elements).buffer) };
     case ElementType.I16:
-      return populate(Int16Array);
+      return { elementType, dimensions, buffer: new Uint8Array(Int16Array.from(elements).buffer) };
     case ElementType.U32:
-      return populate(Uint32Array);
+      return { elementType, dimensions, buffer: new Uint8Array(Uint32Array.from(elements).buffer) };
     case ElementType.I32:
-      return populate(Int32Array);
+      return { elementType, dimensions, buffer: new Uint8Array(Int32Array.from(elements).buffer) };
     case ElementType.F32:
-      return populate(Float32Array);
+      return { elementType, dimensions, buffer: new Uint8Array(Float32Array.from(elements).buffer) };
     case ElementType.U64:
-      return populate(BigUint64Array);
+      return { elementType, dimensions, buffer: new Uint8Array(BigUint64Array.from(elements.map(BigInt)).buffer) };
     case ElementType.I64:
-      return populate(BigInt64Array);
+      return { elementType, dimensions, buffer: new Uint8Array(BigInt64Array.from(elements.map(BigInt)).buffer) };
     case ElementType.F64:
-      return populate(Float64Array);
+      return { elementType, dimensions, buffer: new Uint8Array(Float64Array.from(elements).buffer) };
 
     default:
       return undefined;
