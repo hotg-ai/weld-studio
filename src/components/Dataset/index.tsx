@@ -46,7 +46,7 @@ const Dataset = ({
   tables,
   isQueryLoading,
   setQueryData,
-  setQueryError
+  setQueryError,
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -138,10 +138,10 @@ const Dataset = ({
             </div>
 
             {tables.map((table: TableData, tidx: number) => (
-              <Dropdown key={tidx} title={table.table_name}>
+              <Dropdown key={`Dropdown-${tidx}`} title={table.table_name} selectBtnIcon="/assets/table.svg" onSelect={() => { setSql(`${sql} \nselect * from ${table.table_name} limit 10`);    }}>
                 {table.column_names.map((item, idx) => {
                   return (
-                    <DropdownOption key={idx}>
+                    <DropdownOption key={`DropdownOption-${tidx}-${idx}`}>
                       <div className="dropdownOption__Content">
                         <span>
                           {item}: {table.column_types[idx]}
@@ -175,7 +175,14 @@ const Dataset = ({
             <div className="code__container-header">
               <div className="title">
                 <img src="/assets/codeIcon.svg" alt="" />
-                <span><input className="code__container-datasetname-input" type="text" onChange={(c) => setDatasetName(c.target.value)} value={datasetName} /></span>
+                <span>
+                  <input
+                    className="code__container-datasetname-input"
+                    type="text"
+                    onChange={(c) => setDatasetName(c.target.value)}
+                    value={datasetName}
+                  />
+                </span>
               </div>
               <ClipLoader color="purple" loading={isQueryLoading} size={25} />
             </div>
@@ -201,22 +208,21 @@ const Dataset = ({
               <button>
                 <span> Add Analysis</span>
               </button>
-
             </Link>
-            <button onClick={() => {
+            <button
+              onClick={() => {
+                const name = datasetName;
+                try {
+                  const dataset = createQueryDataset(data, querySchema, sql);
 
-              const name = datasetName;
-              try {
-                const dataset = createQueryDataset(data, querySchema, sql);
+                  setQueryData(name, dataset);
 
-                setQueryData(name, dataset)
-
-                setQueryError("Registered DataSet: " + name);
-              } catch (e) {
-
-                setQueryError("Cannot create dataset: " + e);
-              }
-            }}>
+                  setQueryError("Registered DataSet: " + name);
+                } catch (e) {
+                  setQueryError("Cannot create dataset: " + e);
+                }
+              }}
+            >
               <span> Add as Dataset</span>
             </button>
             <div>
@@ -239,32 +245,49 @@ const Dataset = ({
           </div>
         </div> */}
 
-
           <div className="selectedColumns__container">
             <Dropdown title="Datasets">
-              {Object.keys(datasetRegistry).map((name: string) => {
-                const dataset = datasetRegistry[name];
-                return <DropdownOption title={name}>
-                  <div className="dropdownOption__Content" onClick={() => {
-                    setSql(dataset.query)
-                    setDatasetName(name)
-                  }}>
-                    <span key={name} ><b>{name}</b> | <div style={{ maxWidth: "200px", overflow: "clip" }}>{dataset.query}</div></span>
-                    {/* <span>{JSON.stringify(field)}</span> */}
-                    {/* <ProgressBar percent={item.percent} /> */}
-                  </div>
-                </DropdownOption>
-
-              })}
+              {Object.keys(datasetRegistry).map(
+                (name: string, iddx: number) => {
+                  const dataset = datasetRegistry[name];
+                  return (
+                    <DropdownOption
+                      key={`DropdownOption-${name}-${iddx}`}
+                      title={name}
+                    >
+                      <div
+                        className="dropdownOption__Content"
+                        onClick={() => {
+                          setSql(dataset.query);
+                          setDatasetName(name);
+                        }}
+                      >
+                        <span key={name}>
+                          <b>{name}</b> |{" "}
+                          <div style={{ maxWidth: "200px", overflow: "clip" }}>
+                            {dataset.query}
+                          </div>
+                        </span>
+                        {/* <span>{JSON.stringify(field)}</span> */}
+                        {/* <ProgressBar percent={item.percent} /> */}
+                      </div>
+                    </DropdownOption>
+                  );
+                }
+              )}
             </Dropdown>
             {data && data.length > 0 ? (
               <Dropdown title="Query Result Schema">
                 {querySchema.fields.map((field: FieldSchema, idx: number) => {
-
                   return (
                     <DropdownOption key={idx}>
                       <div className="dropdownOption__Content">
-                        <span>{field.name}: {typeof field.data_type == "string" ? field.data_type : Object.keys(field.data_type)[0]}</span>
+                        <span>
+                          {field.name}:{" "}
+                          {typeof field.data_type == "string"
+                            ? field.data_type
+                            : Object.keys(field.data_type)[0]}
+                        </span>
                         {/* <span>{JSON.stringify(field)}</span> */}
                         {/* <ProgressBar percent={item.percent} /> */}
                       </div>
@@ -275,7 +298,6 @@ const Dataset = ({
             ) : (
               <></>
             )}
-
           </div>
         </div>
 
@@ -341,28 +363,30 @@ type QuerySchema = { fields: FieldSchema[] };
 function createQueryDataset(
   data: Array<Record<string, any>>,
   querySchema: QuerySchema,
-  query: string,
+  query: string
 ): QueryData {
-
   const dataType = commonDataType(querySchema);
   if (!dataType) {
     // We weren't able to determine the common data type (e.g. because one
     // column is a u32 while the rest are f64).
     throw new Error("Could not determine common data type");
-
   }
 
-  const tensor = mergeColumnsIntoTensor(data, querySchema.fields.map(f => f.name), dataType)
+  const tensor = mergeColumnsIntoTensor(
+    data,
+    querySchema.fields.map((f) => f.name),
+    dataType
+  );
   if (!tensor) {
     // The data couldn't be merged (because it was a string, etc.).
     throw new Error("Could not merge data");
-
   }
 
   return {
     fields: querySchema.fields,
     query,
     tensor,
+    data
   };
 }
 
@@ -374,7 +398,7 @@ function createQueryDataset(
 function commonDataType(schema: QuerySchema): ElementType | undefined {
   const [first, ...rest] = schema.fields;
 
-  if (rest.some(field => field.data_type != first.data_type)) {
+  if (rest.some((field) => field.data_type != first.data_type)) {
     // We've got a data frame where the columns have different types, so it's
     // not possible to construct a tensor using all the column data.
     return undefined;
@@ -388,13 +412,13 @@ interface TypedArray extends ArrayBuffer {
 }
 
 interface TypedArrayConstructor {
-  new(length: number): TypedArray;
+  new (length: number): TypedArray;
 }
 
 function mergeColumnsIntoTensor(
   data: Array<Record<string, any>>,
   columnNames: string[],
-  elementType: ElementType,
+  elementType: ElementType
 ): Tensor | undefined {
   const dimensions = Uint32Array.from([columnNames.length, data.length]);
   const elementCount = dimensions.reduce((acc, elem) => acc * elem, 1);

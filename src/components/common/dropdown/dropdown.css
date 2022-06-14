@@ -27,6 +27,8 @@
   display: inline-block;
   width: 100%;
   margin-bottom: 0.5rem;
+  overflow-x: hidden;
+  padding-left: 10px;
 }
 
 .dropdown-content {
