@@ -357,8 +357,8 @@ export default function StudioCanvas({}: OwnProps) {
         connectionLineStyle={connectionLineStyle}
         nodeTypes={nodeTypes}
         onInit={onInit}
-        nodes={diagram.nodes}
-        edges={diagram.edges}
+        nodes={canvasNodes}
+        edges={canvasEdges}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}
