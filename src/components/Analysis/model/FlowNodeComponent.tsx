@@ -1,5 +1,10 @@
 import _ from "lodash";
-import { Connection, Handle, Position, updateEdge } from "react-flow-renderer";
+import {
+  Connection,
+  Handle,
+  Position,
+  useReactFlow,
+} from "react-flow-renderer";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { ClearSelectedNode, SelectNode } from "../../../redux/builderSlice";
 import { openNotification } from "../../../utils";
@@ -85,6 +90,7 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
   const diagram = useAppSelector((s) => s.flow);
   const dispatch = useAppDispatch();
   const forgeLogs = useAppSelector((state) => state.builder.forgeLogs);
+  const { getNodes, setNodes } = useReactFlow();
 
   const isValidConnection = (connection: Connection) => {
     const result = isConnectionValid(connection, diagram, components);
@@ -131,6 +137,7 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
   };
 
   const nodeDeleteHandler = async () => {
+    await setNodes(getNodes().filter((node) => node.id !== props.id));
     await dispatch(ClearSelectedNode());
     await dispatch({ type: "DELETE_NODE", payload: props.id });
   };
