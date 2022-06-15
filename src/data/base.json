@@ -1,0 +1,89 @@
+{
+  "runeCanvasVersion": "0.2.0",
+  "name": "pew-pew",
+  "diagram": {
+    "position": [-24.55217953942889, 103.53981708591658],
+    "zoom": 73.73417329952102
+  },
+  "nodes": {
+    "47337a22-e82b-405b-ac2f-2be5dddc72f3": {
+      "component": "capability",
+      "position": {
+        "x": -165.66036808118167,
+        "y": 66.08972887123002
+      },
+      "data": {
+        "id": "47337a22-e82b-405b-ac2f-2be5dddc72f3",
+        "type": "capability",
+        "name": "capability",
+        "label": "Binary (U8IntArray)",
+        "ports": {
+          "34c34da5-df19-4b1c-87f0-a77ef3abd165": {
+            "idx": 0,
+            "id": "34c34da5-df19-4b1c-87f0-a77ef3abd165",
+            "name": "data",
+            "label": "data",
+            "type": "",
+            "tensor": {
+              "elementType": "u8",
+              "dimensions": [1],
+              "displayName": "data",
+              "description": "Raw output from Binary Capability",
+              "dimensionType": "fixed"
+            },
+            "in": false,
+            "alignment": "left"
+          }
+        },
+        "propertiesValueMap": {
+          "length": 1,
+          "source": 0
+        },
+        "componentID": "capability/raw",
+        "componentIdentifier": "RAW"
+      },
+      "sourcePosition": "right"
+    },
+    "b90b741a-0b1a-4cc1-8067-8a4d8af8076d": {
+      "component": "output",
+      "position": {
+        "x": 476.3396319188183,
+        "y": 56.08972887123002
+      },
+      "data": {
+        "id": "b90b741a-0b1a-4cc1-8067-8a4d8af8076d",
+        "type": "output",
+        "name": "output",
+        "label": "Output",
+        "ports": {
+          "fd9d16b6-a3de-4d23-b92f-cfbba15575b2": {
+            "idx": 0,
+            "id": "fd9d16b6-a3de-4d23-b92f-cfbba15575b2",
+            "name": "Output input 1",
+            "label": "Output input 1",
+            "type": "",
+            "tensor": {
+              "elementType": "utf8",
+              "dimensions": [1],
+              "dimensionType": "dynamic"
+            },
+            "in": true,
+            "alignment": "left"
+          }
+        },
+        "propertiesValueMap": {},
+        "componentID": "output/serial",
+        "componentIdentifier": "SERIAL"
+      },
+      "targetPosition": "left"
+    }
+  },
+  "links": {},
+  "components": {},
+  "resources": {
+    "resource_185bde712e6a437da62ef93daff0ed66": {
+      "path": "./185bde712e6a437da62ef93daff0ed66",
+      "type": "string"
+    }
+  }
+}

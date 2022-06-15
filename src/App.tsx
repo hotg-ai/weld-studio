@@ -1,4 +1,5 @@
 import React from "react";
+
 import "./App.css";
 import Header from "./components/Header";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -9,40 +10,46 @@ import Anaysis from "./components/Analysis";
 import { invoke } from "@tauri-apps/api/tauri";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
-import { TableData, FileDropEvent } from "./types";
+import { TableData, FileDropEvent, FieldSchema, QueryData } from "./types";
 
 import ClipLoader from "react-spinners/ClipLoader";
 
 type AppState = {
   data: any[];
+  querySchema: { fields: FieldSchema[] };
   sql: string | undefined;
   queryError: string | undefined;
   tables: TableData[];
   isLoadingTable: boolean;
   isQueryLoading: boolean;
+  datasetRegistry: Record<string, QueryData>;
 };
 
 class App extends React.Component<{}, AppState> {
   state: AppState = {
     data: [],
+    querySchema: { fields: [] },
     sql: undefined,
     queryError: undefined,
     tables: [],
     isLoadingTable: false,
     isQueryLoading: false,
+    datasetRegistry: {},
   };
 
   unsubscribers: UnlistenFn[] = [];
 
-  constructor(props: any) {
-    super(props);
-    this.getTables();
-
-    listen("tauri://file-drop", (e) =>
-      this.eventHandlerFileDrop(e as FileDropEvent)
-    ).then((u) => {
+  componentDidMount() {
+    listen("tauri://file-drop", (e) => {
+      this.eventHandlerFileDrop(e as FileDropEvent);
+    }).then((u) => {
       if (u) this.unsubscribers.push(u);
     });
+
+    // let event: FileDropEvent = {
+    //   payload: ["/Users/mohit/Desktop/hurricanium.csv"], // Chnage this path to your hurricanium file.
+    // };
+    // this.eventHandlerFileDrop(event);
 
     listen("load_csv_complete", (payload: unknown) =>
       this.eventHandlerLoadCSVComplete([payload])
@@ -52,6 +59,14 @@ class App extends React.Component<{}, AppState> {
 
     listen("load_arrow_row_batch", ({ payload }: { payload: any[] }) =>
       this.eventHandlerLoadArrowRowBatch(payload)
+    ).then((u) => {
+      if (u) this.unsubscribers.push(u);
+    });
+
+    listen(
+      "load_arrow_row_batch_schema",
+      ({ payload }: { payload: { fields: FieldSchema[] } }) =>
+        this.eventHandlerLoadArrowRowBatchSchema(payload)
     ).then((u) => {
       if (u) this.unsubscribers.push(u);
     });
@@ -67,7 +82,13 @@ class App extends React.Component<{}, AppState> {
         if (u) this.unsubscribers.push(u);
       }
     );
+
+    this.getTables();
   }
+
+  // constructor(props: any) {
+  //   super(props);
+  // }
 
   componentWillUnmount() {
     this.unsubscribers.forEach((u) => u());
@@ -81,13 +102,13 @@ class App extends React.Component<{}, AppState> {
 
   executeQuery(sql: string) {
     // FIXME: This is a hack so we can test the Rune compiler
-    //invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
+    // invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
 
     // FIXME: This is a hack to make sure the backend can search WAPM for all
     // proc-blocks
-    //invoke("known_proc_blocks").then(console.log).catch(console.error);
+    // invoke("known_proc_blocks").then(console.log).catch(console.error);
 
-    this.setState({ data: [] });
+    this.setState({ data: [], querySchema: { fields: [] } });
     if (this.state.isQueryLoading) return;
 
     this.setState({ isQueryLoading: true });
@@ -98,9 +119,9 @@ class App extends React.Component<{}, AppState> {
         //setData(result_typed.records)
       })
       .catch((e) => {
-        
+        //Note: e is an object and we can't put the entire object in jsx as queryError,So we need to set queryError to the message property of the e object.
         this.setState({ queryError: e }, () => {
-          console.log(this.state)
+          console.log(this.state);
         });
       })
       .finally(() => this.setState({ isQueryLoading: false }));
@@ -112,14 +133,24 @@ class App extends React.Component<{}, AppState> {
     this.setState({ data: newData });
   }
 
+  eventHandlerLoadArrowRowBatchSchema(schema: { fields: FieldSchema[] }) {
+    //     console.log("DATAxxx is ", data.length)
+    //console.log("Schema", schema);
+    this.setState({ querySchema: schema });
+    // const newData = [...this.state.data, ...chunk];
+    // this.setState({ schema: newSchema });
+  }
+
   eventHandlerLoadCSVComplete(payload: any[]) {
     this.setState({ isLoadingTable: false });
     this.getTables();
   }
 
   eventHandlerFileDrop(event: FileDropEvent) {
+    if (!event.payload || (event.payload && event.payload.length === 0)) {
+      return;
+    }
     this.setState({ isLoadingTable: true });
-    console.log("SET LOADING TABLE TRUE");
     let files = event.payload as string[];
     if (files.length > 0) {
       invoke("load_csv", { invokeMessage: files[0] })
@@ -135,8 +166,15 @@ class App extends React.Component<{}, AppState> {
   }
 
   render() {
-    const { isLoadingTable, data, queryError, sql, tables, isQueryLoading } =
-      this.state;
+    const {
+      isLoadingTable,
+      data,
+      queryError,
+      querySchema,
+      sql,
+      tables,
+      isQueryLoading,
+    } = this.state;
     return (
       <div className="App">
         <div
@@ -157,16 +195,58 @@ class App extends React.Component<{}, AppState> {
                 element={
                   <Dataset
                     data={data}
+                    querySchema={querySchema}
                     queryError={queryError}
                     sql={sql}
                     setSql={(sql: string) => this.executeQuery(sql)}
                     tables={tables}
                     isQueryLoading={isQueryLoading}
+                    datasetRegistry={this.state.datasetRegistry}
+                    setQueryError={(error: string) =>
+                      this.setState({ queryError: error })
+                    }
+                    setQueryData={(name: string, query_data: QueryData) =>
+                      this.setState({
+                        datasetRegistry: {
+                          ...this.state.datasetRegistry,
+                          [name]: query_data,
+                        },
+                      })
+                    }
                   />
                 }
               />
-              <Route path="/analysis/:id" element={<Anaysis />} />
-              <Route path="/" element={<Home />} />
+              <Route
+                path="/analysis/:id"
+                element={
+                  <Anaysis
+                    datasetRegistry={this.state.datasetRegistry}
+                    querySchema={querySchema}
+                    data={data}
+                    queryError={queryError}
+                    isLoadingTable={isLoadingTable}
+                    setIsLoadingTable={(isLoadingTable: boolean) => this.setState({isLoadingTable}, () => console.log("SETTING IS LOADING TABLE", isLoadingTable))}
+                    setQueryError={(error: string) => this.setState({queryError: error})} 
+                  />
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <Home
+                    setQueryError={(queryError) =>
+                      this.setState({ queryError })
+                    }
+                    setIsLoadingTable={(isLoadingTable) =>
+                      this.setState({ isLoadingTable })
+                    }
+                  />
+
+                  // <div style={{ height:"calc(100vh - 35px)", width: "calc(100vw - 5px)"}}>
+                  //     <Flow />
+                  // </div>
+                }
+              />
             </Routes>
           </Router>
         </div>

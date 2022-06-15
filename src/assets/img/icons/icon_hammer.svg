@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+  <g id="Hammer_icon" transform="translate(1 1)">
+    <g id="Rectangle_547" data-name="Rectangle 547" transform="translate(-1 -1)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="1">
+      <rect width="15" height="15" rx="2" stroke="none"/>
+      <rect x="0.5" y="0.5" width="14" height="14" rx="1.5" fill="none"/>
+    </g>
+    <g id="hammer" transform="translate(3.113 1.924)">
+      <path id="Path_18650" data-name="Path 18650" d="M182.878,241.536h.805V241H181v.536h.805v.536h1.073Z" transform="translate(-178.853 -236.689)" fill="#fff"/>
+      <path id="Path_18651" data-name="Path 18651" d="M226,331h1.073v1.073H226Z" transform="translate(-223.049 -325.079)" fill="#fff"/>
+      <path id="Path_18652" data-name="Path 18652" d="M226,421h1.073v1.628H226Z" transform="translate(-223.049 -413.469)" fill="#fff"/>
+      <path id="Path_18653" data-name="Path 18653" d="M151,0h3.757V3.775H151Z" transform="translate(-149.39)" fill="#fff"/>
+      <path id="Path_18654" data-name="Path 18654" d="M61,8.761l1.073.536V5.728L61,6.264Z" transform="translate(-61 -5.625)" fill="#fff"/>
+      <path id="Path_18655" data-name="Path 18655" d="M392.073,8.761v-2.5L391,5.728V9.3Z" transform="translate(-385.097 -5.625)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

@@ -1,27 +1,346 @@
-import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { Dropdown, DropdownOption } from "../common/dropdown";
+
+import { invoke } from "@tauri-apps/api/tauri";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { storm2rune } from "src/canvas2rune";
+import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
+import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
+import { FlowElements } from "src/redux/reactFlowSlice";
+import { DatasetTypes } from "../Dataset";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
 import "./analysis.css";
+import InputDimensions from "./InputDimensions";
+import OutputDimensions from "./OutputDimensions";
+import Properties from "./Properties";
+import StudioCanvas from "./StudioCanvas";
+import { ComponentsSelector } from "./StudioComponentsSelector";
+import { diagramToRuneCanvas } from "./utils/FlowUtils";
+import { FlowNodeData } from "./model/FlowNodeComponent";
+import { Node } from "react-flow-renderer";
+import { TensorDescriptionModel } from "./model";
+import _ from "lodash";
+import ClipLoader from "react-spinners/ClipLoader";
+import { QueryData } from "../../types";
+import { Tensor } from "@hotg-ai/rune";
+import { convertElementType, modelToTensorElementType } from "./model/metadata";
 
-const DummytTableData = [
-  { name: "sam", age: 20, job: "developer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-  { name: "sara", age: 24, job: "designer" },
-];
-function Anaysis() {
+function Analysis({
+  data,
+  querySchema,
+  datasetRegistry,
+  setQueryError,
+  queryError,
+  setIsLoadingTable,
+  isLoadingTable,
+}: {
+  data: any[];
+  querySchema: any;
+  datasetRegistry: Record<string, QueryData>;
+  setQueryError: (error: string | undefined) => void;
+  queryError: string | undefined;
+  setIsLoadingTable: (isLoading: boolean) => void;
+  isLoadingTable: boolean;
+}) {
+  //console.log("REGISTRY", datasetRegistry);
+  const diagram = useAppSelector((s) => s.flow);
+  const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
+  const [activeCollapseKeys, setActiveCollapseKeys] = useState([
+    "Data Columns",
+  ]);
+  const dispatch = useAppDispatch();
+  const { state } = useLocation();
+  let dataColumns: string[] = [];
+  //let data: any = {};
+  let dataTypes: DatasetTypes = {};
+
+  Object.entries(state).map(([key, value]) => {
+    if (key == "dataColumns") dataColumns = value;
+    //if (key == "data") data = value;
+    if (key == "dataTypes") dataTypes = value;
+  });
+
+  // console.log(data, dataColumns, dataTypes);
+
+  const [tableData, setTableData] = useState(data);
+
+  useEffect(() => {
+    let newTable = data;
+
+    const capabilities = diagram.nodes.filter(
+      (node) => node.data.type === "capability"
+    );
+
+    let labels: string[] = capabilities.map((cap) => cap.data.name);
+    // console.log("labels", labels);
+
+    newTable = newTable.map((o, index) => {
+      if (labels && labels.length > 0) {
+        let row = labels.reduce((acc, curr) => {
+          if (curr.startsWith("Dataset_")) {
+            const name = curr.replace("Dataset_", "");
+            Object.entries(datasetRegistry[name].data[index]).forEach(
+              ([k, v]) => {
+                if (!acc[name]) acc[name] = "";
+                acc[name] = acc[name] + `"${k}": ${v}, `;
+              }
+            );
+            // acc[name] = datasetRegistry[name].data.
+          } else {
+            acc[curr] = o[curr];
+          }
+          return acc;
+        }, {});
+        if (!_.isEmpty(row)) return row;
+      }
+    });
+
+    setTableData(newTable || []);
+  }, [diagram]);
 
   const { id } = useParams();
 
+  const buildAndRun = async (
+    diagram: FlowElements,
+    datasetTypes: DatasetTypes,
+    data: any[]
+  ): Promise<string> => {
+    const rune = await storm2rune(
+      JSON.parse(
+        JSON.stringify(
+          diagramToRuneCanvas(
+            {
+              state: "loaded",
+              info: {
+                id: "",
+                name: "",
+                ownerId: 0,
+                path: "",
+                templateName: "",
+                url: "",
+              },
+              procBlocks: {},
+            },
+            {},
+            components,
+            diagram
+          )
+        )
+      ) as SerializedFlowDiagram
+    );
+
+    const getDataArrayFromType = (data, type) => {
+      switch (type) {
+        case "utf8":
+          return data;
+          break;
+        case "u8":
+          return Uint8Array.from(data);
+          break;
+        case "u16":
+          return Uint32Array.from(data);
+          break;
+        case "u32":
+          return Uint32Array.from(data);
+          break;
+        case "u64":
+          return BigUint64Array.from(data);
+          break;
+        case "i8":
+          return Int8Array.from(data);
+          break;
+        case "i16":
+          return Int16Array.from(data);
+          break;
+        case "i32":
+          return Int32Array.from(data);
+          break;
+        case "i64":
+          return BigInt64Array.from(data);
+          break;
+        case "f32":
+          return Float32Array.from(data);
+          break;
+        case "f64":
+          return Float64Array.from(data);
+          break;
+      }
+    };
+
+    const convertTensorResult = (result: {
+      element_type: string;
+      dimensions: number[];
+      buffer: any;
+    }) => {
+      const { element_type, dimensions, buffer } = result;
+      const data = new Uint8Array(buffer);
+      switch (element_type.toLowerCase()) {
+        case "utf8":
+          return data;
+          break;
+        case "u8":
+          return new Uint8Array(data.buffer);
+          break;
+        case "u16":
+          return new Uint16Array(data.buffer);
+          break;
+        case "u32":
+          return new Uint32Array(data.buffer);
+          break;
+        case "u64":
+          return new BigUint64Array(data.buffer);
+          break;
+        case "i8":
+          return new Int8Array(data.buffer);
+          break;
+        case "i16":
+          return new Int16Array(data.buffer);
+          break;
+        case "i32":
+          return new Int32Array(data.buffer);
+          break;
+        case "i64":
+          return new BigInt64Array(data.buffer);
+          break;
+        case "f32":
+          return new Float32Array(data.buffer);
+          break;
+        case "f64":
+          return new Float64Array(data.buffer);
+          break;
+      }
+    };
+
+    const getConnectedInputTensor = (
+      capability: Node<FlowNodeData>,
+      diagram: FlowElements
+    ): TensorDescriptionModel | undefined => {
+      if (!data || data.length < 1) return undefined;
+      if (!data || data.length === 0) return undefined;
+      const connectedEdge = diagram.edges.filter(
+        (edge) => edge.source === capability.id
+      );
+
+      if (connectedEdge.length > 0) {
+        const connectedNode = diagram.nodes.filter(
+          (node) => node.id === connectedEdge[0].target
+        );
+        if (connectedNode.length > 0) {
+          return connectedNode[0].data.inputs.filter(
+            (input) => input.id === connectedEdge[0].targetHandle
+          )[0].tensor;
+        }
+      }
+      return undefined;
+    };
+
+    //TODO: Move to backend
+    let columns = [];
+    if (data[0]) columns = Object.keys(data[0]);
+    let dataMap = {};
+    data.map((row) => {
+      columns.map((column) => {
+        if (dataMap[column]) dataMap[column].push(row[column]);
+        else dataMap[column] = [row[column]];
+      });
+    });
+
+    let input_tensors = {};
+
+    const capabilities = diagram.nodes.filter(
+      (node) => node.data.type === "capability"
+    );
+
+    capabilities.forEach((node) => {
+      let tensor: Tensor;
+      if (node.data.name.startsWith("Dataset_")) {
+        const name = node.data.name.replace("Dataset_", "");
+        const dataSetData = datasetRegistry[name];
+        tensor = dataSetData.tensor;
+        // console.log(
+        //   "SETTING TENSOR",
+        //   tensor,
+        //   convertElementType(tensor.elementType).toUpperCase()
+        // );
+        input_tensors[node.data.label] = {
+          element_type: convertElementType(tensor.elementType).toUpperCase(),
+          dimensions: Object.values(tensor.dimensions),
+          buffer: Object.values(tensor.buffer),
+        };
+      } else {
+        const name = node.data.name;
+        const descriptor = getConnectedInputTensor(node, diagram);
+        const data = getDataArrayFromType(
+          dataMap[node.data.label],
+          descriptor.elementType
+        );
+        const { buffer, byteLength } = data;
+        const bufferAsU8 = new Uint8Array(buffer, 0, byteLength);
+        tensor = {
+          buffer,
+          elementType: modelToTensorElementType(descriptor.elementType),
+          dimensions: Uint32Array.from(descriptor.dimensions),
+        };
+        input_tensors[node.data.label] = {
+          element_type: descriptor.elementType.toUpperCase(),
+          dimensions: [data.length],
+          buffer: Object.values(bufferAsU8),
+        };
+      }
+    });
+    let result;
+    console.log("RUNEFILE, INPUT", rune, input_tensors);
+    try {
+      const zune = await invoke("compile", { runefile: rune });
+      console.log("ZUNE BUILT", zune);
+      try {
+        result = await invoke("reune", {
+          zune: zune,
+          inputTensors: input_tensors,
+        });
+        const tensorResult = convertTensorResult(result);
+        //console.log("FO REAL RESULT", result, tensorResult);
+        const newTable = tableData.map((row, index) => {
+          // if (labels && labels.length > 0) {
+          //   let row = labels.reduce((acc, curr) => {
+          //     acc[curr] = o[curr];
+          //     return acc;
+          //   }, {});
+          //   if (!_.isEmpty(row)) return row;
+          // }
+          return {
+            ...row,
+            Result:
+              tensorResult[index] !== undefined ? tensorResult[index] : "",
+          };
+        });
+        setTableData(newTable);
+      } catch (error) {
+        console.log("RUN ERROR", error);
+      }
+    } catch (error) {
+      console.log("COMPILE ERROR", error);
+    }
+    return result;
+  };
+
   const fileInput = document.querySelector(".input-file") as HTMLInputElement,
     the_return = document.querySelector(".file-return")!;
+
+  const toggleActiveCollapseKeys = (key: string) => {
+    const activeCollapseKeysVar = [...activeCollapseKeys];
+    const keyIndex = activeCollapseKeysVar.indexOf(key);
+
+    if (keyIndex === -1) {
+      activeCollapseKeysVar.push(key);
+    } else {
+      activeCollapseKeysVar.splice(keyIndex, 1);
+    }
+
+    setActiveCollapseKeys(activeCollapseKeysVar);
+  };
 
   return (
     <div className="analysis_page">
@@ -32,73 +351,75 @@ function Anaysis() {
             <span>Back</span>
           </Link>
         </div>
-
-        <div className="modules__container">
-          <div className="title">
-            <span>Drag Modules</span>
-          </div>
-
-          <Dropdown title={"Data Columns"}>
-            <DropdownOption>
-              <div className="dropdownOption__Content pink">HHID: INTEGER</div>
-              <div className="dropdownOption__Content pink">
-                hahAVG_PN: FLOATaha
-              </div>
-              <div className="dropdownOption__Content pink">RCSR: INTEGER</div>
-            </DropdownOption>
-          </Dropdown>
-          <Dropdown title={"Predictive Analytics (Proc Block)"}>
-            <DropdownOption>
-              <div className="dropdownOption__Content green">
-                Linear Mixed Model
-              </div>
-            </DropdownOption>
-          </Dropdown>
-          <Dropdown title={"Image Classification"}>
-            <DropdownOption>
-              <div className="dropdownOption__Content blue">
-                Classify Images
-              </div>
-              <div className="dropdownOption__Content blue">Predict Range</div>
-            </DropdownOption>
-          </Dropdown>
-        </div>
         <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
         </button>
+        <ComponentsSelector
+          data={data}
+          datasetRegistry={datasetRegistry}
+          querySchema={querySchema}
+          dataColumns={dataColumns}
+          dataTypes={dataTypes}
+        />
       </div>
 
       <div className="analysis_page_content">
         <div className="studio__container">
           <div className="studio__content">
-            <h5>Drop Here</h5>
+            <StudioCanvas />
           </div>
           <div className="sidebar_right">
+            <button
+             //  disabled={!isLoadingTable}
+              onClick={async () => {
+                console.log("DATA TYPES", dataTypes);
+                // invoke("reune")
+                //   .then(console.log)
+                //   .catch((error) => {
+                //     console.log("RUN ERROR", error);
+                //   });
+                setQueryError(undefined);
+                setIsLoadingTable(true);
+
+                buildAndRun(diagram, dataTypes, tableData)
+                  .then((result) => {
+                    if (result) {
+                      console.log("RESULT", result);
+                    }
+                    setIsLoadingTable(false);
+                  })
+                  .catch((e) => {
+                    setQueryError("Error running model");
+                    setIsLoadingTable(false);
+                    console.error(e)
+                  });
+              }}
+            >
+              {/* <img src="/assets/model.svg" alt="<" /> */}
+              {isLoadingTable ? (
+                <ClipLoader color="purple" loading={isLoadingTable} size={25} />
+              ) : (
+                <span>{"</> "}Build &amp; Run</span>
+              )}
+            </button>
             <button onClick={() => setCustomModalVisible(true)}>
-              <img src="/assets/share.svg" alt="<" />
+              {/* <img src="/assets/share.svg" alt="<" /> */}
               <span>Save and Share</span>
             </button>
+            {queryError ? <span>{queryError}</span> : <></>}
             <div className="properties__container">
               <div className="title">
                 <img src="/assets/properties.svg" alt="" />
                 <span>Properties</span>
               </div>
-              <div className="inputs__container">
-                <label>
-                  Data Type: <input type="text" />
-                </label>
-                <label>
-                  Parameter: <input type="text" />
-                </label>
-                <label>
-                  Nullable: <input type="checkbox" />
-                </label>
-              </div>
+              <InputDimensions />
+              <Properties />
+              <OutputDimensions />
             </div>
           </div>
         </div>
         <div className="studio-table__container">
-          <Table data={DummytTableData} />
+          <Table data={tableData} />
         </div>
       </div>
 
@@ -234,4 +555,4 @@ function Anaysis() {
   );
 }
 
-export default Anaysis;
+export default Analysis;

@@ -8,12 +8,15 @@ pub mod wapm;
 
 use anyhow::{Context, Error};
 use change_case::snake_case;
-use hotg_rune_compiler::{BuildConfig, FeatureFlags};
+use hotg_rune_compiler::{
+    asset_loader::{AssetLoader, DefaultAssetLoader},
+    BuildConfig, FeatureFlags,
+};
 use tracing;
 use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
-use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use std::{path::Path, sync::Arc};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 use arrow::json;
 use serde_json;
@@ -28,7 +31,7 @@ use arrow::record_batch::RecordBatch;
 use duckdb::{params, Connection, Result};
 
 use crate::{
-    compiler::{compile, Cache, CachingStrategy},
+    compiler::{compile, reune},
     wapm::known_proc_blocks,
 };
 // use serde::*;
@@ -43,12 +46,11 @@ struct DefragStudioState {
     pub conn: Mutex<Connection>,
 }
 
-
 fn main() -> Result<(), Error> {
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var(
             "RUST_LOG",
-            "info,app=debug,hotg_rune_compiler=debug,salsa=warn",
+            "warn,app=debug,hotg_rune_compiler=debug,hotg_rune_runtime=debug",
         );
     }
 
@@ -62,7 +64,6 @@ fn main() -> Result<(), Error> {
     };
     tracing::info!("Initializing Defrag Studio");
 
-
     let submenu = Submenu::new(
         "Edit",
         Menu::new()
@@ -72,11 +73,13 @@ fn main() -> Result<(), Error> {
             .add_native_item(MenuItem::SelectAll)
             .add_native_item(MenuItem::Undo)
             .add_native_item(MenuItem::Redo)
-            .add_native_item(MenuItem::Quit)
+            .add_native_item(MenuItem::Quit),
     );
     let menu = Menu::new()
         .add_item(CustomMenuItem::new("hide", "Hide"))
         .add_submenu(submenu);
+    let assets: Arc<dyn AssetLoader + Send + Sync> =
+        Arc::new(DefaultAssetLoader::default().cached());
 
     tauri::Builder::default()
         .manage(state)
@@ -92,8 +95,8 @@ fn main() -> Result<(), Error> {
             }
             _ => {}
         })
-        .manage(Arc::new(Cache::with_strategy(CachingStrategy::Url)))
-        .manage(reqwest::Client::new())
+        .manage(assets)
+        .manage(reqwest::Client::builder().danger_accept_invalid_certs(true).build()?)
         .manage(BuildConfig {
             current_directory: std::env::current_dir()?,
             features: FeatureFlags::stable(),
@@ -103,6 +106,7 @@ fn main() -> Result<(), Error> {
             run_sql,
             get_tables,
             compile,
+            reune,
             known_proc_blocks
         ])
         .run(tauri::generate_context!())
@@ -132,7 +136,7 @@ async fn load_csv(
     // let schema = csv.schema();
 
     let create_table = format!(
-        "create table \"{}\"  as select * from read_csv_auto('{}');",
+        "create table \"{}\"  as select * from read_csv_auto('{}', SAMPLE_SIZE=-1);",
         table_name, invoke_message[0]
     );
 
@@ -209,7 +213,7 @@ async fn run_sql(
     if is_running {
         cancel.0.store(true, Ordering::Relaxed);
         running.0.store(false, Ordering::Relaxed);
-        tracing::info!("Running csv");
+        tracing::info!("Running qsl");
     }
     let conn = state
         .conn
@@ -232,16 +236,30 @@ async fn run_sql(
     cancel.0.store(false, Ordering::Relaxed);
     running.0.store(true, Ordering::Relaxed);
     let mut sum: i64 = 0;
+
+    let mut send_schema: bool = true;
+
     for batch in batches {
         let cancelled: bool = cancel.0.load(Ordering::Relaxed);
         tracing::info!("Cancelled: {}", cancelled);
         if !cancelled {
             let _span = tracing::info_span!("batch", size = batch.num_rows()).entered();
 
+
+            if send_schema {
+                window
+                .emit("load_arrow_row_batch_schema", serde_json::json!(&batch.schema()))
+                .map_err(|e| e.to_string())?;
+                send_schema = false;
+            }
+
             let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
                 json::writer::record_batches_to_json_rows(&vec![batch][..])
                     .map_err(|e| e.to_string())?;
             sum = sum + json_rows.len() as i64;
+
+      
+            
             window
                 .emit("load_arrow_row_batch", json_rows)
                 .map_err(|e| e.to_string())?
