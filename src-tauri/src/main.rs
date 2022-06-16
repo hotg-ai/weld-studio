@@ -13,9 +13,15 @@ use hotg_rune_compiler::{
     BuildConfig, FeatureFlags,
 };
 use tracing;
-use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
+use tracing_subscriber::{
+    fmt::format::FmtSpan, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer, Registry,
+};
 
-use std::{path::Path, sync::Arc};
+use std::{
+    fs::OpenOptions,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 use arrow::json;
@@ -47,17 +53,7 @@ struct DefragStudioState {
 }
 
 fn main() -> Result<(), Error> {
-    if std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var(
-            "RUST_LOG",
-            "warn,app=debug,hotg_rune_compiler=debug,hotg_rune_runtime=debug",
-        );
-    }
-
-    tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env())
-        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
-        .init();
+    initialize_logging();
     let conn = Connection::open_in_memory().unwrap();
     let state = DefragStudioState {
         conn: Mutex::new(conn),
@@ -96,7 +92,11 @@ fn main() -> Result<(), Error> {
             _ => {}
         })
         .manage(assets)
-        .manage(reqwest::Client::builder().danger_accept_invalid_certs(true).build()?)
+        .manage(
+            reqwest::Client::builder()
+                .danger_accept_invalid_certs(true)
+                .build()?,
+        )
         .manage(BuildConfig {
             current_directory: std::env::current_dir()?,
             features: FeatureFlags::stable(),
@@ -245,11 +245,13 @@ async fn run_sql(
         if !cancelled {
             let _span = tracing::info_span!("batch", size = batch.num_rows()).entered();
 
-
             if send_schema {
                 window
-                .emit("load_arrow_row_batch_schema", serde_json::json!(&batch.schema()))
-                .map_err(|e| e.to_string())?;
+                    .emit(
+                        "load_arrow_row_batch_schema",
+                        serde_json::json!(&batch.schema()),
+                    )
+                    .map_err(|e| e.to_string())?;
                 send_schema = false;
             }
 
@@ -258,8 +260,6 @@ async fn run_sql(
                     .map_err(|e| e.to_string())?;
             sum = sum + json_rows.len() as i64;
 
-      
-            
             window
                 .emit("load_arrow_row_batch", json_rows)
                 .map_err(|e| e.to_string())?
@@ -277,4 +277,53 @@ async fn run_sql(
     //let records = DataResponse { records: json_rows };
 
     Ok(())
+}
+
+fn initialize_logging() {
+    if std::env::var_os("RUST_LOG").is_none() {
+        std::env::set_var(
+            "RUST_LOG",
+            "warn,app=debug,hotg_rune_compiler=debug,hotg_rune_runtime=debug",
+        );
+    }
+
+    let fmt = tracing_subscriber::fmt()
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        .with_env_filter(EnvFilter::from_default_env())
+        .finish();
+
+    match file_logger() {
+        Some((layer, path)) => {
+            fmt.with(layer).init();
+            tracing::info!(path = %path.display(), "Writing logs to disk");
+        }
+        None => {
+            fmt.init();
+        }
+    };
+}
+
+/// Try to create a logger that will write to disk.
+fn file_logger<S>() -> Option<(impl Layer<S>, PathBuf)>
+where
+    S: tracing::Subscriber + for<'a> tracing_subscriber::registry::LookupSpan<'a>,
+{
+    let project = directories::ProjectDirs::from("ai", "hotg", "weld")?;
+
+    let log_dir = project.data_local_dir();
+    std::fs::create_dir_all(log_dir).ok()?;
+
+    let filename = log_dir.join("weld.log");
+    let f = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&filename)
+        .ok()?;
+
+    let layer = tracing_subscriber::fmt::layer()
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        .json()
+        .with_writer(Arc::new(f));
+
+    Some((layer, filename))
 }
