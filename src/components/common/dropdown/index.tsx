@@ -19,17 +19,17 @@ export function Dropdown({ disabled = false, title, children, onSelect, selectBt
   }
 
   return (
-    <div className={`dropdown ${disabled ? "disabled" : ""}`} style={{display: "flex", flexDirection:"column"}}>
-      <div style={{display: "flex", flexDirection:"row"}}>
-      <button onClick={toggleDropdown} className="dropbtn" style={{ overflowX: "clip" }}>
-        <img
-          src={`/assets/dropdown${dropdownOpen ? "open" : "Close"}.svg`}
-          alt=""
-        />
-        <span>{title}</span>
-      </button>
-      {onSelect ? <button className="dropbtn" onClick={(e) => { e.stopPropagation(); onSelect()} } style={{ display: "inline-block" }}>
-          {selectBtnIcon ? <img src={selectBtnIcon} alt="" />: "+"}
+    <div className={`dropdown ${disabled ? "disabled" : ""}`} style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <button onClick={toggleDropdown} className="dropbtn" style={{ overflowX: "clip" }}>
+          <img
+            src={`/assets/dropdown${dropdownOpen ? "open" : "Close"}.svg`}
+            alt=""
+          />
+          <span>{title}</span>
+        </button>
+        {onSelect ? <button className="dropbtn" onClick={(e) => { e.stopPropagation(); onSelect() }} style={{ display: "inline-block" }}>
+          {selectBtnIcon ? <img src={selectBtnIcon} alt="" /> : "+"}
         </button> : <></>}
       </div>
       <div
@@ -42,6 +42,16 @@ export function Dropdown({ disabled = false, title, children, onSelect, selectBt
   );
 }
 
-export function DropdownOption(props: any) {
-  return <div className="dropdown_item">{props.children}</div>;
+export function DropdownOption({ children, onClick, btnIcon, title }: { children: React.ReactNode, onClick?: () => void, title?: string, btnIcon?: string }) {
+  return <div className="dropdown_item">
+    <span>{onClick ? <img style={{paddingRight: "5px"}} src={btnIcon} onClick={onClick} alt=""/>: <></>}<b>{title}</b></span>
+    {children}
+  </div>;
 }
+
+// export function DropdownOption({ children, onClick, btnIcon, title }: { children: React.ReactNode, onClick?: () => void, title?: string, btnIcon?: string }) {
+//   return <div className="dropdown_item">
+//     {/* <span>{title} {onClick ? <img src={btnIcon} onClick={onClick} alt=""/>: <></>}</span> */}
+//     {children}
+//   </div>;
+// }

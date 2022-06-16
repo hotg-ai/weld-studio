@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/tauri";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "../common/dropdown";
@@ -44,8 +44,10 @@ const Dataset = ({
   datasetRegistry,
   tables,
   isQueryLoading,
+  numberSelectedDatasets,
   setQueryData,
   setQueryError,
+  selectDataset
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -55,14 +57,18 @@ const Dataset = ({
   tables: TableData[];
   datasetRegistry: Record<string, QueryData>;
   isQueryLoading: boolean;
+  numberSelectedDatasets: number;
   setQueryData: (name: string, query_data: QueryData) => void;
   setQueryError: (error: string) => void;
+  selectDataset: (dataset: string, toggle: boolean) => void;
+  
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const [datasetName, setDatasetName] = useState("untitled_dataset");
+  const history = useNavigate();
 
   useEffect(() => {
     const procBlocks = async () => {
@@ -195,19 +201,17 @@ const Dataset = ({
               <img src="/assets/share.svg" alt="" />
               <span>Share</span>
             </button> */}
-            <Link
-              to={{ pathname: `/analysis/${id}` }}
-              state={{
-                dataColumns:
-                  data && data.length > 0 ? Object.keys(data[0]) : {},
-                data: data || [],
-                dataTypes: dataTypes || {},
-              }}
-            >
-              <button>
-                <span> Add Analysis</span>
+         
+              <button 
+              disabled={ numberSelectedDatasets === 0}
+              style={{backgroundColor:  numberSelectedDatasets === 0 ? "grey" : "#00b594"}}
+              onClick={
+                () => {
+                  history(`/analysis/${id}`)
+                }
+              }>
+                <span>Start Analysis</span>
               </button>
-            </Link>
             <button
               onClick={() => {
                 const name = datasetName;
@@ -253,20 +257,20 @@ const Dataset = ({
                     <DropdownOption
                       key={`DropdownOption-${name}-${iddx}`}
                       title={name}
+                      btnIcon={dataset.selected ? "/assets/likeFilled.svg" : "/assets/like.svg"}
+                      onClick={() => selectDataset(name, !dataset.selected)}
+                      
                     >
-                      <div
+                      <div key={name}
                         className="dropdownOption__Content"
                         onClick={() => {
                           setSql(dataset.query);
                           setDatasetName(name);
                         }}
                       >
-                        <span key={name}>
-                          <b>{name}</b> |{" "}
-                          <div style={{ maxWidth: "200px", overflow: "clip" }}>
+                          <div style={{ maxWidth: "200px", overflow: "clip", maxHeight:"50px"}}>
                             {dataset.query}
                           </div>
-                        </span>
                         {/* <span>{JSON.stringify(field)}</span> */}
                         {/* <ProgressBar percent={item.percent} /> */}
                       </div>
@@ -385,7 +389,9 @@ function createQueryDataset(
     fields: querySchema.fields,
     query,
     tensor,
-    data
+    selected: true,
+    data,
+    createdAt: new Date(),
   };
 }
 

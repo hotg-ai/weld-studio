@@ -51,16 +51,16 @@ function Analysis({
     "Data Columns",
   ]);
   const dispatch = useAppDispatch();
-  const { state } = useLocation();
-  let dataColumns: string[] = [];
-  //let data: any = {};
-  let dataTypes: DatasetTypes = {};
+  // const { state } = useLocation();
+  // let dataColumns: string[] = [];
+  // //let data: any = {};
+  // let dataTypes: DatasetTypes = {};
 
-  Object.entries(state).map(([key, value]) => {
-    if (key == "dataColumns") dataColumns = value;
-    //if (key == "data") data = value;
-    if (key == "dataTypes") dataTypes = value;
-  });
+  // Object.entries(state).map(([key, value]) => {
+  //   if (key == "dataColumns") dataColumns = value;
+  //   //if (key == "data") data = value;
+  //   if (key == "dataTypes") dataTypes = value;
+  // });
 
   // console.log(data, dataColumns, dataTypes);
 
@@ -104,7 +104,6 @@ function Analysis({
 
   const buildAndRun = async (
     diagram: FlowElements,
-    datasetTypes: DatasetTypes,
     data: any[]
   ): Promise<string> => {
     const rune = await storm2rune(
@@ -355,11 +354,8 @@ function Analysis({
           + Add custom Model
         </button>
         <ComponentsSelector
-          data={data}
           datasetRegistry={datasetRegistry}
           querySchema={querySchema}
-          dataColumns={dataColumns}
-          dataTypes={dataTypes}
         />
       </div>
 
@@ -372,7 +368,7 @@ function Analysis({
             <button
              //  disabled={!isLoadingTable}
               onClick={async () => {
-                console.log("DATA TYPES", dataTypes);
+               // console.log("DATA TYPES", dataTypes);
                 // invoke("reune")
                 //   .then(console.log)
                 //   .catch((error) => {
@@ -381,7 +377,7 @@ function Analysis({
                 setQueryError(undefined);
                 setIsLoadingTable(true);
 
-                buildAndRun(diagram, dataTypes, tableData)
+                buildAndRun(diagram, tableData)
                   .then((result) => {
                     if (result) {
                       console.log("RESULT", result);

@@ -404,9 +404,6 @@ const generateCapabilities = (
 };
 
 export const ComponentsSelector = ({
-  data,
-  dataColumns,
-  dataTypes,
   querySchema,
   datasetRegistry,
 }) => {
@@ -429,7 +426,7 @@ export const ComponentsSelector = ({
         ...prefixKeys(outputs()),
       })
     );
-  }, [dataColumns, dataTypes]);
+  }, [datasetRegistry]);
 
   // dispatch(ClearComponents());
 

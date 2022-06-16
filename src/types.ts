@@ -24,4 +24,6 @@ export type QueryData = {
   fields: FieldSchema[];
   tensor: Tensor;
   data: Array<Record<string, any>>;
+  selected: boolean;
+  createdAt: Date;
 };
