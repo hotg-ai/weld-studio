@@ -28,7 +28,6 @@ function Home({
   setSearchValue: (value: string) => void;
 }) {
   const history = useNavigate();
-  const [selectedId, setSelectedId] = useState();
 
   return (
     <div className="home__container">
@@ -52,45 +51,6 @@ function Home({
               <img src="/assets/searchIcon.svg" alt="" />
             </div>
           </form>
-
-          {/* <div className="upload__container">
-            <button
-              disabled={numberSelectedDatasets === 0}
-              style={{
-                backgroundColor:
-                  numberSelectedDatasets === 0 ? "gray" : "#00b594",
-              }}
-              onClick={async () => {
-                history("/analysis/1");
-                // const file = await open({
-                //   title: "Select a CSV file",
-                //   filters: [{ "extensions": ['csv', 'tsv', 'txt'], "name": "delimited files" }]
-                // })
-
-                // if (file) {
-
-                //   setIsLoadingTable(true);
-                //   invoke("load_csv", { invokeMessage: file })
-                //     .then((res) => {
-                //       let result = res as string;
-                //       setQueryError(`${file} loaded as ${result}`);
-                //       setIsLoadingTable(false);
-
-                //       history("/dataset/1", { replace: true });
-                //       //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
-                //     })
-                //     .catch((e) => {
-                //       setIsLoadingTable(false)
-                //       setQueryError(e.message);
-
-                //       history("/dataset/1", { replace: true });
-                //     });
-                // }
-              }}
-            >
-              Start Analysis
-            </button>
-          </div> */}
         </div>
 
         <div className="datasets__container">
@@ -135,8 +95,6 @@ function Home({
               const dataset: QueryData = datasets[name];
               return (
                 <DatasetBox
-                  selectedId={selectedId}
-                  setSelectedId={setSelectedId}
                   key={name}
                   id={idx}
                   selected={dataset.selected}
@@ -145,6 +103,43 @@ function Home({
                 />
               );
             })}
+        </div>
+        <div className="analysisBtn__container">
+          <button
+            disabled={numberSelectedDatasets === 0}
+            style={{
+              backgroundColor:
+                numberSelectedDatasets === 0 ? "gray" : "#00b594",
+            }}
+            onClick={async () => {
+              history("/analysis/1");
+              // const file = await open({
+              //   title: "Select a CSV file",
+              //   filters: [{ "extensions": ['csv', 'tsv', 'txt'], "name": "delimited files" }]
+              // })
+
+              // if (file) {
+              //   setIsLoadingTable(true);
+              //   invoke("load_csv", { invokeMessage: file })
+              //     .then((res) => {
+              //       let result = res as string;
+              //       setQueryError(`${file} loaded as ${result}`);
+              //       setIsLoadingTable(false);
+
+              //       history("/dataset/1", { replace: true });
+              //       //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
+              //     })
+              //     .catch((e) => {
+              //       setIsLoadingTable(false)
+              //       setQueryError(e.message);
+
+              //       history("/dataset/1", { replace: true });
+              //     });
+              // }
+            }}
+          >
+            Start Analysis
+          </button>
         </div>
       </div>
     </div>
@@ -158,23 +153,15 @@ interface DatasetBoxProps {
   selected: boolean;
   id: number;
   selectDataset: (n: boolean) => void;
-  setSelectedId: React.Dispatch<React.SetStateAction<number>>;
-  selectedId: number;
 }
 const DatasetBox = ({
   id,
   title,
   selected,
   selectDataset,
-  setSelectedId,
-  selectedId,
 }: DatasetBoxProps) => {
   return (
-    <div
-      className={`dataset-box__container ${
-        selectedId === id ? "selected" : undefined
-      }`}
-    >
+    <div className="dataset-box__container">
       <img src={testDatasetScreenshot} alt="" />
       <div className="dataset-box_content">
         <img src={sqlTableIcon} alt="" />
@@ -188,11 +175,6 @@ const DatasetBox = ({
           defaultChecked={selected}
           onClick={() => {
             selectDataset(!selected);
-            if (!selected) {
-              setSelectedId(id);
-            } else {
-              setSelectedId(undefined);
-            }
           }}
         />
       </div>

@@ -277,7 +277,14 @@ const Dataset = ({
                   onClick={() => selectDataset(name, !dataset.selected)}
                 >
                   <div key={name} className="dropdownOption__Content">
-                    <h3>{name}</h3>
+                    <h3
+                      onClick={() => {
+                        setSql(dataset.query);
+                        setDatasetName(name);
+                      }}
+                    >
+                      {name}
+                    </h3>
                     <span
                       onClick={() => {
                         setSql(dataset.query);

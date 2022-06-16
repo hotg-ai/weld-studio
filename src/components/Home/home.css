@@ -105,11 +105,15 @@
   padding-top: 30px;
   padding-bottom: 30px;
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  height: 80%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: flex-start;
-  grid-gap: 10px;
+  grid-gap: 15px;
+  grid-row-gap: 15px;
   overflow-y: scroll;
   padding-right: 0.3rem;
 }
@@ -144,6 +148,23 @@
 .home_content .home_content-header .upload__container input {
   display: none;
 }
+.analysisBtn__container {
+  border-top: 1px solid #333;
+  width: 100%;
+  padding: 35px 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.analysisBtn__container button {
+  border-radius: 25px;
+  outline: none;
+  border: none;
+  width: 180px;
+  height: 40px;
+  cursor: pointer;
+  color: #fff;
+}
 
 .prepareDatasetBtn {
   border-radius: 5px;
@@ -163,7 +184,8 @@
 }
 
 .datasets__container > div {
-  height: 230px;
+  width: 280px;
+  height: 290px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   overflow: hidden;

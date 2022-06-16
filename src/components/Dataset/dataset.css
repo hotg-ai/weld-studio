@@ -115,13 +115,18 @@
   align-items: center;
   justify-content: space-between;
 }
+.dropdown .dropdown-content {
+  padding: 16px 0 0 0;
+}
 .dataset__sidebar__container.right .selectedColumns__container > div {
   padding: 0 25px;
+  padding-top: 0.5rem;
 }
 .dataset__sidebar__container.right .dropdownOption__Content > h3 {
   font-weight: bold;
   font-size: 18px;
   color: #000;
+  cursor: pointer;
 }
 .dataset__sidebar__container.right .dropdownOption__Content > span {
   font-size: 13px;
@@ -133,6 +138,7 @@
 .dataset__sidebar__container.right .dropdownOption__Content > .dropdown {
   padding: 0;
 }
+
 .dataset__sidebar__container.right
   .dropdownOption__Content
   > .dropdown
