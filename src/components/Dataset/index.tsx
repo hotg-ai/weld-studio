@@ -16,6 +16,9 @@ import _ from "lodash";
 import { FieldSchema } from "../../types";
 import { arrowDataTypeToRunicElementType } from "../Analysis/utils/ArrowConvert";
 import { ElementType, Tensor } from "@hotg-ai/rune";
+import { sqlTableIcon } from "../../assets";
+import { open } from "@tauri-apps/api/dialog";
+
 type IntegerColumnType = {
   type: "INTEGER";
   value: Uint16Array;
@@ -47,7 +50,7 @@ const Dataset = ({
   numberSelectedDatasets,
   setQueryData,
   setQueryError,
-  selectDataset
+  selectDataset,
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -61,7 +64,6 @@ const Dataset = ({
   setQueryData: (name: string, query_data: QueryData) => void;
   setQueryError: (error: string) => void;
   selectDataset: (dataset: string, toggle: boolean) => void;
-  
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const linkInputRef = useRef<any>();
@@ -137,13 +139,57 @@ const Dataset = ({
             </Link>
           </div>
           <div className="tables__container">
-            <div className="title">
-              <img src="/assets/table.svg" alt="" />
-              <span>Tables</span>
+            <div className="tables-title__container">
+              <div className="title">
+                <img src="/assets/table.svg" alt="" />
+                <span>Tables</span>
+              </div>
+              <button
+                onClick={async () => {
+                  const file = await open({
+                    title: "Select a CSV file",
+                    filters: [
+                      {
+                        extensions: ["csv", "tsv", "txt"],
+                        name: "delimited files",
+                      },
+                    ],
+                  });
+
+                  if (file) {
+                    invoke("load_csv", { invokeMessage: file })
+                      .then((res) => {
+                        let result = res as string;
+                        setQueryError(`${file} loaded as ${result}`);
+
+                        history("/dataset/1", { replace: true });
+                        //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
+                      })
+                      .catch((e) => {
+                        setQueryError(e.message);
+
+                        history("/dataset/1", { replace: true });
+                      });
+                  }
+                }}
+              >
+                Add CSV
+              </button>
             </div>
 
             {tables.map((table: TableData, tidx: number) => (
-              <Dropdown key={`Dropdown-${tidx}`} title={table.table_name} selectBtnIcon="/assets/table.svg" onSelect={() => { setSql(`${sql ? sql + "\n" : ''} select * from ${table.table_name} limit 10`);    }}>
+              <Dropdown
+                key={`Dropdown-${tidx}`}
+                title={table.table_name}
+                selectBtnIcon={sqlTableIcon}
+                onSelect={() => {
+                  setSql(
+                    `${sql ? sql + "\n" : ""} select * from ${
+                      table.table_name
+                    } limit 10`
+                  );
+                }}
+              >
                 {table.column_names.map((item, idx) => {
                   return (
                     <DropdownOption key={`DropdownOption-${tidx}-${idx}`}>
@@ -189,6 +235,23 @@ const Dataset = ({
                   />
                 </span>
               </div>
+              <button
+                className="addAsDataset_btn"
+                onClick={() => {
+                  const name = datasetName;
+                  try {
+                    const dataset = createQueryDataset(data, querySchema, sql);
+
+                    setQueryData(name, dataset);
+
+                    setQueryError("Registered DataSet: " + name);
+                  } catch (e) {
+                    setQueryError("Cannot create dataset: " + e);
+                  }
+                }}
+              >
+                <span> Add as Dataset</span>
+              </button>
               <ClipLoader color="purple" loading={isQueryLoading} size={25} />
             </div>
             <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
@@ -196,50 +259,6 @@ const Dataset = ({
         </div>
 
         <div className="dataset__sidebar__container right">
-          <div className="share__container">
-            {/* <button onClick={() => setModalVisible(true)}>
-              <img src="/assets/share.svg" alt="" />
-              <span>Share</span>
-            </button> */}
-         
-              <button 
-              disabled={ numberSelectedDatasets === 0}
-              style={{backgroundColor:  numberSelectedDatasets === 0 ? "grey" : "#00b594"}}
-              onClick={
-                () => {
-                  history(`/analysis/${id}`)
-                }
-              }>
-                <span>Start Analysis</span>
-              </button>
-            <button
-              onClick={() => {
-                const name = datasetName;
-                try {
-                  const dataset = createQueryDataset(data, querySchema, sql);
-
-                  setQueryData(name, dataset);
-
-                  setQueryError("Registered DataSet: " + name);
-                } catch (e) {
-                  setQueryError("Cannot create dataset: " + e);
-                }
-              }}
-            >
-              <span> Add as Dataset</span>
-            </button>
-            <div>
-              {data && data.length > 0 ? (
-                <h5>
-                  {data.length} Rows, {Object.keys(data[0]).length} Columns
-                </h5>
-              ) : (
-                <></>
-              )}
-              {/* <span>No changes in row count</span> */}
-            </div>
-          </div>
-
           {/* <div className="Sources__container">
           <span>Sources Tables</span>
           <div>
@@ -249,58 +268,65 @@ const Dataset = ({
         </div> */}
 
           <div className="selectedColumns__container">
-            <Dropdown title="Datasets">
-              {Object.keys(datasetRegistry).map(
-                (name: string, iddx: number) => {
-                  const dataset = datasetRegistry[name];
-                  return (
-                    <DropdownOption
-                      key={`DropdownOption-${name}-${iddx}`}
-                      title={name}
-                      btnIcon={dataset.selected ? "/assets/likeFilled.svg" : "/assets/like.svg"}
-                      onClick={() => selectDataset(name, !dataset.selected)}
-                      
+            {Object.keys(datasetRegistry).map((name: string, iddx: number) => {
+              const dataset = datasetRegistry[name];
+              return (
+                <div
+                  className={datasetName === name ? "activeDataset" : undefined}
+                  key={`DropdownOption-${name}-${iddx}`}
+                  onClick={() => selectDataset(name, !dataset.selected)}
+                >
+                  <div key={name} className="dropdownOption__Content">
+                    <h3>{name}</h3>
+                    <span
+                      onClick={() => {
+                        setSql(dataset.query);
+                        setDatasetName(name);
+                      }}
                     >
-                      <div key={name}
-                        className="dropdownOption__Content"
-                        onClick={() => {
-                          setSql(dataset.query);
-                          setDatasetName(name);
-                        }}
-                      >
-                          <div style={{ maxWidth: "200px", overflow: "clip", maxHeight:"50px"}}>
-                            {dataset.query}
-                          </div>
-                        {/* <span>{JSON.stringify(field)}</span> */}
-                        {/* <ProgressBar percent={item.percent} /> */}
-                      </div>
-                    </DropdownOption>
-                  );
-                }
-              )}
-            </Dropdown>
-            {data && data.length > 0 ? (
-              <Dropdown title="Query Result Schema">
-                {querySchema.fields.map((field: FieldSchema, idx: number) => {
-                  return (
-                    <DropdownOption key={idx}>
-                      <div className="dropdownOption__Content">
-                        <span>
-                          {field.name}:{" "}
-                          {typeof field.data_type == "string"
-                            ? field.data_type
-                            : Object.keys(field.data_type)[0]}
-                        </span>
-                        {/* <span>{JSON.stringify(field)}</span> */}
-                        {/* <ProgressBar percent={item.percent} /> */}
-                      </div>
-                    </DropdownOption>
-                  );
-                })}
-              </Dropdown>
-            ) : (
-              <></>
+                      {dataset.query}
+                    </span>
+                    {data && data.length > 0 && datasetName === name && (
+                      <Dropdown title="Query Result Schema">
+                        {querySchema.fields.map(
+                          (field: FieldSchema, idx: number) => {
+                            return (
+                              <DropdownOption key={idx}>
+                                <div className="dropdownOption__Content">
+                                  <span>
+                                    {field.name}:{" "}
+                                    {typeof field.data_type == "string"
+                                      ? field.data_type
+                                      : Object.keys(field.data_type)[0]}
+                                  </span>
+                                  {/* <span>{JSON.stringify(field)}</span> */}
+                                  {/* <ProgressBar percent={item.percent} /> */}
+                                </div>
+                              </DropdownOption>
+                            );
+                          }
+                        )}
+                      </Dropdown>
+                    )}
+                    {/* <span>{JSON.stringify(field)}</span> */}
+                    {/* <ProgressBar percent={item.percent} /> */}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="dataset__sidebar__container footer">
+            {data && data.length > 0 && (
+              <>
+                <h5>
+                  {data.length} Rows, {Object.keys(data[0]).length} Columns
+                </h5>
+                <Link to="/" className="saveBtn">
+                  Save
+                </Link>
+              </>
             )}
+            {/* <span>No changes in row count</span> */}
           </div>
         </div>
 
@@ -417,7 +443,7 @@ interface TypedArray extends ArrayBuffer {
 }
 
 interface TypedArrayConstructor {
-  new(length: number): TypedArray;
+  new (length: number): TypedArray;
 }
 
 function mergeColumnsIntoTensor(
@@ -425,11 +451,13 @@ function mergeColumnsIntoTensor(
   columnNames: string[],
   elementType: ElementType
 ): Tensor | undefined {
-  const dimensions = Uint32Array.from([data.length, columnNames.length].filter(d => d != 1));
+  const dimensions = Uint32Array.from(
+    [data.length, columnNames.length].filter((d) => d != 1)
+  );
   const elements: number[] = [];
 
   for (let i = 0; i < data.length; i++) {
-  for (let j = 0; j < columnNames.length; j++) {
+    for (let j = 0; j < columnNames.length; j++) {
       const element = data[i][columnNames[j]];
       if (typeof element != "number") {
         throw new Error();
@@ -442,23 +470,61 @@ function mergeColumnsIntoTensor(
     case ElementType.U8:
       return { elementType, dimensions, buffer: Uint8Array.from(elements) };
     case ElementType.I8:
-      return { elementType, dimensions, buffer: new Uint8Array(Int8Array.from(elements).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(Int8Array.from(elements).buffer),
+      };
     case ElementType.U16:
-      return { elementType, dimensions, buffer: new Uint8Array(Uint16Array.from(elements).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(Uint16Array.from(elements).buffer),
+      };
     case ElementType.I16:
-      return { elementType, dimensions, buffer: new Uint8Array(Int16Array.from(elements).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(Int16Array.from(elements).buffer),
+      };
     case ElementType.U32:
-      return { elementType, dimensions, buffer: new Uint8Array(Uint32Array.from(elements).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(Uint32Array.from(elements).buffer),
+      };
     case ElementType.I32:
-      return { elementType, dimensions, buffer: new Uint8Array(Int32Array.from(elements).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(Int32Array.from(elements).buffer),
+      };
     case ElementType.F32:
-      return { elementType, dimensions, buffer: new Uint8Array(Float32Array.from(elements).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(Float32Array.from(elements).buffer),
+      };
     case ElementType.U64:
-      return { elementType, dimensions, buffer: new Uint8Array(BigUint64Array.from(elements.map(BigInt)).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(
+          BigUint64Array.from(elements.map(BigInt)).buffer
+        ),
+      };
     case ElementType.I64:
-      return { elementType, dimensions, buffer: new Uint8Array(BigInt64Array.from(elements.map(BigInt)).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(BigInt64Array.from(elements.map(BigInt)).buffer),
+      };
     case ElementType.F64:
-      return { elementType, dimensions, buffer: new Uint8Array(Float64Array.from(elements).buffer) };
+      return {
+        elementType,
+        dimensions,
+        buffer: new Uint8Array(Float64Array.from(elements).buffer),
+      };
 
     default:
       return undefined;

@@ -9,7 +9,7 @@
 .table__container {
   width: 100%;
   height: 35%;
-  padding: 1rem 0 3rem;
+  padding: 0 0 3rem;
   background: #faf8ff;
   overflow-y: scroll;
   display: flex;
@@ -27,7 +27,7 @@
   color: #df3636;
 }
 .table__container table {
-  width: 95%;
+  width: 100%;
 }
 .dataset__container {
   width: 100%;
@@ -37,7 +37,6 @@
   height: 65%;
   position: relative;
   overflow: hidden;
-  padding-bottom: 2rem;
   background: #faf8ff;
 }
 
@@ -74,8 +73,26 @@
 .dataset__sidebar__container.left .tables__container {
   padding-bottom: 30px;
 }
-.dataset__sidebar__container.left .tables__container .title {
+.dataset__sidebar__container.left .tables__container .tables-title__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding-bottom: 30px;
+}
+.dataset__sidebar__container.left
+  .tables__container
+  .tables-title__container
+  > button {
+  background-color: #c53bb5;
+  border-radius: 12px;
+  padding: 5px 15px;
+  color: #fff;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  width: 85px;
+}
+.dataset__sidebar__container.left .tables__container .title {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -98,6 +115,53 @@
   align-items: center;
   justify-content: space-between;
 }
+.dataset__sidebar__container.right .selectedColumns__container > div {
+  padding: 0 25px;
+}
+.dataset__sidebar__container.right .dropdownOption__Content > h3 {
+  font-weight: bold;
+  font-size: 18px;
+  color: #000;
+}
+.dataset__sidebar__container.right .dropdownOption__Content > span {
+  font-size: 13px;
+  color: #838383;
+  display: block;
+  padding-bottom: 0.5rem;
+  cursor: pointer;
+}
+.dataset__sidebar__container.right .dropdownOption__Content > .dropdown {
+  padding: 0;
+}
+.dataset__sidebar__container.right
+  .dropdownOption__Content
+  > .dropdown
+  .dropbtn
+  > span {
+  font-size: 14px;
+}
+.dataset__sidebar__container.footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+}
+.dataset__sidebar__container.footer > h5 {
+  color: #bc49b4;
+  font-weight: bold;
+}
+.dataset__sidebar__container.footer .saveBtn {
+  background: #00b594;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 5px 25px;
+  color: #fff;
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+}
+
 .dataset__sidebar__container.left .models__container {
   padding-bottom: 30px;
 }
@@ -140,7 +204,7 @@
 }
 
 .dataset__sidebar__container.center {
-  background-color: #f5f5f5;
+  background-color: #d9d9d9;
   width: 50%;
   padding: 30px 25px;
   height: 100%;
@@ -152,7 +216,6 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 2rem;
 }
 .dataset__sidebar__container.center .code__container .code__container-header {
   width: 100%;
@@ -174,6 +237,15 @@
   padding: 10px 15px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+.code__container-header .addAsDataset_btn {
+  background: #00b594 !important;
+  padding: 0px 15px !important;
+  height: 30px;
+  width: 200px !important;
+}
+.code__container-header .addAsDataset_btn:hover {
+  background: #25d6b6 !important;
 }
 .dataset__sidebar__container.center
   .code__container
@@ -214,10 +286,11 @@
 .dataset__sidebar__container.right {
   background: #faf8ff;
   width: 25%;
-  padding: 30px 25px;
+  padding: 30px 0;
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow-y: scroll;
 }
 
@@ -272,7 +345,7 @@
   font-size: 11px;
   line-height: 20px;
   padding-left: 10px;
-  color: #C354B3 !important;
+  color: #c354b3 !important;
 }
 .dataset__sidebar__container.right .share__container div span {
   font-style: italic;
@@ -306,12 +379,14 @@
 }
 
 .dataset__sidebar__container.right .selectedColumns__container {
-  padding: 20px 0 40px 0;
+  padding: 0 0 40px 0;
+}
+.dataset__sidebar__container.right .selectedColumns__container .activeDataset {
+  background-color: #d9d9d9;
 }
 
-
 .code__container-datasetname-input {
-  border:none;
+  border: none;
   background-color: transparent;
   outline: none;
   width: fit-content;

@@ -1,56 +1,59 @@
-.ant-tag{
+.ant-tag {
   white-space: unset !important;
 }
-.ant-collapse-ghost > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box{
+.ant-collapse-ghost
+  > .ant-collapse-item
+  > .ant-collapse-content
+  > .ant-collapse-content-box {
   padding-top: 0 !important;
 }
 /* .StudioBody--right__form__infoProject--container{
   margin-bottom: 2rem;
 } */
-.StudioBody--right__form__infoProject{
+.StudioBody--right__form__infoProject {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 0.5rem;
 }
 
-.StudioBody--right__form__input{
+.StudioBody--right__form__input {
   text-align: center;
 }
-.sidebar_right .ant-col-12{
+.sidebar_right .ant-col-12 {
   flex: unset !important;
   max-width: unset !important;
   margin-right: 10px;
 }
 
-.input-container{
+.input-container {
   background: #fff !important;
 }
 
-.input-container h4{
- font-weight: bold;
- font-size: 13px;
-}
-.input-container h5{
+.input-container h4 {
   font-weight: bold;
-  color: #5F32B8;
+  font-size: 13px;
 }
-.input-container span{
-padding-left: 5px;
+.input-container h5 {
+  font-weight: bold;
+  color: #5f32b8;
+}
+.input-container span {
+  padding-left: 5px;
 }
 
-.StudioBody--right__form__label.main--label{
-  color: #000; 
+.StudioBody--right__form__label.main--label {
+  color: #000;
   font-weight: bold;
 }
-.StudioBody--right__form__label.sub--label{
+.StudioBody--right__form__label.sub--label {
   color: #555555;
   font-weight: thin;
   display: inline-block;
   padding-left: 5px;
 }
-.StudioBody--right__form__label.dimention--label{
-  color: #000; 
+.StudioBody--right__form__label.dimention--label {
+  color: #000;
   font-weight: bold;
   display: inline-block;
 }
@@ -82,7 +85,7 @@ padding-left: 5px;
   margin-bottom: 1rem;
 }
 
-.sidebar_left .back-link__container {
+/* .sidebar_left .back-link__container {
   width: 100%;
   padding: 0 0 40px 0;
 }
@@ -102,7 +105,7 @@ padding-left: 5px;
   font-weight: bold;
   font-size: 16px;
   line-height: 20px;
-}
+} */
 
 .sidebar_left .modules__container {
   padding-bottom: 30px;
