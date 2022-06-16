@@ -4,10 +4,12 @@ import "./datasetCard.css";
 interface props {
   name: string;
   likes: number;
-  updateTime: number;
+  updateTime: Date;
   downloads: number;
   id: number;
   description: string;
+  selected: boolean;
+  selectDataset: (n: boolean) => void;
 }
 function numberFormatter(num: any) {
   if (num >= 1000000000) {
@@ -29,9 +31,11 @@ const DatasetCard = ({
   downloads = 0,
   id,
   description,
+  selected,
+  selectDataset,
 }: props) => {
   const [showDescription, setShowDescription] = useState<boolean>(false);
-  const [liked, setLiked] = useState<boolean>(false);
+
 
   return (
     <div className="dataset__card__container">
@@ -45,11 +49,10 @@ const DatasetCard = ({
 
         <div className="likes">
           <img
-            src={liked ? "/assets/likeFilled.svg" : "/assets/like.svg"}
+            src={selected ? "/assets/likeFilled.svg" : "/assets/like.svg"}
             alt=""
-            onClick={() => setLiked(!liked)}
+            onClick={() => selectDataset(!selected)}
           />
-          <span>{numberFormatter(Math.round(Math.random() * likes))}</span>
         </div>
       </div>
       <div className="dataset_details__container">
@@ -62,7 +65,7 @@ const DatasetCard = ({
         </div>
         <div className="update_container">
           <img src="/assets/updateIcon.svg" alt="" />
-          <span>{Math.round(Math.random() * updateTime)} hours ago</span>
+          <span>{updateTime.toISOString()}</span>
         </div>
         <div className="download_container">
           <img src="/assets/downloadIcon.svg" alt="" />

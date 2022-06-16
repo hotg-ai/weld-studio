@@ -23,6 +23,8 @@ type AppState = {
   isLoadingTable: boolean;
   isQueryLoading: boolean;
   datasetRegistry: Record<string, QueryData>;
+  selectedDatasets: string[];
+  searchValue: string;
 };
 
 class App extends React.Component<{}, AppState> {
@@ -35,6 +37,8 @@ class App extends React.Component<{}, AppState> {
     isLoadingTable: false,
     isQueryLoading: false,
     datasetRegistry: {},
+    selectedDatasets: [],
+    searchValue: '',
   };
 
   unsubscribers: UnlistenFn[] = [];
@@ -174,7 +178,32 @@ class App extends React.Component<{}, AppState> {
       sql,
       tables,
       isQueryLoading,
+      datasetRegistry,
+      searchValue
     } = this.state;
+
+
+    const filteredData: Record<string, QueryData> = Object.keys(datasetRegistry).filter((dataset_name: string) => {
+      const dataset: QueryData = datasetRegistry[dataset_name];
+      return (dataset_name.toLowerCase().includes(searchValue) || dataset.query.toLowerCase().includes(searchValue));
+    }
+    ).reduce<Record<string, QueryData>>((acc, key) => {
+      acc[key] = datasetRegistry[key];
+      return acc;
+    }, {} as Record<string, QueryData>);
+
+
+    const selectedDatasets: Record<string, QueryData> = Object.keys(datasetRegistry).filter((dataset_name: string) => {
+      const dataset: QueryData = datasetRegistry[dataset_name];
+      return dataset.selected;
+    }
+    ).reduce<Record<string, QueryData>>((acc, key) => {
+      acc[key] = datasetRegistry[key];
+      return acc;
+    }, {} as Record<string, QueryData>);
+
+
+
     return (
       <div className="App">
         <div
@@ -202,9 +231,15 @@ class App extends React.Component<{}, AppState> {
                     tables={tables}
                     isQueryLoading={isQueryLoading}
                     datasetRegistry={this.state.datasetRegistry}
+                    numberSelectedDatasets={Object.keys(selectedDatasets).length}
                     setQueryError={(error: string) =>
                       this.setState({ queryError: error })
                     }
+                    selectDataset={(name, toggle) => {
+                      this.setState({ datasetRegistry: {...this.state.datasetRegistry, [name] : {
+                        ...this.state.datasetRegistry[name], selected: toggle
+                      }}
+                    })}}
                     setQueryData={(name: string, query_data: QueryData) =>
                       this.setState({
                         datasetRegistry: {
@@ -220,7 +255,7 @@ class App extends React.Component<{}, AppState> {
                 path="/analysis/:id"
                 element={
                   <Anaysis
-                    datasetRegistry={this.state.datasetRegistry}
+                    datasetRegistry={selectedDatasets}
                     querySchema={querySchema}
                     data={data}
                     queryError={queryError}
@@ -234,6 +269,15 @@ class App extends React.Component<{}, AppState> {
                 path="/"
                 element={
                   <Home
+                    numberSelectedDatasets={Object.keys(selectedDatasets).length}
+                    selectDataset={(name, toggle) => {
+                      this.setState({ datasetRegistry: {...this.state.datasetRegistry, [name] : {
+                        ...this.state.datasetRegistry[name], selected: toggle
+                      }}
+                    })}}
+                    searchValue={searchValue}
+                    setSearchValue={(searchValue: string) => this.setState({searchValue})}
+                    datasets={filteredData}
                     setQueryError={(queryError) =>
                       this.setState({ queryError })
                     }
@@ -254,5 +298,33 @@ class App extends React.Component<{}, AppState> {
     );
   }
 }
+
+/*
+
+
+  const [searchValue, setSearchValue] = useState("");
+  const [datasets, setDatasets] = useState<Record<string, QueryData>>(datasetRegistry);
+  //filter by search
+  const serachOnChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    const searchedValue = e.target.value.toLowerCase();
+    if (searchedValue === "") {
+      setDatasets(datasetRegistry);
+    } else {
+      const filteredData: Record<string, QueryData> = Object.keys(datasetRegistry).filter((dataset_name: string) => {
+        const dataset: QueryData = datasetRegistry[dataset_name];
+        return (dataset_name.toLowerCase().includes(searchedValue) || dataset.query.toLowerCase().includes(searchedValue));
+      }
+      ).reduce<Record<string, QueryData>>((acc, key) => {
+        acc[key] = datasetRegistry[key];
+        return acc;
+      }, {} as Record<string, QueryData>);
+
+      setDatasets(filteredData);
+    }
+  };
+
+
+*/
 
 export default App;

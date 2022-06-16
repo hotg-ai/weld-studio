@@ -5,6 +5,7 @@ import hammerSidebarWhite from "./img/icons/hammer-sidebar-white.svg";
 import homeSidebarJamin from "./img/icons/home-sidebar-jasmine.svg";
 import homeSidebarWhite from "./img/icons/home-sidebar-white.svg";
 
+import sqlTableIcon from "./img/icons/sqlTableIcon.svg";
 import TutorialsSidebarJasmin from "./img/icons/tutorials-sidebar-jasmine.svg";
 import TutorialsSidebarWhite from "./img/icons/tutorials-sidebar-white.svg";
 
@@ -76,38 +77,41 @@ import ReactIcon from "./img/icons/react.svg";
 import Rust from "./img/icons/rust.svg";
 import Ios from "./img/icons/ios.svg";
 import Android from "./img/icons/android.svg";
-import Search from './img/icons/search-icon.svg';
-import PropertiesIcon from './img/icons/properties-icon.svg';
-import QuestionMark from './img/icons/question-mark.svg';
-import HammerIcon from './img/icons/icon_hammer.svg';
-import SDKIcon from './img/icons/icon_sdk.svg';
-import LockIcon from './img/icons/icon_lock.svg';
-import DeleteIcon from './img/icons/icon_delete.svg';
-import HammerSecondaryIcon from './img/icons/icon_hammer_secondary.svg';
-import PlayIcon from './img/icons/icon_play.svg';
-import DeployIcon from './img/icons/icon_deploy.svg';
-import LabTubeIcon from './img/icons/icon_labtube.svg';
-import CloseIcon from './img/icons/icon_close.svg';
-import SaveIcon from './img/icons/icon_save.svg';
-import EditIcon from './img/icons/icon_edit.svg';
-import CollapseArrowIcon from './img/icons/icon_collapse_arrow.svg';
-import InfoIcon from './img/icons/icon_info.svg';
-import CoralIcon from './img/icons/icon_coral.svg';
-import JetsonIcon from './img/icons/icon_jetson.svg';
-import RaspberryIcon from './img/icons/icon_raspberry.svg';
-import XilinxIcon from './img/icons/icon_xilinx.svg';
-import SessionsIcon from './img/icons/icon_sessions.svg';
-import InferenceIcon from './img/icons/icon_inference.svg';
-import DevicesIcon from './img/icons/icon_devices.svg';
-import ErrorsIcon from './img/icons/icon_errors.svg';
-import EventsScreenIcon from './img/icons/icon_events_screen.svg';
-import QuickTourIcon from './img/icons/icon_quicktour.svg';
-import GooglePlayIcon from './img/icons/icon_google_play.svg';
-import AppleIcon from './img/icons/icon_apple.svg';
-import CookieIcon from './img/icons/icon_cookie_multicolor.svg';
-import EmailVerificationPng from './img/images/EmailVerificationPng.png';
-
+import Search from "./img/icons/search-icon.svg";
+import PropertiesIcon from "./img/icons/properties-icon.svg";
+import QuestionMark from "./img/icons/question-mark.svg";
+import HammerIcon from "./img/icons/icon_hammer.svg";
+import SDKIcon from "./img/icons/icon_sdk.svg";
+import LockIcon from "./img/icons/icon_lock.svg";
+import DeleteIcon from "./img/icons/icon_delete.svg";
+import HammerSecondaryIcon from "./img/icons/icon_hammer_secondary.svg";
+import PlayIcon from "./img/icons/icon_play.svg";
+import DeployIcon from "./img/icons/icon_deploy.svg";
+import LabTubeIcon from "./img/icons/icon_labtube.svg";
+import CloseIcon from "./img/icons/icon_close.svg";
+import SaveIcon from "./img/icons/icon_save.svg";
+import EditIcon from "./img/icons/icon_edit.svg";
+import CollapseArrowIcon from "./img/icons/icon_collapse_arrow.svg";
+import InfoIcon from "./img/icons/icon_info.svg";
+import CoralIcon from "./img/icons/icon_coral.svg";
+import JetsonIcon from "./img/icons/icon_jetson.svg";
+import RaspberryIcon from "./img/icons/icon_raspberry.svg";
+import XilinxIcon from "./img/icons/icon_xilinx.svg";
+import SessionsIcon from "./img/icons/icon_sessions.svg";
+import InferenceIcon from "./img/icons/icon_inference.svg";
+import DevicesIcon from "./img/icons/icon_devices.svg";
+import ErrorsIcon from "./img/icons/icon_errors.svg";
+import EventsScreenIcon from "./img/icons/icon_events_screen.svg";
+import QuickTourIcon from "./img/icons/icon_quicktour.svg";
+import GooglePlayIcon from "./img/icons/icon_google_play.svg";
+import AppleIcon from "./img/icons/icon_apple.svg";
+import CookieIcon from "./img/icons/icon_cookie_multicolor.svg";
+import EmailVerificationPng from "./img/images/EmailVerificationPng.png";
+import testDatasetScreenshot from "./img/images/testDatasetScreenshot.png";
+import addDatasetIcon from "./img/icons/addDatasetIcon.svg";
 export {
+  addDatasetIcon,
+  testDatasetScreenshot,
   EmailVerificationPng,
   Search,
   Web,
@@ -201,4 +205,5 @@ export {
   GooglePlayIcon,
   AppleIcon,
   CookieIcon,
+  sqlTableIcon,
 };

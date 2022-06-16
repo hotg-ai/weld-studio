@@ -3,6 +3,7 @@ import "./header.css";
 const Header = () => {
   return (
     <div className="header__container">
+      <div style={{ width: "12%" }}></div>
       <a href="/">
         <img
           src="/assets/DeSilo.svg"

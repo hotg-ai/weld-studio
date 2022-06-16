@@ -7,7 +7,7 @@
   align-items: flex-start;
   justify-content: flex-start;
 }
-.home_sidebar {
+/* .home_sidebar {
   background-color: #f7f3ff;
   width: 25%;
   height: 100%;
@@ -26,7 +26,7 @@
   width: 100%;
   background: #dddddd;
   border-radius: 5px;
-}
+} */
 
 .home_content {
   display: flex;
@@ -34,13 +34,13 @@
   align-items: flex-start;
   justify-content: flex-start;
   padding: 10px 40px;
-  width: 75%;
+  width: 100%;
   height: 100%;
 }
 .home_content .home_content-header {
   display: flex;
   align-items: flex-end;
-  justify-content: flex-start;
+  justify-content: space-between;
   width: 100%;
   padding: 1rem 0 2rem 0;
 }
@@ -51,15 +51,12 @@
   align-items: center;
   justify-content: flex-start;
 }
+
 .home_content .home_content-header .dataset_amount_container h5 {
+  font-size: 22px;
+  color: #c130b0;
   font-weight: bold;
-  margin-right: 1.5rem;
-  font-size: 14px;
-  margin-bottom: 0;
-}
-.home_content .home_content-header .dataset_amount_container span {
-  color: #555555;
-  font-size: 14px;
+  margin: 0;
 }
 
 .home_content .home_content-header .search_container {
@@ -106,11 +103,17 @@
 
 .datasets__container {
   padding-top: 30px;
+  padding-bottom: 30px;
   width: 100%;
+  height: 80%;
+  display: flex;
   align-items: flex-start;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 30px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  grid-gap: 15px;
+  grid-row-gap: 15px;
   overflow-y: scroll;
   padding-right: 0.3rem;
 }
@@ -124,7 +127,6 @@
   background: #dddddd;
   border-radius: 5px;
 }
-
 
 .home_content .home_content-header .upload__container button {
   display: block;
@@ -145,4 +147,81 @@
 }
 .home_content .home_content-header .upload__container input {
   display: none;
+}
+.analysisBtn__container {
+  border-top: 1px solid #333;
+  width: 100%;
+  padding: 35px 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.analysisBtn__container button {
+  border-radius: 25px;
+  outline: none;
+  border: none;
+  width: 180px;
+  height: 40px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.prepareDatasetBtn {
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-width: 3px !important;
+  cursor: pointer;
+}
+.prepareDatasetBtn img {
+  margin-bottom: 0.5rem;
+}
+.prepareDatasetBtn span {
+  font-size: 16px;
+  color: #b9b9b9;
+}
+
+.datasets__container > div {
+  width: 280px;
+  height: 290px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.dataset-box__container.selected {
+  box-shadow: 1px 1px 5px #c130b0, -1px -1px 5px #c130b0;
+}
+.dataset-box__container > img {
+  width: 100%;
+}
+.dataset-box_content {
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dataset-box_content > img {
+  width: 20px;
+  height: 20px;
+}
+.dataset-box_content .title {
+  width: 65%;
+}
+.dataset-box_content .title > a {
+  font-weight: bolder;
+  font-size: 16px;
+}
+.dataset-box_content .title > a > h5 {
+  font-weight: bolder;
+  font-size: 16px;
+}
+.dataset-box_content .title > span {
+  font-size: 14px;
+}
+
+.ant-checkbox-wrapper .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #c130b0 !important;
+  border-color: #c130b0 !important;
 }
