@@ -1,4 +1,3 @@
-
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
@@ -84,6 +83,13 @@ function Analysis({
             Object.entries(datasetRegistry[name].data[index]).forEach(
               ([k, v]) => {
                 if (!acc[name]) acc[name] = "";
+                if (
+                  tableData &&
+                  tableData[index] &&
+                  tableData[index]["Result"]
+                ) {
+                  acc["Result"] = tableData[index]["Result"];
+                }
                 acc[name] = acc[name] + `"${k}": ${v}, `;
               }
             );
@@ -366,9 +372,9 @@ function Analysis({
           </div>
           <div className="sidebar_right">
             <button
-             //  disabled={!isLoadingTable}
+              //  disabled={!isLoadingTable}
               onClick={async () => {
-               // console.log("DATA TYPES", dataTypes);
+                // console.log("DATA TYPES", dataTypes);
                 // invoke("reune")
                 //   .then(console.log)
                 //   .catch((error) => {
@@ -387,7 +393,7 @@ function Analysis({
                   .catch((e) => {
                     setQueryError("Error running model");
                     setIsLoadingTable(false);
-                    console.error(e)
+                    console.error(e);
                   });
               }}
             >
