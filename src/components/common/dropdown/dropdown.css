@@ -16,6 +16,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+  z-index: 1000;
 }
 
 .dropdown.disabled {
@@ -29,6 +30,7 @@
   margin-right: 1rem;
   width: 16px;
   height: 16px;
+  z-index: 1000;
 }
 
 .dropdown {
