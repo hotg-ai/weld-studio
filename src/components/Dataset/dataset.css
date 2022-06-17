@@ -94,7 +94,7 @@
   outline: none;
   border: none;
   cursor: pointer;
-  width: 85px;
+  /* width: 85px; */
 }
 .dataset__sidebar__container.left .tables__container .title {
   display: flex;
