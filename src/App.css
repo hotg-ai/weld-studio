@@ -41,10 +41,10 @@
 
 *::-webkit-scrollbar {
   background: transparent;
-  width: 5px;
+  width: 3px;
+  height:min-content;
 }
 *::-webkit-scrollbar-thumb {
-  width: 100%;
-  background: #5F32B8 !important;
+  background-color: #dddd;
   border-radius: 5px;
 }

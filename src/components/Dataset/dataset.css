@@ -15,6 +15,10 @@
   display: flex;
   justify-content: center;
 }
+.table__container thead{
+  position: sticky;
+  top: 0;
+}
 .table__container > .error,
 .table__container > .message {
   width: 100%;
@@ -127,6 +131,9 @@
   font-size: 18px;
   color: #000;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dataset__sidebar__container.right .dropdownOption__Content > span {
   font-size: 13px;

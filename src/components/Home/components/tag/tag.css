@@ -17,12 +17,12 @@
 }
 .tags::-webkit-scrollbar {
   background: transparent;
-  width: 6px;
+  width: 3px;
 }
 .tags::-webkit-scrollbar-thumb {
   background: #fff;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 .tags .tag_item {
   border-radius: 9px;
