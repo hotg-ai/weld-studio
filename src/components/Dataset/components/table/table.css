@@ -27,10 +27,10 @@ tr td.null {
   color: #888888;
 }
 tr th:first-child {
-  border-top-left-radius: 10px;
+  border-top-left-radius: 0px;
 }
 tr th:last-child {
-  border-top-right-radius: 10px;
+  border-top-right-radius: 0px;
 }
 tr td:not(tr td:first-child) {
   border-left: 1px solid rgba(0, 0, 0, 0.1);

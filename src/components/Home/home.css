@@ -120,7 +120,7 @@
 
 .datasets__container::-webkit-scrollbar {
   background: transparent;
-  width: 5px;
+  width: 3px;
 }
 .datasets__container::-webkit-scrollbar-thumb {
   width: 100%;
@@ -149,7 +149,7 @@
   display: none;
 }
 .analysisBtn__container {
-  border-top: 1px solid #333;
+  border-top: 1px solid #CCCCCC;
   width: 100%;
   padding: 35px 0;
   display: flex;
@@ -216,6 +216,9 @@
 .dataset-box_content .title > a > h5 {
   font-weight: bolder;
   font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dataset-box_content .title > span {
   font-size: 14px;

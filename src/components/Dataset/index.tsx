@@ -130,6 +130,15 @@ const Dataset = ({
 
   return (
     <div className="dataset_page">
+      <div
+        className="spinner__container"
+        style={{ display: isQueryLoading ? "flex" : "none" }}
+      >
+        <div className="spinner__body">
+          <ClipLoader color="purple" size={25} />{" "}
+          <p style={{ paddingLeft: "20px" }}>Loading ...</p>
+        </div>
+      </div>
       <div className="dataset__container">
         <div className="dataset__sidebar__container left">
           <div className="back-link__container">
