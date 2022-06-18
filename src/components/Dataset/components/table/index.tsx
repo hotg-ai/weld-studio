@@ -16,7 +16,7 @@ const Table = ({ data }: { data: any[] }) => {
                 {h}{" "}
                 {h === header[header.length - 1] && (
                   <button>
-                    <img src={downloadIcon} alt="" /> Download
+                    <img src={downloadIcon} alt="" /> Export
                   </button>
                 )}
               </th>

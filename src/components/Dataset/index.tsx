@@ -288,7 +288,7 @@ const Dataset = ({
                       </h3>
                       {datasetName === name && (
                         <button>
-                          <img src={downloadIcon} alt="" /> Download
+                          <img src={downloadIcon} alt="" /> Export
                         </button>
                       )}
                     </div>
