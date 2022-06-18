@@ -4,8 +4,8 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { open } from "@tauri-apps/api/dialog";
 
 import { useNavigate } from "react-router";
-import { QueryData } from "src/types";
-import { testDatasetScreenshot, sqlTableIcon } from "../../assets";
+import { QueryData, TableData } from "src/types";
+import { testDatasetScreenshot, sqlTableIcon, databaseIcon } from "../../assets";
 import { Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import { addDatasetIcon } from "../../assets";
@@ -18,6 +18,8 @@ function Home({
   searchValue,
   setSearchValue,
   numberSelectedDatasets,
+  tables,
+  setSql
 }: {
   setQueryError: (error: string) => void;
   setIsLoadingTable: (isLoading: boolean) => void;
@@ -26,6 +28,8 @@ function Home({
   selectDataset: (dataset: string, toggle: boolean) => void;
   searchValue: string;
   setSearchValue: (value: string) => void;
+  setSql: (sql: string) => void;
+  tables: TableData[];
 }) {
   const history = useNavigate();
 
@@ -88,7 +92,7 @@ function Home({
             }}
           >
             <img src={addDatasetIcon} alt="" />
-            <span>Prepare Dataset</span>
+            <span>Add Table or Analysis Features</span>
           </div>
           {datasets &&
             Object.keys(datasets).map((name: string, idx: number) => {
@@ -98,11 +102,27 @@ function Home({
                   key={name}
                   id={idx}
                   selected={dataset.selected}
+                  isSelectable={true}
                   title={name}
+                  onClick={() => {}}
                   selectDataset={(toggle) => selectDataset(name, toggle)}
                 />
               );
             })}
+            {tables &&
+             tables.map((table: TableData, idx: number) => {
+              return (
+                <DatasetBox
+                  key={table.table_name}
+                  id={idx}
+                  selected={false}
+                  isSelectable={false}
+                  title={`table::${table.table_name}`}
+                  onClick={() => setSql(`select * from ${table.table_name} limit 10`)}
+                  selectDataset={(toggle) => setSql(`select * from ${table.table_name} limit 10`)} />
+              )
+             })
+             }
         </div>
         <div className="analysisBtn__container">
           <button
@@ -152,27 +172,32 @@ interface DatasetBoxProps {
   title: string;
   selected: boolean;
   id: number;
+  isSelectable: boolean;
+  onClick: () => void;
   selectDataset: (n: boolean) => void;
 }
 const DatasetBox = ({
   id,
   title,
   selected,
+  isSelectable,
+  onClick,
   selectDataset,
 }: DatasetBoxProps) => {
   return (
     <div className="dataset-box__container">
       <img src={testDatasetScreenshot} alt="" />
       <div className="dataset-box_content">
-        <img src={sqlTableIcon} alt="" />
+        <img src={ isSelectable ? sqlTableIcon : databaseIcon } alt="" />
         <div className="title">
-          <Link to={`/dataset/${id}`}>
+          <Link to={`/dataset/${id}`} onClick={onClick}>
             <h5>{title}</h5>
           </Link>
-          <span>15 May 2022</span>
+          <span>{(new Date()).toDateString()}</span>
         </div>
         <Checkbox
           defaultChecked={selected}
+          disabled={!isSelectable}
           onClick={() => {
             selectDataset(!selected);
           }}

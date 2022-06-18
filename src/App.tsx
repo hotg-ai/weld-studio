@@ -216,6 +216,8 @@ class App extends React.Component<{}, AppState> {
 
 
 
+
+
     return (
       <div className="App">
         <div
@@ -243,6 +245,7 @@ class App extends React.Component<{}, AppState> {
                     tables={tables}
                     isQueryLoading={isQueryLoading}
                     datasetRegistry={this.state.datasetRegistry}
+                    setIsQueryLoading={(isQueryLoading: boolean) => this.setState({isLoadingTable: isQueryLoading})}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
                     setQueryError={(error: string) =>
                       this.setState({ queryError: error })
@@ -281,6 +284,7 @@ class App extends React.Component<{}, AppState> {
                 path="/"
                 element={
                   <Home
+                    setSql={(sql: string) => this.setState({sql}, () => this.executeQuery(sql))}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
                     selectDataset={(name, toggle) => {
                       this.setState({ datasetRegistry: {...this.state.datasetRegistry, [name] : {
@@ -290,6 +294,7 @@ class App extends React.Component<{}, AppState> {
                     searchValue={searchValue}
                     setSearchValue={(searchValue: string) => this.setState({searchValue})}
                     datasets={filteredData}
+                    tables={tables}
                     setQueryError={(queryError) =>
                       this.setState({ queryError })
                     }

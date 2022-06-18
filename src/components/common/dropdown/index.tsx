@@ -28,7 +28,7 @@ export function Dropdown({ disabled = false, title, children, onSelect, selectBt
           />
           <span>{title}</span>
         </button>
-        {onSelect ? <button className="dropbtn" onClick={(e) => { e.stopPropagation(); onSelect() }} style={{ display: "inline-block" }}>
+        {onSelect ? <button className="dropbtn"  onClick={(e) => { e.stopPropagation(); onSelect() }} style={{ display: "inline-block", maxWidth: "30%" }}>
           {selectBtnIcon ? <img src={selectBtnIcon} alt="" /> : "+"}
         </button> : <></>}
       </div>

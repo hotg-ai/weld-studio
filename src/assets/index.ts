@@ -109,7 +109,9 @@ import CookieIcon from "./img/icons/icon_cookie_multicolor.svg";
 import EmailVerificationPng from "./img/images/EmailVerificationPng.png";
 import testDatasetScreenshot from "./img/images/testDatasetScreenshot.png";
 import addDatasetIcon from "./img/icons/addDatasetIcon.svg";
+import databaseIcon from "./img/icons/database-icon.svg";
 export {
+  databaseIcon,
   addDatasetIcon,
   testDatasetScreenshot,
   EmailVerificationPng,

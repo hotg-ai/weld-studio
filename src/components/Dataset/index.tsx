@@ -52,6 +52,7 @@ const Dataset = ({
   setQueryData,
   setQueryError,
   selectDataset,
+  setIsQueryLoading
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -61,6 +62,7 @@ const Dataset = ({
   tables: TableData[];
   datasetRegistry: Record<string, QueryData>;
   isQueryLoading: boolean;
+  setIsQueryLoading: (isQueryLoading: boolean) => void;
   numberSelectedDatasets: number;
   setQueryData: (name: string, query_data: QueryData) => void;
   setQueryError: (error: string) => void;
@@ -167,6 +169,7 @@ const Dataset = ({
                   });
 
                   if (file) {
+                    setIsQueryLoading(true);
                     invoke("load_csv", { invokeMessage: file })
                       .then((res) => {
                         let result = res as string;
@@ -174,10 +177,11 @@ const Dataset = ({
 
                         history("/dataset/1", { replace: true });
                         //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
+                        setIsQueryLoading(false);
                       })
                       .catch((e) => {
                         setQueryError(e.message);
-
+                        setIsQueryLoading(false);
                         history("/dataset/1", { replace: true });
                       });
                   }
@@ -256,11 +260,11 @@ const Dataset = ({
 
                     setQueryError("Registered DataSet: " + name);
                   } catch (e) {
-                    setQueryError("Cannot create dataset: " + e);
+                    setQueryError("Cannot create dataset: \n" + e.message);
                   }
                 }}
               >
-                <span> Add as Dataset</span>
+                <span>Prepare for Analysis</span>
               </button>
               <ClipLoader color="purple" loading={isQueryLoading} size={25} />
             </div>
@@ -433,7 +437,7 @@ function createQueryDataset(
   if (!dataType) {
     // We weren't able to determine the common data type (e.g. because one
     // column is a u32 while the rest are f64).
-    throw new Error("Could not determine common data type");
+    throw new Error("Analysis features must be common datatype.\n i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using cast `::double` or `(column as DOUBLE)`");
   }
 
   const tensor = mergeColumnsIntoTensor(
