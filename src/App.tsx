@@ -9,10 +9,12 @@ import Anaysis from "./components/Analysis";
 
 import { invoke } from "@tauri-apps/api/tauri";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
+import { resourceDir } from '@tauri-apps/api/path';
 
 import { TableData, FileDropEvent, FieldSchema, QueryData } from "./types";
 
 import ClipLoader from "react-spinners/ClipLoader";
+import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
 
 type AppState = {
   data: any[];
@@ -98,8 +100,33 @@ class App extends React.Component<{}, AppState> {
         if (u) this.unsubscribers.push(u);
       }
     );
+    this.preloadDatafiles().then(() => {
+      this.getTables()
+    }).finally(() => {
+      this.getTables();
+    });
+  }
 
-    this.getTables();
+  async preloadDatafiles() {
+    this.setState({ isQueryLoading: true });
+
+    const entries = await readDir('preload_tables', { dir: BaseDirectory.Resource, recursive: false });
+
+    this.setState({ isQueryLoading: true });
+    for (const file of entries) {
+      console.log(`Entry: ${file.path}`);
+      await invoke("load_csv", { invokeMessage: file.path })
+      .then((res) => {
+        let result = res as string;
+        this.setState({ queryError: `${file} loaded as ${result}`});
+      })
+      .catch((e) => {
+        this.setState({ queryError: e.message});
+       
+      });  
+    }
+    this.setState({ isQueryLoading: false });
+       
   }
 
   // constructor(props: any) {

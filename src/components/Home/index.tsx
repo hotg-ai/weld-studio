@@ -41,7 +41,7 @@ function Home({
       <div className="home_content">
         <div className="home_content-header">
           <div className="dataset_amount_container">
-            <h5>Select DataSet(s)</h5>
+            <h5>Get Started</h5>
           </div>
 
           <form className="search_container">

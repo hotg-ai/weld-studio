@@ -11,10 +11,14 @@
     "version": "0.1.0"
   },
   "tauri": {
+    
     "allowlist": {
-      "all": true
+      "all": true,"fs": {
+        "scope": ["$RESOURCE/**/*"]
+      }
     },
     "bundle": {
+
       "active": true,
       "category": "DeveloperTool",
       "copyright": "",
@@ -38,7 +42,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": ["./preload_tables"],
       "shortDescription": "",
       "targets": "all",
       "windows": {
