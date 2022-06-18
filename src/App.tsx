@@ -55,6 +55,17 @@ class App extends React.Component<{}, AppState> {
     // };
     // this.eventHandlerFileDrop(event);
 
+    listen("save_started", () => {
+      this.setState({ isQueryLoading: true });
+    }).then((u) => {
+      if (u) this.unsubscribers.push(u);
+    });
+
+    listen("save_ended", () => {
+    }).then((u) => { 
+      if (u) this.unsubscribers.push(u);
+    })
+
     listen("load_csv_complete", (payload: unknown) =>
       this.eventHandlerLoadCSVComplete([payload])
     ).then((u) => {
