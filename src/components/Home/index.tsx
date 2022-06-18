@@ -5,10 +5,14 @@ import { open } from "@tauri-apps/api/dialog";
 
 import { useNavigate } from "react-router";
 import { QueryData } from "src/types";
-import { testDatasetScreenshot, sqlTableIcon } from "../../assets";
+import {
+  testDatasetScreenshot,
+  sqlTableIcon,
+  databaseIcon,
+  addDatasetIcon,
+} from "../../assets";
 import { Checkbox } from "antd";
 import { Link } from "react-router-dom";
-import { addDatasetIcon } from "../../assets";
 
 function Home({
   setQueryError,
@@ -36,8 +40,21 @@ function Home({
       </div> */}
       <div className="home_content">
         <div className="home_content-header">
-          <div className="dataset_amount_container">
-            <h5>Select DataSet(s)</h5>
+          <div className="home-header-cards__container">
+            <div className="header-card" style={{ background: "#00B59433" }}>
+              <div>
+                <Link to="/">Start with No Code</Link>
+                <img src={databaseIcon} alt="" />
+              </div>
+              <span>Drag and drop analysis</span>
+            </div>
+            <div className="header-card" style={{ background: "#DEE5FF" }}>
+              <div>
+                <Link to="/">Start with SQL</Link>
+                <img src={sqlTableIcon} alt="" />
+              </div>
+              <span>SQL editor analysis</span>
+            </div>
           </div>
 
           <form className="search_container">
@@ -52,57 +69,59 @@ function Home({
             </div>
           </form>
         </div>
-
         <div className="datasets__container">
-          <div
-            className="prepareDatasetBtn"
-            onClick={async () => {
-              const file = await open({
-                title: "Select a CSV file",
-                filters: [
-                  {
-                    extensions: ["csv", "tsv", "txt"],
-                    name: "delimited files",
-                  },
-                ],
-              });
+          <h5>Select DataSet(s)</h5>
+          <div className="dataset-boxes__container">
+            <div
+              className="prepareDatasetBtn"
+              onClick={async () => {
+                const file = await open({
+                  title: "Select a CSV file",
+                  filters: [
+                    {
+                      extensions: ["csv", "tsv", "txt"],
+                      name: "delimited files",
+                    },
+                  ],
+                });
 
-              if (file) {
-                setIsLoadingTable(true);
-                invoke("load_csv", { invokeMessage: file })
-                  .then((res) => {
-                    let result = res as string;
-                    setQueryError(`${file} loaded as ${result}`);
-                    setIsLoadingTable(false);
+                if (file) {
+                  setIsLoadingTable(true);
+                  invoke("load_csv", { invokeMessage: file })
+                    .then((res) => {
+                      let result = res as string;
+                      setQueryError(`${file} loaded as ${result}`);
+                      setIsLoadingTable(false);
 
-                    history("/dataset/1", { replace: true });
-                    //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
-                  })
-                  .catch((e) => {
-                    setIsLoadingTable(false);
-                    setQueryError(e.message);
+                      history("/dataset/1", { replace: true });
+                      //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
+                    })
+                    .catch((e) => {
+                      setIsLoadingTable(false);
+                      setQueryError(e.message);
 
-                    history("/dataset/1", { replace: true });
-                  });
-              }
-            }}
-          >
-            <img src={addDatasetIcon} alt="" />
-            <span>Prepare Dataset</span>
+                      history("/dataset/1", { replace: true });
+                    });
+                }
+              }}
+            >
+              <img src={addDatasetIcon} alt="" />
+              <span>Prepare Dataset</span>
+            </div>
+            {datasets &&
+              Object.keys(datasets).map((name: string, idx: number) => {
+                const dataset: QueryData = datasets[name];
+                return (
+                  <DatasetBox
+                    key={name}
+                    id={idx}
+                    selected={dataset.selected}
+                    title={name}
+                    selectDataset={(toggle) => selectDataset(name, toggle)}
+                  />
+                );
+              })}
           </div>
-          {datasets &&
-            Object.keys(datasets).map((name: string, idx: number) => {
-              const dataset: QueryData = datasets[name];
-              return (
-                <DatasetBox
-                  key={name}
-                  id={idx}
-                  selected={dataset.selected}
-                  title={name}
-                  selectDataset={(toggle) => selectDataset(name, toggle)}
-                />
-              );
-            })}
         </div>
         <div className="analysisBtn__container">
           <button

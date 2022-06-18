@@ -15,7 +15,7 @@
   display: flex;
   justify-content: center;
 }
-.table__container thead{
+.table__container thead {
   position: sticky;
   top: 0;
 }
@@ -119,6 +119,7 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .dropdown .dropdown-content {
   padding: 16px 0 0 0;
 }
@@ -126,7 +127,36 @@
   padding: 0 25px;
   padding-top: 0.5rem;
 }
-.dataset__sidebar__container.right .dropdownOption__Content > h3 {
+
+.selectedColumns__container .dropdownOption__Content .title-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.selectedColumns__container .dropdownOption__Content .title-content > button {
+  width: 40%;
+  display: flex;
+  padding: 5px 10px;
+  background-color: transparent;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  outline: none;
+  color: #000;
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+}
+.selectedColumns__container
+  .dropdownOption__Content
+  .title-content
+  > button
+  img {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.2rem;
+}
+.dataset__sidebar__container.right .dropdownOption__Content .title-content h3 {
   font-weight: bold;
   font-size: 18px;
   color: #000;
@@ -143,13 +173,13 @@
   cursor: pointer;
   z-index: 1000;
 }
-.dataset__sidebar__container.right .dropdownOption__Content > .dropdown {
-  padding: 0;
+.dataset__sidebar__container.right .dropdownOption__Content .dropdown {
+  padding: 0 !important;
 }
 
 .dataset__sidebar__container.right
   .dropdownOption__Content
-  > .dropdown
+  .dropdown
   .dropbtn
   > span {
   font-size: 14px;
@@ -237,6 +267,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.dataset__sidebar__container.center
+  .code__container
+  .code__container-header
+  > span {
+  margin: 0 0.3rem 0 auto;
 }
 .dataset__sidebar__container.center
   .code__container
@@ -406,12 +442,12 @@
   width: fit-content;
 }
 
-.table__container::-webkit-scrollbar{
+.table__container::-webkit-scrollbar {
   background: #faf8ff;
   width: 5px;
   border: 1px rgb(104, 104, 104) solid;
 }
-.table__container::-webkit-scrollbar-thumb{
+.table__container::-webkit-scrollbar-thumb {
   background: #dddd;
   width: 100%;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);

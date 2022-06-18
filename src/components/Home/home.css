@@ -39,20 +39,63 @@
 }
 .home_content .home_content-header {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   width: 100%;
   padding: 1rem 0 2rem 0;
 }
-.home_content .home_content-header .dataset_amount_container {
-  width: 200px;
-  /* height: 100%; */
+.home_content .home_content-header .home-header-cards__container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
 }
+.home_content .home_content-header .home-header-cards__container .header-card {
+  margin: 0 1rem 0 0;
+  border-radius: 13px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 300px;
+  height: 100px;
+}
+.home_content
+  .home_content-header
+  .home-header-cards__container
+  .header-card
+  > div {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.home_content
+  .home_content-header
+  .home-header-cards__container
+  .header-card
+  > div
+  a {
+  color: #000000;
+  font-weight: bold;
+}
+.home_content
+  .home_content-header
+  .home-header-cards__container
+  .header-card
+  > div
+  img {
+  width: 28px;
+  height: 25px;
+}
+.home_content
+  .home_content-header
+  .home-header-cards__container
+  .header-card
+  > span {
+}
 
-.home_content .home_content-header .dataset_amount_container h5 {
+.datasets__container > h5 {
   font-size: 22px;
   color: #c130b0;
   font-weight: bold;
@@ -102,6 +145,10 @@
 }
 
 .datasets__container {
+  width: 100%;
+  height: 58%;
+}
+.dataset-boxes__container {
   padding-top: 30px;
   padding-bottom: 30px;
   width: 100%;
@@ -118,11 +165,11 @@
   padding-right: 0.3rem;
 }
 
-.datasets__container::-webkit-scrollbar {
+.dataset-boxes__container::-webkit-scrollbar {
   background: transparent;
   width: 3px;
 }
-.datasets__container::-webkit-scrollbar-thumb {
+.dataset-boxes__container::-webkit-scrollbar-thumb {
   width: 100%;
   background: #dddddd;
   border-radius: 5px;
@@ -149,7 +196,7 @@
   display: none;
 }
 .analysisBtn__container {
-  border-top: 1px solid #CCCCCC;
+  border-top: 1px solid #cccccc;
   width: 100%;
   padding: 35px 0;
   display: flex;
@@ -183,7 +230,7 @@
   color: #b9b9b9;
 }
 
-.datasets__container > div {
+.dataset-boxes__container > div {
   width: 280px;
   height: 290px;
   border: 1px solid rgba(0, 0, 0, 0.1);

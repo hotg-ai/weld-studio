@@ -23,6 +23,13 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { QueryData } from "../../types";
 import { Tensor } from "@hotg-ai/rune";
 import { convertElementType, modelToTensorElementType } from "./model/metadata";
+import { Carousel } from "antd";
+import {
+  image6,
+  introModalStepOne,
+  studioCanvasScreenshot,
+  testDatasetScreenshot,
+} from "src/assets";
 
 function Analysis({
   data,
@@ -46,6 +53,7 @@ function Analysis({
   const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
+  const [introModalVisible, setIntroModalVisible] = useState(false);
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
@@ -105,6 +113,10 @@ function Analysis({
 
     setTableData(newTable || []);
   }, [diagram]);
+
+  useEffect(() => {
+    setIntroModalVisible(true);
+  }, []);
 
   const { id } = useParams();
 
@@ -356,9 +368,10 @@ function Analysis({
             <span>Back</span>
           </Link>
         </div>
-        <button onClick={() => setSaveModalVisible(true)}>
+        {/* <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
-        </button>
+        </button> */}
+        <Link to={`/dataset/${id}`}>Add Dataset</Link>
         <ComponentsSelector
           datasetRegistry={datasetRegistry}
           querySchema={querySchema}
@@ -551,6 +564,58 @@ function Analysis({
               </div>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {introModalVisible && (
+        <Modal
+          className="intro_modal__container"
+          title="Getting started"
+          setModalVisible={setIntroModalVisible}
+        >
+          <p className="modal-description">
+            This is a no code editor for you to rapidly test out statistical
+            models on your private data. Add and prepare datasets for analysis
+            such as logistic/linear etc with 3 steps.
+          </p>
+          <Carousel arrows prevArrow={<button>Back</button>}>
+            <div className="step-one">
+              <div className="example-sql__container">
+                <img src={introModalStepOne} alt="" />
+              </div>
+              <p>
+                <b>Using the SQL editor</b> you can quickly create datasets.
+                Datasets are derived from your private files. For example:
+                `select * from datga.csv` Get started by connecting data
+              </p>
+            </div>
+            <div className="step-two">
+              <img src={testDatasetScreenshot} alt="" />
+              <div className="step-two-content">
+                <h3>1. DataSet: Creating features for procblocks</h3>
+                <span>To perpare data for logistic regression we will </span>
+              </div>
+            </div>
+            <div className="step-three">
+              <img src={studioCanvasScreenshot} alt="" />
+              <div className="step-three-content">
+                <h3>2. Adding blocks to the canvas</h3>
+                <span>To perpare data for logistic regression we will </span>
+              </div>
+            </div>
+            <div className="step-four">
+              <img src={image6} alt="" />
+              <div className="step-four-content">
+                <h3>3. Execute and compare models</h3>
+              </div>
+            </div>
+          </Carousel>
+          <button
+            className="intro-modal-skip_btn"
+            onClick={() => setIntroModalVisible(false)}
+          >
+            Skip
+          </button>
         </Modal>
       )}
     </div>

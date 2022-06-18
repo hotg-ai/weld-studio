@@ -16,7 +16,7 @@ import _ from "lodash";
 import { FieldSchema } from "../../types";
 import { arrowDataTypeToRunicElementType } from "../Analysis/utils/ArrowConvert";
 import { ElementType, Tensor } from "@hotg-ai/rune";
-import { sqlTableIcon } from "../../assets";
+import { downloadIcon, sqlTableIcon } from "../../assets";
 import { open } from "@tauri-apps/api/dialog";
 
 type IntegerColumnType = {
@@ -130,15 +130,6 @@ const Dataset = ({
 
   return (
     <div className="dataset_page">
-      <div
-        className="spinner__container"
-        style={{ display: isQueryLoading ? "flex" : "none" }}
-      >
-        <div className="spinner__body">
-          <ClipLoader color="purple" size={25} />{" "}
-          <p style={{ paddingLeft: "20px" }}>Loading ...</p>
-        </div>
-      </div>
       <div className="dataset__container">
         <div className="dataset__sidebar__container left">
           <div className="back-link__container">
@@ -244,6 +235,7 @@ const Dataset = ({
                   />
                 </span>
               </div>
+              <ClipLoader color="purple" loading={isQueryLoading} size={25} />
               <button
                 className="addAsDataset_btn"
                 onClick={() => {
@@ -261,7 +253,6 @@ const Dataset = ({
               >
                 <span> Add as Dataset</span>
               </button>
-              <ClipLoader color="purple" loading={isQueryLoading} size={25} />
             </div>
             <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
           </div>
@@ -286,14 +277,21 @@ const Dataset = ({
                   onClick={() => selectDataset(name, !dataset.selected)}
                 >
                   <div key={name} className="dropdownOption__Content">
-                    <h3
-                      onClick={() => {
-                        setSql(dataset.query);
-                        setDatasetName(name);
-                      }}
-                    >
-                      {name}
-                    </h3>
+                    <div className="title-content">
+                      <h3
+                        onClick={() => {
+                          setSql(dataset.query);
+                          setDatasetName(name);
+                        }}
+                      >
+                        {name}
+                      </h3>
+                      {datasetName === name && (
+                        <button>
+                          <img src={downloadIcon} alt="" /> Download
+                        </button>
+                      )}
+                    </div>
                     <span
                       onClick={() => {
                         setSql(dataset.query);
@@ -302,28 +300,30 @@ const Dataset = ({
                     >
                       {dataset.query}
                     </span>
-                    {data && data.length > 0 && datasetName === name && (
-                      <Dropdown title="Query Result Schema">
-                        {querySchema.fields.map(
-                          (field: FieldSchema, idx: number) => {
-                            return (
-                              <DropdownOption key={idx}>
-                                <div className="dropdownOption__Content">
-                                  <span>
-                                    {field.name}:{" "}
-                                    {typeof field.data_type == "string"
-                                      ? field.data_type
-                                      : Object.keys(field.data_type)[0]}
-                                  </span>
-                                  {/* <span>{JSON.stringify(field)}</span> */}
-                                  {/* <ProgressBar percent={item.percent} /> */}
-                                </div>
-                              </DropdownOption>
-                            );
-                          }
-                        )}
-                      </Dropdown>
-                    )}
+                    <div>
+                      {data && data.length > 0 && datasetName === name && (
+                        <Dropdown title="Query Result Schema">
+                          {querySchema.fields.map(
+                            (field: FieldSchema, idx: number) => {
+                              return (
+                                <DropdownOption key={idx}>
+                                  <div className="dropdownOption__Content">
+                                    <span>
+                                      {field.name}:{" "}
+                                      {typeof field.data_type == "string"
+                                        ? field.data_type
+                                        : Object.keys(field.data_type)[0]}
+                                    </span>
+                                    {/* <span>{JSON.stringify(field)}</span> */}
+                                    {/* <ProgressBar percent={item.percent} /> */}
+                                  </div>
+                                </DropdownOption>
+                              );
+                            }
+                          )}
+                        </Dropdown>
+                      )}
+                    </div>
                     {/* <span>{JSON.stringify(field)}</span> */}
                     {/* <ProgressBar percent={item.percent} /> */}
                   </div>
