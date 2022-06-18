@@ -61,7 +61,8 @@ class App extends React.Component<{}, AppState> {
       if (u) this.unsubscribers.push(u);
     });
 
-    listen("save_ended", () => {
+    listen("save_ended", (saved) => {
+      this.setState({ isQueryLoading: false, queryError: `Saved ${saved} records` });
     }).then((u) => { 
       if (u) this.unsubscribers.push(u);
     })

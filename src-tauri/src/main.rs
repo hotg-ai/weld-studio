@@ -201,8 +201,6 @@ async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Result<
     Ok(())
 }
 
-
-
 #[tauri::command]
 #[tracing::instrument(skip(state, window), err)]
 async fn save_data(
@@ -213,7 +211,7 @@ async fn save_data(
     cancel: tauri::State<'_, Cancelled>,
     running: tauri::State<'_, Running>,
     window: tauri::Window,
-) -> Result<(), String> {
+) -> Result<u32, String> {
     let is_running = running.0.load(Ordering::Relaxed);
     if is_running {
         cancel.0.store(true, Ordering::Relaxed);
@@ -222,8 +220,6 @@ async fn save_data(
     }
     let path = Path::new(&file_loc);
 
-    
-    
     let sql = format!(
         "COPY ({}) to '{}' WITH (HEADER 1, DELIMITER ',', FORMAT CSV, ENCODING 'UTF-8')",
         sql,
@@ -242,20 +238,26 @@ async fn save_data(
     // }).map_err(|_e| String::from("Could not query"))?;
     // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
     tracing::info!("Loading arrow");
-    window
-        .emit("save_started", "")
+    window.emit("save_started", "").map_err(|e| e.to_string())?;
+
+    let rows = stmt
+        .query_map(params![], |row| {
+            let saved_amt: u32 = row.get(0)?;
+            Ok(saved_amt)
+        })
         .map_err(|e| e.to_string())?;
 
-    let batches = stmt.execute(params![]).map_err(|e| e.to_string())?;
-   
+    let rows: Vec<u32> = rows.map(|m| m.unwrap()).collect();
 
-    window.emit("save_ended", batches).map_err(|e| e.to_string())?;
+    window.emit("save_ended", "").map_err(|e| e.to_string())?;
+
+
     // tracing::info!("Serializing arrow");
     //
     // tracing::info!("Finished Serializing {}: {:?}", sql, &rbs.len());
     //let records = DataResponse { records: json_rows };
 
-    Ok(())
+    Ok(rows[0])
 }
 
 #[tauri::command]

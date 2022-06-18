@@ -18,6 +18,7 @@ import { arrowDataTypeToRunicElementType } from "../Analysis/utils/ArrowConvert"
 import { ElementType, Tensor } from "@hotg-ai/rune";
 import { sqlTableIcon } from "../../assets";
 import { open } from "@tauri-apps/api/dialog";
+import { downloadDir, join } from "@tauri-apps/api/path";
 
 type IntegerColumnType = {
   type: "INTEGER";
@@ -337,9 +338,27 @@ const Dataset = ({
                 <h5>
                   {data.length} Rows, {Object.keys(data[0]).length} Columns
                 </h5>
-                <Link to="/" className="saveBtn">
-                  Save
-                </Link>
+                <div className="saveBtn" onClick={async () => {
+                   let fileLoc = await open({
+                    title: "Select a location to save CSV file",
+                    directory: true,
+                    multiple: false,
+                    defaultPath: await downloadDir(),
+                  }) as string;
+                  if (typeof fileLoc === "string") {
+                    // append data name
+                    fileLoc = await join(fileLoc, `${datasetName}.csv`); 
+
+                    invoke('save_data', {sql, fileLoc}).then((rows) => {
+                      setQueryError(`Saved ${rows} to ${fileLoc}`);
+                      
+                    }).catch((e) => {
+                      setQueryError("Error saving file: " + e);
+                    })
+                  }
+                }}>
+                  Export
+                </div>
               </>
             )}
             {/* <span>No changes in row count</span> */}
