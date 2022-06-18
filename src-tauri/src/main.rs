@@ -107,7 +107,8 @@ fn main() -> Result<(), Error> {
             get_tables,
             compile,
             reune,
-            known_proc_blocks
+            known_proc_blocks,
+            save_data,
         ])
         .run(tauri::generate_context!())
         .context("error while running tauri application")
@@ -197,6 +198,63 @@ async fn get_tables(
 #[tracing::instrument(skip(cancel), err)]
 async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Result<(), String> {
     cancelled.0.store(cancel, Ordering::Relaxed);
+    Ok(())
+}
+
+
+
+#[tauri::command]
+#[tracing::instrument(skip(state, window), err)]
+async fn save_data(
+    sql: String,
+    file_loc: String,
+    //format: SaveFormat, // CSV, JSON, Parquey for now CSV only
+    state: tauri::State<'_, DefragStudioState>,
+    cancel: tauri::State<'_, Cancelled>,
+    running: tauri::State<'_, Running>,
+    window: tauri::Window,
+) -> Result<(), String> {
+    let is_running = running.0.load(Ordering::Relaxed);
+    if is_running {
+        cancel.0.store(true, Ordering::Relaxed);
+        running.0.store(false, Ordering::Relaxed);
+        tracing::info!("Running qsl");
+    }
+    let path = Path::new(&file_loc);
+
+    
+    
+    let sql = format!(
+        "COPY ({}) to '{}' WITH (HEADER 1, DELIMITER ',', FORMAT CSV, ENCODING 'UTF-8')",
+        sql,
+        path.display().to_string()
+    );
+    let conn = state
+        .conn
+        .lock()
+        .map_err(|_e| String::from("Could not lock connection"))?;
+    let mut stmt = conn
+        .prepare(&sql[..])
+        .map_err(|_e| format!("Could not prepare statement: {}", _e.to_string()))?;
+    // let rbs = stmt.query_map([], |row| {
+    //     let foo: bool = row.get(0)?;
+    //     Ok(foo)
+    // }).map_err(|_e| String::from("Could not query"))?;
+    // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
+    tracing::info!("Loading arrow");
+    window
+        .emit("save_started", "")
+        .map_err(|e| e.to_string())?;
+
+    let batches = stmt.execute(params![]).map_err(|e| e.to_string())?;
+   
+
+    window.emit("save_ended", batches).map_err(|e| e.to_string())?;
+    // tracing::info!("Serializing arrow");
+    //
+    // tracing::info!("Finished Serializing {}: {:?}", sql, &rbs.len());
+    //let records = DataResponse { records: json_rows };
+
     Ok(())
 }
 
