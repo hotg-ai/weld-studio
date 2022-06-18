@@ -65,7 +65,7 @@ class App extends React.Component<{}, AppState> {
 
     listen("save_ended", (saved) => {
       this.setState({ isQueryLoading: false, queryError: `Saved ${saved} records` });
-    }).then((u) => { 
+    }).then((u) => {
       if (u) this.unsubscribers.push(u);
     })
 
@@ -108,24 +108,26 @@ class App extends React.Component<{}, AppState> {
   }
 
   async preloadDatafiles() {
+    await invoke('log_message', { message: "trying to preload files" });
+    try {
+      const entries = await readDir('preload_tables', { dir: BaseDirectory.Resource, recursive: false });
 
-    const entries = await readDir('preload_tables', { dir: BaseDirectory.Resource, recursive: false });
-
-    this.setState({ isLoadingTable: true });
-    for (const file of entries) {
-      console.log(`Entry: ${file.path}`);
-      await invoke("load_csv", { invokeMessage: file.path })
-      .then((res) => {
+      this.setState({ isLoadingTable: true });
+      for (const file of entries) {
+        await invoke('log_message', { message: `preloading ${file.path}` });
+        console.log(`Entry: ${file.path}`);
+        let res = await invoke("load_csv", { invokeMessage: file.path })
         let result = res as string;
-        this.setState({ queryError: `${file} loaded as ${result}`});
-      })
-      .catch((e) => {
-        this.setState({ queryError: e.message});
-       
-      });  
+        this.setState({ queryError: `${file} loaded as ${result}` });
+        this.setState({ isLoadingTable: false });
+
+      }
+    } catch (e) {
+      await invoke('log_message', { message: e });
+      this.setState({ queryError: e.message });
+      this.setState({ isLoadingTable: false });
     }
-    this.setState({ isLoadingTable: false });
-       
+
   }
 
   // constructor(props: any) {
@@ -271,16 +273,20 @@ class App extends React.Component<{}, AppState> {
                     tables={tables}
                     isQueryLoading={isQueryLoading}
                     datasetRegistry={this.state.datasetRegistry}
-                    setIsQueryLoading={(isQueryLoading: boolean) => this.setState({isLoadingTable: isQueryLoading})}
+                    setIsQueryLoading={(isQueryLoading: boolean) => this.setState({ isLoadingTable: isQueryLoading })}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
                     setQueryError={(error: string) =>
                       this.setState({ queryError: error })
                     }
                     selectDataset={(name, toggle) => {
-                      this.setState({ datasetRegistry: {...this.state.datasetRegistry, [name] : {
-                        ...this.state.datasetRegistry[name], selected: toggle
-                      }}
-                    })}}
+                      this.setState({
+                        datasetRegistry: {
+                          ...this.state.datasetRegistry, [name]: {
+                            ...this.state.datasetRegistry[name], selected: toggle
+                          }
+                        }
+                      })
+                    }}
                     setQueryData={(name: string, query_data: QueryData) =>
                       this.setState({
                         datasetRegistry: {
@@ -301,8 +307,8 @@ class App extends React.Component<{}, AppState> {
                     data={data}
                     queryError={queryError}
                     isLoadingTable={isLoadingTable}
-                    setIsLoadingTable={(isLoadingTable: boolean) => this.setState({isLoadingTable}, () => console.log("SETTING IS LOADING TABLE", isLoadingTable))}
-                    setQueryError={(error: string) => this.setState({queryError: error})} 
+                    setIsLoadingTable={(isLoadingTable: boolean) => this.setState({ isLoadingTable }, () => console.log("SETTING IS LOADING TABLE", isLoadingTable))}
+                    setQueryError={(error: string) => this.setState({ queryError: error })}
                   />
                 }
               />
@@ -310,15 +316,20 @@ class App extends React.Component<{}, AppState> {
                 path="/"
                 element={
                   <Home
-                    setSql={(sql: string) => this.setState({sql}, () => this.executeQuery(sql))}
+                    queryError={queryError}
+                    setSql={(sql: string) => this.setState({ sql }, () => this.executeQuery(sql))}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
                     selectDataset={(name, toggle) => {
-                      this.setState({ datasetRegistry: {...this.state.datasetRegistry, [name] : {
-                        ...this.state.datasetRegistry[name], selected: toggle
-                      }}
-                    })}}
+                      this.setState({
+                        datasetRegistry: {
+                          ...this.state.datasetRegistry, [name]: {
+                            ...this.state.datasetRegistry[name], selected: toggle
+                          }
+                        }
+                      })
+                    }}
                     searchValue={searchValue}
-                    setSearchValue={(searchValue: string) => this.setState({searchValue})}
+                    setSearchValue={(searchValue: string) => this.setState({ searchValue })}
                     datasets={filteredData}
                     tables={tables}
                     setQueryError={(queryError) =>

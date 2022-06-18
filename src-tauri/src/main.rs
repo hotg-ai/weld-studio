@@ -106,6 +106,7 @@ fn main() -> Result<(), Error> {
             run_sql,
             get_tables,
             compile,
+            log_message,
             reune,
             known_proc_blocks,
             save_data,
@@ -200,6 +201,14 @@ async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Result<
     cancelled.0.store(cancel, Ordering::Relaxed);
     Ok(())
 }
+
+#[tauri::command]
+#[tracing::instrument(skip(), err)]
+async fn log_message( message: String ) -> Result<(), String> {
+    tracing::info!("{}", message);
+    Ok(())
+}
+
 
 #[tauri::command]
 #[tracing::instrument(skip(state, window), err)]

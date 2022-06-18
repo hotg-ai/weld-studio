@@ -19,6 +19,7 @@ function Home({
   setSearchValue,
   numberSelectedDatasets,
   tables,
+  queryError,
   setSql
 }: {
   setQueryError: (error: string) => void;
@@ -30,6 +31,7 @@ function Home({
   setSearchValue: (value: string) => void;
   setSql: (sql: string) => void;
   tables: TableData[];
+  queryError: string;
 }) {
   const history = useNavigate();
 
@@ -125,6 +127,7 @@ function Home({
              }
         </div>
         <div className="analysisBtn__container">
+          <div className='error__container'>{queryError}</div>
           <button
             disabled={numberSelectedDatasets === 0}
             style={{
