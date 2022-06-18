@@ -108,11 +108,10 @@ class App extends React.Component<{}, AppState> {
   }
 
   async preloadDatafiles() {
-    this.setState({ isQueryLoading: true });
 
     const entries = await readDir('preload_tables', { dir: BaseDirectory.Resource, recursive: false });
 
-    this.setState({ isQueryLoading: true });
+    this.setState({ isLoadingTable: true });
     for (const file of entries) {
       console.log(`Entry: ${file.path}`);
       await invoke("load_csv", { invokeMessage: file.path })
@@ -125,7 +124,7 @@ class App extends React.Component<{}, AppState> {
        
       });  
     }
-    this.setState({ isQueryLoading: false });
+    this.setState({ isLoadingTable: false });
        
   }
 
