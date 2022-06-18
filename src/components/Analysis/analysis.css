@@ -946,6 +946,7 @@ input:checked + .slider:before {
 }
 .intro_modal__container .modal .modal__body {
   padding: 20px 25px 25px !important;
+  position: relative;
 }
 .intro_modal__container .modal .modal-description {
   margin-bottom: 2rem;
@@ -961,7 +962,7 @@ input:checked + .slider:before {
 }
 .ant-carousel .slick-next {
   right: 0 !important;
-  top: 90% !important;
+  top: 270px !important;
   background: #00b594 !important;
   color: #fff !important;
   width: 93px !important;
@@ -971,8 +972,8 @@ input:checked + .slider:before {
   z-index: 990000;
 }
 .ant-carousel .slick-prev {
-  left: 72%;
-  top: 90%;
+  left: 510px !important;
+  top: 270px !important;
   border: 1px solid #00b594 !important;
   background-color: transparent;
   color: #00b594 !important;
@@ -1072,8 +1073,8 @@ input:checked + .slider:before {
 }
 .intro-modal-skip_btn {
   position: absolute;
-  top: 71.5%;
-  left: 55%;
+  top: 356px;
+  left: 450px;
   right: 0 !important;
   background: transparent !important;
   color: #00b594 !important;

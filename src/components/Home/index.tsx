@@ -43,14 +43,14 @@ function Home({
           <div className="home-header-cards__container">
             <div className="header-card" style={{ background: "#00B59433" }}>
               <div>
-                <Link to="/">Start with No Code</Link>
+                <Link to="/analysis/0">Start with No Code</Link>
                 <img src={databaseIcon} alt="" />
               </div>
               <span>Drag and drop analysis</span>
             </div>
             <div className="header-card" style={{ background: "#DEE5FF" }}>
               <div>
-                <Link to="/">Start with SQL</Link>
+                <Link to="/dataset/0">Start with SQL</Link>
                 <img src={sqlTableIcon} alt="" />
               </div>
               <span>SQL editor analysis</span>
