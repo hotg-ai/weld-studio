@@ -300,7 +300,7 @@ class App extends React.Component<{}, AppState> {
                     setSql={(sql: string) => this.executeQuery(sql)}
                     tables={selectedTables}
                     isQueryLoading={isQueryLoading}
-                    datasetRegistry={this.state.datasetRegistry}
+                    datasetRegistry={selectedDatasets}
                     setIsQueryLoading={(isQueryLoading: boolean) => this.setState({ isLoadingTable: isQueryLoading })}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
                     setQueryError={(error: string) =>
