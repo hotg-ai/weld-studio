@@ -90,6 +90,7 @@ const Dataset = ({
   const [datasetName, setDatasetName] = useState("untitled_dataset");
   const history = useNavigate();
 
+
   useEffect(() => {
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
@@ -218,34 +219,8 @@ const Dataset = ({
                 Add CSV 
               </button>
             </div>
-
-            {tables.sort((a, b) => sortByGroup(a, b)).map((table: TableData, tidx: number) => (
-              <Dropdown
-                key={`Dropdown-${tidx}`}
-                title={table.table_name}
-                selectBtnIcon={sqlTableIcon}
-                onSelect={() => {
-                  setSql(
-                    `${sql ? sql + "\n" : ""} select * from ${
-                      table.table_name
-                    } limit 10`
-                  );
-                }}
-              >
-                {table.column_names.map((item, idx) => {
-                  return (
-                    <DropdownOption key={`DropdownOption-${tidx}-${idx}`}>
-                      <div className="dropdownOption__Content">
-                        <span>
-                          {item}: {table.column_types[idx]}
-                        </span>
-                        {/* <ProgressBar percent={item.percent} /> */}
-                      </div>
-                    </DropdownOption>
-                  );
-                })}
-              </Dropdown>
-            ))}
+              
+            <GrouppedTables groups={groups} sql={sql} setSql={setSql}/>
           </div>
           {/* <div className="models__container">
           <div className="title">
@@ -620,4 +595,62 @@ function mergeColumnsIntoTensor(
     default:
       return undefined;
   }
+}
+
+
+const GrouppedTables = ({groups, sql, setSql}: {groups: Record<string, TableData[]>, sql:string, setSql:(sql: string) => void}) => {
+  const [hidden, setHidden] = useState<Record<string, boolean>>({})
+  return (<div>{Object.keys(groups).map(groupName => {
+    const tables = groups[groupName];
+    const hide = hidden[groupName];
+    const setHide = (toggle) => setHidden({...hidden, [groupName]: toggle})
+
+    return <div> 
+            <hr />
+            <span style={{display: "flex", flexDirection:"row", alignItems: "center", justifyContent:"space-between", width:"100%"}} onClick={() => {
+              setHide(!hide)
+            }}>
+              
+              <h3><b>{groupName}</b></h3> <img
+            src={`/assets/dropdown${!hide ? "open" : "Close"}.svg`}
+            alt=""
+          /> </span>
+           <div style={{display: hide ? "none" : "block"}}>
+            <GrouppedTableInner tables={tables} sql={sql} setSql={setSql} />
+          </div>
+        
+      </div>
+  })}</div>)
+}
+
+const GrouppedTableInner = ({tables, setSql, sql}: {tables: TableData[], sql:string, setSql:(sql: string) => void}) => {
+  return (<>
+    {tables.sort((a, b) => sortByGroup(a, b)).map((table: TableData, tidx: number) => (
+      <Dropdown
+        key={`Dropdown-${tidx}`}
+        title={table.table_name}
+        selectBtnIcon={sqlTableIcon}
+        onSelect={() => {
+          setSql(
+            `${sql ? sql + "\n" : ""} select * from ${
+              table.table_name
+            } limit 10`
+          );
+        }}
+      >
+        {table.column_names.map((item, idx) => {
+          return (
+            <DropdownOption key={`DropdownOption-${tidx}-${idx}`}>
+              <div className="dropdownOption__Content">
+                <span>
+                  {item}: {table.column_types[idx]}
+                </span>
+                {/* <ProgressBar percent={item.percent} /> */}
+              </div>
+            </DropdownOption>
+          );
+        })}
+      </Dropdown>
+    ))}
+  </>)
 }
