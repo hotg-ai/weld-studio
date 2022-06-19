@@ -345,6 +345,25 @@ class App extends React.Component<{}, AppState> {
                 element={
                   <Home
                     queryError={queryError}
+                    clearAllSelected={() => { 
+                      const tables = Object.keys(this.state.tables).reduce<Record<string, TableData>>((acc, key) => {
+                        const tables = this.state.tables;
+                         tables[key].selected = false;
+                        acc[key] = tables[key];
+                        return acc;
+                      }, {} as Record<string, TableData>);
+                      this.setState({ tables });
+
+                      const datasets = Object.keys(this.state.datasetRegistry).reduce<Record<string, QueryData>>((acc, key) => {
+                        const datasets = this.state.datasetRegistry;
+                        datasets[key].selected = false;
+                        acc[key] = datasets[key];
+                        return acc;
+                      }, {} as Record<string, QueryData>);
+
+                      this.setState({ datasetRegistry: datasets });
+                      console.log("ASDSADSDA", this.state)
+                    }}
                     setSql={(sql: string) => this.setState({ sql }, () => this.executeQuery(sql))}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
                     numberSelectedTables={selectedTables.length}

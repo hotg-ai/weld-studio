@@ -18,6 +18,7 @@ function Home({
   selectTable,
   searchValue,
   setSearchValue,
+  clearAllSelected,
   numberSelectedDatasets,
   numberSelectedTables,
   tables,
@@ -34,6 +35,7 @@ function Home({
   searchValue: string;
   setSearchValue: (value: string) => void;
   setSql: (sql: string) => void;
+  clearAllSelected: () => void;
   tables: TableData[];
   queryError: string;
 }) {
@@ -46,10 +48,11 @@ function Home({
       </div> */}
       <div className="home_content">
         <div className="home_content-header">
-          <div className="dataset_amount_container">
+          <div className="dataset_amount_container" style={{flex:6}}>
             <h5>Get Started</h5>
           </div>
-
+          
+          { numberSelectedDatasets + numberSelectedTables > 0 && ( <button className="clearall_btn" onClick={clearAllSelected}>X</button> )}
           <form className="search_container">
             <input
               type="text"
@@ -251,8 +254,11 @@ const DatasetBox = ({
         </div>
         <Checkbox
           defaultChecked={selected}
+          checked={selected}
           disabled={!isSelectable}
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             selectDataset(!selected);
           }}
         />
