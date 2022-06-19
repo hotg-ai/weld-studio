@@ -165,13 +165,14 @@ struct DataResponse {
 #[derive(serde::Serialize, Debug, serde::Deserialize)]
 struct TableData {
     name: String,
-    columns: serde_json::Map<String, serde_json::Value>
+    columns: serde_json::Map<String, serde_json::Value>,
 }
 
 #[tauri::command]
 #[tracing::instrument(skip(state), err)]
 async fn get_tables(
     state: tauri::State<'_, DefragStudioState>,
+    preload: Option<bool>,
 ) -> Result<Vec<serde_json::Map<String, serde_json::Value>>, String> {
     let conn = state
         .conn
@@ -187,11 +188,24 @@ async fn get_tables(
         .map_err(|e| e.to_string())?
         .collect();
 
-    let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
+    let mut json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
         json::writer::record_batches_to_json_rows(&batches[..]).map_err(|e| e.to_string())?;
 
+    
     // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
+    if (preload != None) && preload.unwrap() {
+        let jrws = &mut json_rows;
+        for json_row in json_rows.iter_mut() {
+            let mut m = &mut *json_row;
 
+            m.insert(
+                String::from("group"),
+                serde_json::Value::String(String::from("preloaded")),
+            );
+        }
+
+        return Ok(json_rows);
+    }
     Ok(json_rows)
 }
 
@@ -204,11 +218,10 @@ async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Result<
 
 #[tauri::command]
 #[tracing::instrument(skip(), err)]
-async fn log_message( message: String ) -> Result<(), String> {
+async fn log_message(message: String) -> Result<(), String> {
     tracing::info!("{}", message);
     Ok(())
 }
-
 
 #[tauri::command]
 #[tracing::instrument(skip(state, window), err)]
@@ -259,7 +272,6 @@ async fn save_data(
     let rows: Vec<u32> = rows.map(|m| m.unwrap()).collect();
 
     window.emit("save_ended", "").map_err(|e| e.to_string())?;
-
 
     // tracing::info!("Serializing arrow");
     //

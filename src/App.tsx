@@ -102,7 +102,7 @@ class App extends React.Component<{}, AppState> {
       }
     );
     this.preloadDatafiles().then(() => {
-      this.getTables()
+      this.getTables(true)
     }).finally(() => {
       this.getTables();
     });
@@ -142,8 +142,8 @@ class App extends React.Component<{}, AppState> {
     this.unsubscribers.forEach((u) => u());
   }
 
-  getTables() {
-    invoke("get_tables").then((tableResults: any[]) => {
+  getTables(preload?: boolean) {
+    invoke("get_tables", {preload}).then((tableResults: any[]) => {
       const tables = tableResults as TableData[];
       const curTables = this.state.tables;
       tables.forEach((table) => {
