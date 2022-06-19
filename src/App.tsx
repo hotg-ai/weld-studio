@@ -148,7 +148,7 @@ class App extends React.Component<{}, AppState> {
       const curTables = this.state.tables;
       tables.forEach((table) => {
         if (!curTables[table.table_name]) {
-          curTables[table.table_name] = table;
+          curTables[table.table_name] = {...table, selected: true};
         }
       })
       this.setState({ ...this.state, tables: curTables}, () => {
