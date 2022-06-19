@@ -10,7 +10,7 @@ interface props {
 }
 
 export function Dropdown({ disabled = false, title, children, onSelect, selectBtnIcon }: props) {
-  const [dropdownOpen, setDropdownOpen] = useState<boolean>(true);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
   function toggleDropdown() {
     if (!disabled) {

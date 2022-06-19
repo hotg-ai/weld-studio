@@ -344,6 +344,28 @@ class App extends React.Component<{}, AppState> {
                 path="/"
                 element={
                   <Home
+                    setTableGroup={
+                      (group, name) => {
+                        this.setState({
+                          tables: {
+                            ...this.state.tables, [name]: {
+                              ...this.state.tables[name], group
+                            }
+                          }
+                        })
+                      }
+                    }
+                    setDatasetGroup={
+                      (group, name) => {
+                        this.setState({
+                          datasetRegistry: {
+                            ...this.state.datasetRegistry, [name]: {
+                              ...this.state.datasetRegistry[name], group
+                            }
+                          }
+                        })
+                      }
+                    }
                     queryError={queryError}
                     clearAllSelected={() => { 
                       const tables = Object.keys(this.state.tables).reduce<Record<string, TableData>>((acc, key) => {
@@ -362,7 +384,7 @@ class App extends React.Component<{}, AppState> {
                       }, {} as Record<string, QueryData>);
 
                       this.setState({ datasetRegistry: datasets });
-                      console.log("ASDSADSDA", this.state)
+                   
                     }}
                     setSql={(sql: string) => this.setState({ sql }, () => this.executeQuery(sql))}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}

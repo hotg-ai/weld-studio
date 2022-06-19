@@ -221,12 +221,20 @@
 .dataset-box__container > img {
   width: 100%;
 }
+
+
+
 .dataset-box_content {
   padding: 20px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
+.dataset-box_content .dataset-box__group_input {
+  border: none;
+}
+
 .dataset-box_content > img {
   width: 20px;
   height: 20px;

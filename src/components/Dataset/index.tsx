@@ -39,6 +39,21 @@ type TableColumnType = IntegerColumnType | DoubleColumnType | VarcharColumnType;
 type TableColumnTypes = Record<string, TableColumnType>;
 export type DatasetTypes = Record<string, TableColumnTypes>;
 
+
+const sortByGroup = (a: QueryData | TableData, b: QueryData | TableData) => {
+  const aG = a.group;
+  const bG = b.group;
+
+  if (aG > bG) {
+    return 1
+  } else if (aG === bG) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+}
+
 const Dataset = ({
   setSql,
   sql,
@@ -131,8 +146,21 @@ const Dataset = ({
     });
   });
 
-  return (
-    <div className="dataset_page">
+
+  const groups: Record<string, TableData[]> = {}; 
+  tables.forEach((t) => {
+    let group = 'ungrouped';
+    if (t.group) {
+      group = t.group
+    }
+    if (!groups[group])
+      groups[group] = [t]
+    else
+      groups[group].push(t)
+
+  });
+
+    return (<div className="dataset_page">
       <div
         className="spinner__container"
         style={{ display: isQueryLoading ? "flex" : "none" }}
@@ -187,11 +215,11 @@ const Dataset = ({
                   }
                 }}
               >
-                Add CSV
+                Add CSV 
               </button>
             </div>
 
-            {tables.map((table: TableData, tidx: number) => (
+            {tables.sort((a, b) => sortByGroup(a, b)).map((table: TableData, tidx: number) => (
               <Dropdown
                 key={`Dropdown-${tidx}`}
                 title={table.table_name}
@@ -332,7 +360,7 @@ const Dataset = ({
                       {dataset.query}
                     </span>
                     {data && data.length > 0 && datasetName === name && (
-                      <Dropdown title="Query Result Schema">
+                      <Dropdown title="Query Result Schema" >
                         {querySchema.fields.map(
                           (field: FieldSchema, idx: number) => {
                             return (

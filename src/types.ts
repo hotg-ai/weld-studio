@@ -9,6 +9,7 @@ export type TableData = {
   column_names: string[];
   column_types: string[];
   selected?: boolean;
+  group?: string;
 };
 
 export type FieldSchema = {
@@ -27,4 +28,5 @@ export type QueryData = {
   data: Array<Record<string, any>>;
   selected: boolean;
   createdAt: Date;
+  group?: string;
 };
