@@ -53,11 +53,6 @@
     "description": "a binary approach for modelling the relationship between a scalar response and one or more explanatory variables",
     "lastVersion": "0.12.3",
     "publicUrl": "https://func.hotg.ai/function/sbfs/weld/support_vector_classifier.wasm"
-}, {
-    "name": "hotg-ai/support_vector_regression",
-    "description": "a binary approach for modelling the relationship between a scalar response and one or more explanatory variables",
-    "lastVersion": "0.12.3",
-    "publicUrl": "https://func.hotg.ai/function/sbfs/weld/support_vector_regression.wasm"
 },  {
     "name": "hotg-ai/train_test_split",
     "description": "a random split into training and test sets",
