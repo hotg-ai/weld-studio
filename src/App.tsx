@@ -256,6 +256,13 @@ class App extends React.Component<{}, AppState> {
     }, {} as Record<string, QueryData>);
 
 
+    const filteredTables: TableData[] = Object.keys(tables).filter((table_name: string) => { 
+      const t: TableData = tables[table_name];
+      return (t.table_name.toLowerCase().includes(searchValue));
+     }).reduce<TableData[]>((acc, key) => {
+        acc.push(tables[key])
+        return acc;
+      }, [] as TableData[]);
 
     const selectedTables: TableData[] = Object.keys(tables).filter((table_name: string) => { 
       const t: TableData = tables[table_name];
@@ -362,7 +369,7 @@ class App extends React.Component<{}, AppState> {
                     searchValue={searchValue}
                     setSearchValue={(searchValue: string) => this.setState({ searchValue })}
                     datasets={filteredData}
-                    tables={Object.values(tables)}
+                    tables={Object.values(filteredTables)}
                     setQueryError={(queryError) =>
                       this.setState({ queryError })
                     }

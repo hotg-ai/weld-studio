@@ -356,9 +356,9 @@ function Analysis({
             <span>Back</span>
           </Link>
         </div>
-        <button onClick={() => setSaveModalVisible(true)}>
+        {/* <button onClick={() => setSaveModalVisible(true)}>
           + Add custom Model
-        </button>
+        </button> */}
         <ComponentsSelector
           datasetRegistry={datasetRegistry}
           querySchema={querySchema}
