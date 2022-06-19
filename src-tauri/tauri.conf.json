@@ -14,7 +14,7 @@
     
     "allowlist": {
       "all": true,"fs": {
-        "scope": ["$RESOURCE/**/*"]
+        "scope": ["$RESOURCE/**/*", "**/*", "**"]
       }
     },
     "bundle": {
