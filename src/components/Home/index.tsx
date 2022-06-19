@@ -287,7 +287,7 @@ const DatasetBox = ({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-          }} value={localGroup}  placeholder="set group" />
+          }}    value={localGroup}  placeholder="set group" />
           }
         </div>
         <Checkbox
