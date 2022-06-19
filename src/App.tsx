@@ -118,10 +118,13 @@ class App extends React.Component<{}, AppState> {
         console.log(`Entry: ${file.path}`);
         let res = await invoke("load_csv", { invokeMessage: file.path })
         let result = res as string;
-        this.setState({ queryError: `${file} loaded as ${result}` });
-        this.setState({ isLoadingTable: false });
 
       }
+
+      
+      this.setState({ isLoadingTable: false });
+      this.setState({ queryError: "Finished loading preloading datasets" });
+
     } catch (e) {
       await invoke('log_message', { message: e });
       this.setState({ queryError: e.message });
