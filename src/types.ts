@@ -8,6 +8,7 @@ export type TableData = {
   table_name: string;
   column_names: string[];
   column_types: string[];
+  selected?: boolean;
 };
 
 export type FieldSchema = {

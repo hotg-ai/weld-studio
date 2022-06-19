@@ -165,7 +165,7 @@ struct DataResponse {
 #[derive(serde::Serialize, Debug, serde::Deserialize)]
 struct TableData {
     name: String,
-    columns: serde_json::Map<String, serde_json::Value>,
+    columns: serde_json::Map<String, serde_json::Value>
 }
 
 #[tauri::command]

@@ -15,6 +15,7 @@ function Home({
   setIsLoadingTable,
   datasets,
   selectDataset,
+  selectTable,
   searchValue,
   setSearchValue,
   numberSelectedDatasets,
@@ -26,6 +27,7 @@ function Home({
   setIsLoadingTable: (isLoading: boolean) => void;
   datasets: Record<string, QueryData>;
   numberSelectedDatasets: number;
+  selectTable: (dataset: string, toggle: boolean) => void;
   selectDataset: (dataset: string, toggle: boolean) => void;
   searchValue: string;
   setSearchValue: (value: string) => void;
@@ -117,11 +119,11 @@ function Home({
                 <DatasetBox
                   key={table.table_name}
                   id={idx}
-                  selected={false}
-                  isSelectable={false}
+                  selected={table.selected}
+                  isSelectable={true}
                   title={`table::${table.table_name}`}
                   onClick={() => setSql(`select * from ${table.table_name} limit 10`)}
-                  selectDataset={(toggle) => setSql(`select * from ${table.table_name} limit 10`)} />
+                  selectDataset={ (toggle) => selectTable(table.table_name, toggle)} />
               )
              })
              }

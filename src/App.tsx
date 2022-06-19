@@ -15,13 +15,14 @@ import { TableData, FileDropEvent, FieldSchema, QueryData } from "./types";
 
 import ClipLoader from "react-spinners/ClipLoader";
 import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
+import { table } from "console";
 
 type AppState = {
   data: any[];
   querySchema: { fields: FieldSchema[] };
   sql: string | undefined;
   queryError: string | undefined;
-  tables: TableData[];
+  tables: Record<string, TableData>;
   isLoadingTable: boolean;
   isQueryLoading: boolean;
   datasetRegistry: Record<string, QueryData>;
@@ -35,7 +36,7 @@ class App extends React.Component<{}, AppState> {
     querySchema: { fields: [] },
     sql: undefined,
     queryError: undefined,
-    tables: [],
+    tables: {},
     isLoadingTable: false,
     isQueryLoading: false,
     datasetRegistry: {},
@@ -142,8 +143,17 @@ class App extends React.Component<{}, AppState> {
   }
 
   getTables() {
-    invoke("get_tables").then((tableResults: unknown) => {
-      this.setState({ ...this.state, tables: tableResults as TableData[] });
+    invoke("get_tables").then((tableResults: any[]) => {
+      const tables = tableResults as TableData[];
+      const curTables = this.state.tables;
+      tables.forEach((table) => {
+        if (!curTables[table.table_name]) {
+          curTables[table.table_name] = table;
+        }
+      })
+      this.setState({ ...this.state, tables: curTables}, () => {
+        console.log("CURRENT TABLE", curTables)
+      });
     });
   }
 
@@ -247,6 +257,14 @@ class App extends React.Component<{}, AppState> {
 
 
 
+    const selectedTables: TableData[] = Object.keys(tables).filter((table_name: string) => { 
+      const t: TableData = tables[table_name];
+      return t.selected }).reduce<TableData[]>((acc, key) => {
+        acc.push(tables[key])
+        return acc;
+      }, [] as TableData[]);
+
+
 
 
     return (
@@ -273,7 +291,7 @@ class App extends React.Component<{}, AppState> {
                     queryError={queryError}
                     sql={sql}
                     setSql={(sql: string) => this.executeQuery(sql)}
-                    tables={tables}
+                    tables={selectedTables}
                     isQueryLoading={isQueryLoading}
                     datasetRegistry={this.state.datasetRegistry}
                     setIsQueryLoading={(isQueryLoading: boolean) => this.setState({ isLoadingTable: isQueryLoading })}
@@ -322,6 +340,15 @@ class App extends React.Component<{}, AppState> {
                     queryError={queryError}
                     setSql={(sql: string) => this.setState({ sql }, () => this.executeQuery(sql))}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
+                    selectTable={(name, toggle) => {
+                      this.setState({
+                        tables: {
+                          ...this.state.tables, [name]: {
+                            ...this.state.tables[name], selected: toggle
+                          }
+                        }
+                      })
+                    }}
                     selectDataset={(name, toggle) => {
                       this.setState({
                         datasetRegistry: {
@@ -334,7 +361,7 @@ class App extends React.Component<{}, AppState> {
                     searchValue={searchValue}
                     setSearchValue={(searchValue: string) => this.setState({ searchValue })}
                     datasets={filteredData}
-                    tables={tables}
+                    tables={Object.values(tables)}
                     setQueryError={(queryError) =>
                       this.setState({ queryError })
                     }
