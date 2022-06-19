@@ -2,6 +2,10 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { isMap, isObject, uniqueId } from "lodash";
 import pino from "pino";
 
+import { downloadDir, join, resourceDir } from "@tauri-apps/api/path";
+
+import { readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
+
 import {
   RuneCanvas,
   storm2flow,
@@ -200,13 +204,18 @@ export async function loadProcBlocks(): Promise<Record<string, ProcBlock>> {
 }
 
 export async function loadProcBlock(filename: string): Promise<ProcBlock> {
-  const url = `${filename}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    const { status, statusText } = response;
-    throw new Error(`Unable to retrieve ${filename}: ${status} ${statusText}`);
+
+  const url = `${filename.replace('$RESOURCE', '')}`;
+
+  
+  
+  const response = await readBinaryFile(url, { dir: BaseDirectory.Resource });
+  //const response = await fetch(url);
+  if (!response) {
+
+    throw new Error(`Unable to retrieve ${filename}`);
   }
-  const wasm = await response.arrayBuffer();
+  const wasm = response;
   const logger = pino({ browser: { write: console.log } });
   const pb = await ProcBlock.load(wasm, logger);
   return pb;

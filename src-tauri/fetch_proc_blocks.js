@@ -32,7 +32,7 @@ const f = async () => {
     
     xx = await Promise.all(xx)
 
-    console.log(xx)
+    console.log(JSON.stringify(xx))
     
 }
 
