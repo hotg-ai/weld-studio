@@ -262,6 +262,9 @@ const DatasetBox = ({
   group,
   setGroup
 }: DatasetBoxProps) => {
+  const [showGrpBtn, setShowGrpBtn]  = useState<boolean>(group === undefined);
+  const [localGroup, setLocalGroup] = useState<string | undefined>(group);
+
   return (
     <div className="dataset-box__container" onClick={onClick}>
       <img src={testDatasetScreenshot} alt="" />
@@ -269,11 +272,23 @@ const DatasetBox = ({
         <img src={isDataset ? sqlTableIcon : databaseIcon} alt="" />
         <div className="title">
           <h5>{title}</h5>
-          <input className="dataset-box__group_input" type="text" onChange={(e) => setGroup(e.target.value)} 
+          {showGrpBtn ?
+               <button className="dataset-box__group_btn" onClick={(e ) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowGrpBtn(false)}
+              }>+ Group</button>
+            : <input className="dataset-box__group_input" type="text" onChange={(e) => {
+              const value = e.target.value; 
+                setLocalGroup(e.target.value)
+                 if(value.trim().length !== 0)
+                    setGroup(e.target.value)
+            }} 
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-          }} value={group} placeholder="set group" />
+          }} value={localGroup}  placeholder="set group" />
+          }
         </div>
         <Checkbox
           defaultChecked={selected}
