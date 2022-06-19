@@ -340,6 +340,7 @@ class App extends React.Component<{}, AppState> {
                     queryError={queryError}
                     setSql={(sql: string) => this.setState({ sql }, () => this.executeQuery(sql))}
                     numberSelectedDatasets={Object.keys(selectedDatasets).length}
+                    numberSelectedTables={selectedTables.length}
                     selectTable={(name, toggle) => {
                       this.setState({
                         tables: {

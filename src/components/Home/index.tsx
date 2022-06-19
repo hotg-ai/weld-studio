@@ -19,6 +19,7 @@ function Home({
   searchValue,
   setSearchValue,
   numberSelectedDatasets,
+  numberSelectedTables,
   tables,
   queryError,
   setSql
@@ -27,6 +28,7 @@ function Home({
   setIsLoadingTable: (isLoading: boolean) => void;
   datasets: Record<string, QueryData>;
   numberSelectedDatasets: number;
+  numberSelectedTables: number;
   selectTable: (dataset: string, toggle: boolean) => void;
   selectDataset: (dataset: string, toggle: boolean) => void;
   searchValue: string;
@@ -107,37 +109,47 @@ function Home({
                   id={idx}
                   selected={dataset.selected}
                   isSelectable={true}
+                  isDataset={true}
                   title={name}
-                  onClick={() => {}}
+                  onClick={() => { 
+                    selectDataset(name, true);
+                    history(`/analysis/${idx + 1}`, { replace: true });
+                  }}
                   selectDataset={(toggle) => selectDataset(name, toggle)}
                 />
               );
             })}
-            {tables &&
-             tables.map((table: TableData, idx: number) => {
+          {tables &&
+            tables.map((table: TableData, idx: number) => {
               return (
                 <DatasetBox
                   key={table.table_name}
                   id={idx}
                   selected={table.selected}
                   isSelectable={true}
-                  title={`table::${table.table_name}`}
-                  onClick={() => setSql(`select * from ${table.table_name} limit 10`)}
-                  selectDataset={ (toggle) => selectTable(table.table_name, toggle)} />
+                  isDataset={false}
+                  title={`${table.table_name}`}
+                  onClick={() => {
+                    selectTable(table.table_name, true);
+                    setSql(`select * from ${table.table_name} limit 10`)
+                    
+                  }}
+                  selectDataset={(toggle) => selectTable(table.table_name, toggle)} />
               )
-             })
-             }
+            })
+          }
         </div>
         <div className="analysisBtn__container">
-          <div className='error__container'>{queryError}</div>
+          <div className='error__container'>{queryError || (numberSelectedDatasets + numberSelectedTables === 0 ? "Select Tables or Datasets to start" : ``)}</div>
+          <div className="analysisBtns">
           <button
-            disabled={numberSelectedDatasets === 0}
+            disabled={numberSelectedTables === 0}
             style={{
               backgroundColor:
-                numberSelectedDatasets === 0 ? "gray" : "#00b594",
+                numberSelectedTables === 0 ? "gray" : "#00b594",
             }}
             onClick={async () => {
-              history("/analysis/1");
+              history("/dataset/1");
               // const file = await open({
               //   title: "Select a CSV file",
               //   filters: [{ "extensions": ['csv', 'tsv', 'txt'], "name": "delimited files" }]
@@ -163,8 +175,45 @@ function Home({
               // }
             }}
           >
-            Start Analysis
+           Query Data
           </button>
+            <button
+              disabled={numberSelectedDatasets === 0}
+              style={{
+                backgroundColor:
+                  numberSelectedDatasets === 0 ? "gray" : "#00b594",
+              }}
+              onClick={async () => {
+                history("/analysis/1");
+                // const file = await open({
+                //   title: "Select a CSV file",
+                //   filters: [{ "extensions": ['csv', 'tsv', 'txt'], "name": "delimited files" }]
+                // })
+
+                // if (file) {
+                //   setIsLoadingTable(true);
+                //   invoke("load_csv", { invokeMessage: file })
+                //     .then((res) => {
+                //       let result = res as string;
+                //       setQueryError(`${file} loaded as ${result}`);
+                //       setIsLoadingTable(false);
+
+                //       history("/dataset/1", { replace: true });
+                //       //  this.setState({ queryError: `${files[0]} loaded as ${result}` });
+                //     })
+                //     .catch((e) => {
+                //       setIsLoadingTable(false)
+                //       setQueryError(e.message);
+
+                //       history("/dataset/1", { replace: true });
+                //     });
+                // }
+              }}
+            >
+              Start Analysis
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -177,6 +226,7 @@ interface DatasetBoxProps {
   title: string;
   selected: boolean;
   id: number;
+  isDataset: boolean;
   isSelectable: boolean;
   onClick: () => void;
   selectDataset: (n: boolean) => void;
@@ -185,19 +235,18 @@ const DatasetBox = ({
   id,
   title,
   selected,
+  isDataset,
   isSelectable,
   onClick,
   selectDataset,
 }: DatasetBoxProps) => {
   return (
-    <div className="dataset-box__container">
+    <div className="dataset-box__container"  onClick={onClick}>
       <img src={testDatasetScreenshot} alt="" />
       <div className="dataset-box_content">
-        <img src={ isSelectable ? sqlTableIcon : databaseIcon } alt="" />
+        <img src={isDataset ? sqlTableIcon : databaseIcon} alt="" />
         <div className="title">
-          <Link to={`/dataset/${id}`} onClick={onClick}>
             <h5>{title}</h5>
-          </Link>
           <span>{(new Date()).toDateString()}</span>
         </div>
         <Checkbox

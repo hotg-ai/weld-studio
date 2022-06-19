@@ -156,6 +156,17 @@
   align-items: center;
   justify-content: space-between;
 }
+
+.analysisBtn__container .error__container {
+  flex: 6;
+}
+
+.analysisBtn__container .analysisBtns {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content:  space-between;
+}
 .analysisBtn__container button {
   border-radius: 25px;
   outline: none;
@@ -209,11 +220,11 @@
 .dataset-box_content .title {
   width: 65%;
 }
-.dataset-box_content .title > a {
+.dataset-box_content .title {
   font-weight: bolder;
   font-size: 16px;
 }
-.dataset-box_content .title > a > h5 {
+.dataset-box_content .title > h5 {
   font-weight: bolder;
   font-size: 16px;
   white-space: nowrap;
