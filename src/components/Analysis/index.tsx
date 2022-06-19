@@ -351,7 +351,7 @@ function Analysis({
     <div className="analysis_page">
       <div className="sidebar_left">
         <div className="back-link__container">
-          <Link to={`/dataset/${id}`}>
+          <Link to={`/`}>
             <img src="/assets/backArrow.svg" alt="<" />
             <span>Back</span>
           </Link>
