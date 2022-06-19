@@ -80,6 +80,7 @@ function Analysis({
         let row = labels.reduce((acc, curr) => {
           if (curr.startsWith("Dataset_")) {
             const name = curr.replace("Dataset_", "");
+            try {
             Object.entries(datasetRegistry[name].data[index]).forEach(
               ([k, v]) => {
                 if (!acc[name]) acc[name] = "";
@@ -93,6 +94,7 @@ function Analysis({
                 acc[name] = acc[name] + `"${k}": ${v}, `;
               }
             );
+          } catch(e) {}
             // acc[name] = datasetRegistry[name].data.
           } else {
             acc[curr] = o[curr];

@@ -312,7 +312,7 @@ const Dataset = ({
                 <div
                   className={datasetName === name ? "activeDataset" : undefined}
                   key={`DropdownOption-${name}-${iddx}`}
-                  onClick={() => selectDataset(name, !dataset.selected)}
+                //  onClick={() => selectDataset(name, !dataset.selected)}
                 >
                   <div key={name} className="dropdownOption__Content">
                     <h3
