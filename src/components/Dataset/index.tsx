@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/tauri";
+import { resourceDir } from '@tauri-apps/api/path';
 import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "../common/dropdown";
 import CodeEditor from "./components/editor";
@@ -94,10 +95,11 @@ const Dataset = ({
   useEffect(() => {
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
+      const $RESOURCE =  await resourceDir();
       const allProckBlocks: any[] = await invoke("known_proc_blocks");
       const pbs = Object.entries(pb).map(([name, procBlock]) => {
         const match = allProckBlocks.filter((p) => p["name"] === name);
-        const matchUrl = match[0]["publicUrl"];
+        const matchUrl = match[0]["publicUrl"].replace('$RESOURCE', `${$RESOURCE}/preload_proc_blocks`);
         return [
           `proc-block/${name}`,
           metadataToComponent(name, procBlock, matchUrl),

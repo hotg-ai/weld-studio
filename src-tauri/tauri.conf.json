@@ -42,7 +42,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": ["./preload_tables"],
+      "resources": ["./preload_tables", "./preload_proc_blocks"],
       "shortDescription": "",
       "targets": "all",
       "windows": {

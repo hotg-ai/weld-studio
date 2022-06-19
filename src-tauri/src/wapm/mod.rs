@@ -11,7 +11,7 @@ use graphql_client::{GraphQLQuery, Response};
 )]
 pub struct GetNamespace;
 
-const WELD_REGISTRY: &str = include_str!("../manifest.json");
+const WELD_REGISTRY: &str = include_str!("../local_manifest.json");
 #[tauri::command]
 #[tracing::instrument(skip_all, err)]
 pub async fn known_proc_blocks(
