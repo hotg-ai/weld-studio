@@ -135,6 +135,7 @@ function Home({
                   onClick={() => {
                     selectTable(table.table_name, true);
                     setSql(`select * from ${table.table_name} limit 10`)
+                    history(`/dataset/${idx + 1}`, { replace: true });
                     
                   }}
                   selectDataset={(toggle) => selectTable(table.table_name, toggle)} />
@@ -152,6 +153,8 @@ function Home({
                 numberSelectedTables === 0 ? "gray" : "#00b594",
             }}
             onClick={async () => {
+
+              setSql("");
               history("/dataset/1");
               // const file = await open({
               //   title: "Select a CSV file",
