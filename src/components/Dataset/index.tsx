@@ -249,8 +249,15 @@ const Dataset = ({
                   />
                 </span>
               </div>
+
+              <ClipLoader color="purple" loading={isQueryLoading} size={25} />
+              <div>
               <button
                 className="addAsDataset_btn"
+                style={{
+                  borderTopRightRadius: "0px",
+                  borderBottomRightRadius: "0px",
+                }}
                 onClick={() => {
                   const name = datasetName;
                   try {
@@ -266,7 +273,24 @@ const Dataset = ({
               >
                 <span>Prepare for Analysis</span>
               </button>
-              <ClipLoader color="purple" loading={isQueryLoading} size={25} />
+              <button
+                className="addAsDataset_btn"
+                style={{
+                  backgroundColor:
+                  Object.keys(datasetRegistry).length === 0 ? "gray" : "#00b594",
+                   borderLeft: "1px solid white",
+                    borderTopLeftRadius: "0px",
+                    borderBottomLeftRadius: "0px",
+         
+                }}
+                disabled={Object.keys(datasetRegistry).length === 0}
+                onClick={() => {
+                 history("/analysis/1");
+                }}
+              >
+                <span>Start Analysis </span>
+              </button>
+              </div>
             </div>
             <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
           </div>
