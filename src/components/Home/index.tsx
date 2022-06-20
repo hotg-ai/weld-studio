@@ -297,7 +297,7 @@ function Home({
       {introModalVisible && (
         <Modal
           className="intro_modal__container"
-          title="Getting started (Build: weld-studio_0.1.0-RC5_x64)"
+          title="Getting started"
           setModalVisible={setIntroModalVisible}
         >
           <p className="modal-description">
