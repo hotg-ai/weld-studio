@@ -30,7 +30,6 @@ type CustomEdgeProps = {
 };
 
 export default function CustomEdge(props: CustomEdgeProps) {
-  const diagram = useAppSelector((s) => s.flow);
   const dispatch = useAppDispatch();
   const {
     id,
@@ -58,7 +57,6 @@ export default function CustomEdge(props: CustomEdgeProps) {
     targetY,
   });
   const { getEdges, setEdges } = useReactFlow();
-  const edges = getEdges();
 
   const removeEdge = async (e) => {
     await dispatch(ClearSelectedNode());
