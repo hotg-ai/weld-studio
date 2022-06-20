@@ -5,7 +5,7 @@ use hotg_rune_compiler::{
     asset_loader::{AssetLoader, DefaultAssetLoader},
     BuildConfig, FeatureFlags,
 };
-use tauri::{Builder, CustomMenuItem, Menu, MenuItem, Submenu};
+use tauri::{Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 
 use crate::{
     legacy::{Cancelled, Running},
@@ -39,23 +39,17 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         current_directory: std::env::current_dir()?,
         features: FeatureFlags::stable(),
     };
-    Ok(Builder::default()
+
+    let builder = Builder::default()
         .manage(state)
         .manage(Running::default())
         .manage(Cancelled::default())
-        .menu(menu)
-        .on_menu_event(|event| match event.menu_item_id() {
-            "quit" => {
-                std::process::exit(0);
-            }
-            "close" => {
-                event.window().close().unwrap();
-            }
-            _ => {}
-        })
         .manage(assets)
         .manage(client)
         .manage(build_config)
+        .menu(menu)
+        .on_menu_event(handle_menu_event)
+        .on_window_event(handle_window_event)
         .invoke_handler(tauri::generate_handler![
             crate::legacy::load_csv,
             crate::legacy::run_sql,
@@ -64,5 +58,33 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
             crate::compiler::compile,
             crate::runtime::reune,
             crate::wapm::known_proc_blocks,
-        ]))
+        ]);
+
+    Ok(builder)
+}
+
+fn handle_menu_event(event: tauri::WindowMenuEvent) {
+    let window = event.window();
+
+    match event.menu_item_id() {
+        "quit" => {
+            window.app_handle().exit(0);
+        }
+        "close" => {
+            window.close().unwrap();
+        }
+        id => {
+            tracing::warn!(id, "Unhandled menu event");
+        }
+    }
+}
+
+fn handle_window_event(event: tauri::GlobalWindowEvent<impl tauri::Runtime>) {
+    match event.event() {
+        tauri::WindowEvent::FileDrop(tauri::FileDropEvent::Dropped(paths)) => {
+            tracing::warn!(?paths, "The user dragged some files onto the window");
+        }
+        tauri::WindowEvent::CloseRequested { .. } => tracing::debug!("Window was closed"),
+        payload => tracing::trace!(?payload, "Ignoring a global window event"),
+    }
 }

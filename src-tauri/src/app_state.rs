@@ -1,7 +1,4 @@
-use std::{
-    ops::DerefMut,
-    path::{Path, PathBuf},
-};
+use std::{ops::DerefMut, path::PathBuf};
 
 use anyhow::{Context, Error};
 use duckdb::Connection;
@@ -9,7 +6,7 @@ use futures::lock::Mutex;
 
 #[derive(Debug)]
 pub struct AppState {
-    home_dir: PathBuf,
+    _home_dir: PathBuf,
     conn: Mutex<Connection>,
 }
 
@@ -28,11 +25,10 @@ impl AppState {
             .with_context(|| format!("Unable to open the database at \"{}\"", db_file.display()))?;
         let conn = Mutex::new(conn);
 
-        Ok(AppState { home_dir, conn })
-    }
-
-    pub fn log_file(home_dir: &Path) -> PathBuf {
-        home_dir.join("weld.log")
+        Ok(AppState {
+            _home_dir: home_dir,
+            conn,
+        })
     }
 
     pub async fn db(&self) -> impl DerefMut<Target = Connection> + '_ {

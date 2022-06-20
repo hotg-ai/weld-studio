@@ -30,6 +30,8 @@ fn main() -> Result<(), Error> {
         .run(tauri::generate_context!())
         .context("error while running tauri application")?;
 
+    tracing::info!("Shutting down");
+
     Ok(())
 }
 
