@@ -114,7 +114,7 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log("SOMETHING CHANGED IN THE DATA SET");
+    dispatch(ClearSelectedNode());
     setNodes(diagram.nodes);
     setEdges(diagram.edges);
   }, [datasetRegistry]);
