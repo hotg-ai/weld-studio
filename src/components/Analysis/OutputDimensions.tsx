@@ -52,6 +52,7 @@ export default function OutputDimensions() {
 
   if (!model || (model && !model.data)) return null;
   const component = components[(model.data as FlowNodeData).componentID];
+  if (!component) return null;
   // const acceptedTypes = component.acceptedOutputElementTypes?.map(
   //   item => item.elementTypes
   // );

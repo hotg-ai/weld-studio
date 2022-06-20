@@ -434,7 +434,7 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
         });
       dispatch(
         UpdateComponents({
-          ...prefixKeys(procBlocksOnly),
+          ...procBlocksOnly,
           ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
           ...prefixKeys(outputs()),
         })

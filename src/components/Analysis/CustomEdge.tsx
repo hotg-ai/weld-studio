@@ -30,6 +30,7 @@ type CustomEdgeProps = {
 };
 
 export default function CustomEdge(props: CustomEdgeProps) {
+  const diagram = useAppSelector((s) => s.flow);
   const dispatch = useAppDispatch();
   const {
     id,
@@ -59,10 +60,11 @@ export default function CustomEdge(props: CustomEdgeProps) {
   const { getEdges, setEdges } = useReactFlow();
   const edges = getEdges();
 
-  const removeEdge = async () => {
-    await setEdges(getEdges().filter((edge) => edge.id !== id));
+  const removeEdge = async (e) => {
     await dispatch(ClearSelectedNode());
-    await dispatch({ type: "DELETE_EDGE", payload: id });
+    const newEdges = getEdges().filter((edge) => edge.id !== id);
+    await setEdges(newEdges);
+    await dispatch({ type: "SET_EDGES", payload: newEdges });
   };
 
   return (
@@ -83,7 +85,12 @@ export default function CustomEdge(props: CustomEdgeProps) {
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <div className="body">
-          <button className="edgebutton" onClick={removeEdge}>
+          <button
+            className="edgebutton"
+            onClick={(e) => {
+              removeEdge(e);
+            }}
+          >
             <img
               width="8px"
               height="8px"

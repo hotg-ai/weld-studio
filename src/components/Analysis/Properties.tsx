@@ -379,7 +379,9 @@ export default function PropertiesForm() {
       propertiesValueMap = (selectedNode as Node<FlowNodeData>).data
         ?.propertiesValueMap;
     const componentID = (selectedNode as Node<FlowNodeData>).data?.componentID;
-    if (componentID) properties = componentProperties(components[componentID]);
+    const selectedComponent = components[componentID];
+    if (!selectedComponent) return null;
+    if (componentID) properties = componentProperties(selectedComponent);
   }
   if (!properties || !propertiesValueMap) return null;
 

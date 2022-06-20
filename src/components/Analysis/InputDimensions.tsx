@@ -34,11 +34,11 @@ export default function InputDimensions() {
   }
 
   const { ports, model } = inputPorts(diagram, selected);
-
   if (!model || !model?.data) return null;
+  const component = components[(model.data as FlowNodeData).componentID];
+  if (!component) return null;
 
   const children = ports.map((port, i) => {
-    const component = components[(model.data as FlowNodeData).componentID];
     const acceptedTypes = component.acceptedInputElementTypes?.[i]
       .elementTypes || [model.data?.inputs[i].tensor.elementType];
 
