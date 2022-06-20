@@ -311,18 +311,18 @@ function Home({
               <p>
                 <b>You can do three things incredibly fast with Weld:</b> <br/><br/>
                 <ol>
-                <li>1. Rapid analysis of multiple csv files. Add CSV files and run SQL queries on them, including creating joins on data that is hard to do with excel.
+                <li>Rapid analysis of multiple csv files. Add CSV files and run SQL queries on them, including creating joins on data that is hard to do with excel.
                </li>
-                <li>2.Build predictive models (such as logistic regression) by selecting features and outcome variables from the query and using no code - drag and drop editor. 
+                <li>Build predictive models (such as logistic regression) by selecting features and outcome variables from the query and using no code - drag and drop editor. 
                 </li>
-                <li>3.Compare multiple models to pick the best features, rapidly.</li>
+                <li>Compare multiple models to pick the best features, rapidly.</li>
                 </ol>
               </p>
             </div>
             <div className="step-two">
               <img src={testDatasetScreenshot} alt="" />
               <div className="step-two-content">
-                <h3>1.Create SQL analysis and select features and targets for predictive analytics</h3>
+                <h3>1. Create SQL analysis and select features and targets for predictive analytics</h3>
                 <span>
                   Import any number of CSV files and use standard SQL to query them. Perform joins blazingly fast. Select feature and outcome columns for further ML analysis. 
                 </span>
