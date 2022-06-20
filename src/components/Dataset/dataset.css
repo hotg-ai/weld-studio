@@ -301,6 +301,7 @@
   height: 30px;
   width: 200px !important;
   margin-right: 0.3rem;
+  margin-left: auto;
 }
 .code__container-header .addAsDataset_btn:hover {
   background: #00b594 !important;

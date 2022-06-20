@@ -56,7 +56,7 @@ const nodeType2Color = (
   | "#969696" => {
   switch (type) {
     case "capability":
-      return "purple";
+      return "#cb4ebc";
     case "model":
       return "#cb4ebc";
     case "proc-block":

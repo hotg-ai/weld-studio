@@ -1,9 +1,9 @@
 .App {
   width: 100%;
- position: relative;
+  position: relative;
 }
 .dashboard__container {
-  padding-top: 4.5rem;
+  padding-top: 3.8rem;
 }
 
 .spinner__container {
@@ -42,7 +42,7 @@
 *::-webkit-scrollbar {
   background: transparent;
   width: 3px;
-  height:min-content;
+  height: min-content;
 }
 *::-webkit-scrollbar-thumb {
   background-color: #dddd;
