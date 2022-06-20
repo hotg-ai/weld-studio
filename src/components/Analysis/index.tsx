@@ -117,7 +117,10 @@ function Analysis({
   }, [diagram]);
 
   useEffect(() => {
-    setIntroModalVisible(true);
+    if (sessionStorage.getItem("analysis_intro") !== "seen") {
+      setIntroModalVisible(true);
+      sessionStorage.setItem("analysis_intro", "seen");
+    }
   }, []);
 
   const { id } = useParams();
