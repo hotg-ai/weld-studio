@@ -416,6 +416,10 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
   });
 
   useMemo(() => {
+    console.log(
+      "CAPABILITIES UPDATED",
+      generateDatasetCapabilities(datasetRegistry)
+    );
     dispatch(
       UpdateComponents({
         // ...prefixKeys(
@@ -587,3 +591,8 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
     </>
   );
 };
+
+
+
+Record <string, ResultColumns[]>
+

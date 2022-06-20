@@ -2,6 +2,7 @@ import React from "react";
 import {
   getBezierPath,
   getEdgeCenter,
+  useReactFlow,
 } from "react-flow-renderer";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { ClearSelectedNode } from "../../redux/builderSlice";
@@ -55,9 +56,11 @@ export default function CustomEdge(props: CustomEdgeProps) {
     targetX,
     targetY,
   });
-  const edges = useAppSelector((s) => s.flow.edges);
+  const { getEdges, setEdges } = useReactFlow();
+  const edges = getEdges();
 
   const removeEdge = async () => {
+    await setEdges(getEdges().filter((edge) => edge.id !== id));
     await dispatch(ClearSelectedNode());
     await dispatch({ type: "DELETE_EDGE", payload: id });
   };
@@ -81,7 +84,13 @@ export default function CustomEdge(props: CustomEdgeProps) {
       >
         <div className="body">
           <button className="edgebutton" onClick={removeEdge}>
-            <img width="8px" height="8px" style={{marginTop: "-10px", marginLeft: "-1px" }} src={deleteSvg} alt="" />
+            <img
+              width="8px"
+              height="8px"
+              style={{ marginTop: "-10px", marginLeft: "-1px" }}
+              src={deleteSvg}
+              alt=""
+            />
           </button>
         </div>
       </foreignObject>

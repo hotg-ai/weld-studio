@@ -7,7 +7,6 @@ import {
 } from "react-flow-renderer";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { ClearSelectedNode, SelectNode } from "../../../redux/builderSlice";
-import { openNotification } from "../../../utils";
 import { Component, TensorDescriptionModel } from ".";
 import { isConnectionValid } from "../utils/FlowValidator";
 import {
@@ -17,6 +16,7 @@ import {
 import deleteBlackSvg from "../icons/deleteBlack.svg";
 
 import { Port, PortErrorComponent } from "./Storm";
+import { useState } from "react";
 
 export type ForgeNodeData = {
   type: Component["type"];
@@ -91,6 +91,7 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
   const dispatch = useAppDispatch();
   const forgeLogs = useAppSelector((state) => state.builder.forgeLogs);
   const { getNodes, setNodes } = useReactFlow();
+  const [highlightPort] = useState(false);
 
   const isValidConnection = (connection: Connection) => {
     const result = isConnectionValid(connection, diagram, components);
@@ -124,14 +125,6 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
           //   forgeLogs
           // );
         }
-        openNotification(
-          error.code.toString(),
-          error.message,
-          "error",
-          "bottom-right",
-          dispatch,
-          forgeLogs
-        );
       });
     return result.valid || result.connectOnError;
   };

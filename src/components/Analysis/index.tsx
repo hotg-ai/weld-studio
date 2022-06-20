@@ -383,7 +383,7 @@ function Analysis({
       <div className="analysis_page_content">
         <div className="studio__container">
           <div className="studio__content">
-            <StudioCanvas />
+            <StudioCanvas datasetRegistry={datasetRegistry} />
           </div>
           <div className="sidebar_right">
             <button
