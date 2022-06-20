@@ -39,6 +39,11 @@
   margin-right: 0.4rem;
 }
 
+.header__container h6 {
+  color:#c130b0;
+  padding: 0.4rem;
+}
+
 .back-link__container a {
   display: flex;
   align-items: center;

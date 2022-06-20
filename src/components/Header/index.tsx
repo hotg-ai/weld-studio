@@ -112,7 +112,7 @@ const Header = ({
           alt="DeSilo"
           className="header-logo"
         />
-        Weld Studio
+        <>WeldStudio <h6>RC-5</h6></> 
       </a>
       <div>
         <span>Powered by</span>
