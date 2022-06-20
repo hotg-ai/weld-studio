@@ -1,38 +1,3 @@
-import { Message } from "console-feed/lib/definitions/Console";
-import { Log } from "../redux/builderSlice";
-
-export const openNotification = (
-  id: string,
-  message: string,
-  status: "success" | "error" | "info" | "warning",
-  placement:
-    | "bottom-center"
-    | "top-center"
-    | "top-left"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-right",
-  dispatch: any,
-  logs: Message[]
-) => {
-  logError(message, dispatch, logs);
-};
-
-export const logError = (message: string, dispatch: any, logs: Message[]) => {
-  const doesMessageExist =
-    logs.length > 1 && logs.filter((item: any) => item.data[1] === message)[0];
-
-  //if the message does not exist already, then log the message
-  if (!doesMessageExist) {
-    dispatch(
-      Log({
-        type: "warn",
-        message,
-      })
-    );
-  }
-};
-
 export const detectInvalidNodes = (
   nodeId: string | undefined,
   status: "processing" | "invalid" | "valid"

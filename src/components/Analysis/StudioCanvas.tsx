@@ -16,8 +16,6 @@ import {
 } from "./model";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { ClearSelectedNode, SelectNode } from "../../redux/builderSlice";
-import { AppDispatch, store } from "../../redux/store";
-import { fetchComponentDependencies } from "../../redux/actions/studio/fetchComponentDependencies";
 import ReactFlow, {
   Controls,
   Position,
@@ -29,15 +27,15 @@ import ReactFlow, {
   applyNodeChanges,
   ReactFlowInstance,
   ConnectionMode,
-  NodeTypes,
   EdgeChange,
 } from "react-flow-renderer";
 import { FlowNodeData, FlowNodeComponent } from "./model/FlowNodeComponent";
-import { flowCanvasToDiagram } from "./utils/FlowUtils";
-import { isDiagramValid } from "./utils/FlowValidator";
 import CustomEdge from "./CustomEdge";
+import { QueryData } from "src/types";
 
-type OwnProps = {};
+type OwnProps = {
+  datasetRegistry: Record<string, QueryData>;
+};
 
 function componentProperties(component: Component): Record<string, Property> {
   switch (component.type) {
@@ -101,7 +99,7 @@ export function outputs(
   }
 }
 
-export default function StudioCanvas({}: OwnProps) {
+export default function StudioCanvas({ datasetRegistry }: OwnProps) {
   const [canvasNodes, setNodes] = useState<Node<FlowNodeData>[]>([]);
   const [canvasEdges, setEdges] = useState<Edge<undefined>[]>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -116,17 +114,10 @@ export default function StudioCanvas({}: OwnProps) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (loadedProject.state == "loaded" && loadedProject.diagram) {
-      const d = flowCanvasToDiagram(loadedProject.diagram, components);
-      store.dispatch({
-        type: "SET_DIAGRAM",
-        payload: d,
-      });
-      setNodes(d.nodes);
-      setEdges(d.edges);
-      const result = isDiagramValid(diagram, components);
-    }
-  }, [loadedProject.state]);
+    dispatch(ClearSelectedNode());
+    setNodes(diagram.nodes);
+    setEdges(diagram.edges);
+  }, [datasetRegistry]);
 
   // We ned to clear selection so that we can see the properties panel showing the
   useEffect(() => {
@@ -171,7 +162,7 @@ export default function StudioCanvas({}: OwnProps) {
     setEdges((edges) =>
       addEdge({ ...connection, id, animated: true, type: "custom" }, edges)
     );
-    store.dispatch({
+    dispatch({
       type: "ADD_EDGE",
       payload: addEdge({ ...connection, id, animated: true, type: "custom" }, [
         ...diagram.edges,
@@ -183,13 +174,12 @@ export default function StudioCanvas({}: OwnProps) {
     event: React.MouseEvent<Element, MouseEvent>,
     node: Node<FlowNodeData>
   ) => {
-    store.dispatch({ type: "REPOSITION_NODE", payload: node });
+    dispatch({ type: "REPOSITION_NODE", payload: node });
   };
 
   const onDrop = (
     event: React.DragEvent,
-    components: Record<string, Component | undefined>,
-    dispatch: AppDispatch
+    components: Record<string, Component | undefined>
   ) => {
     event.preventDefault();
     if (reactFlowWrapper && reactFlowWrapper.current && reactFlowInstance) {
@@ -223,7 +213,7 @@ export default function StudioCanvas({}: OwnProps) {
           };
           if (component.type === "capability") {
             let count = 0;
-            diagram.nodes.forEach((node) => {
+            canvasNodes.forEach((node) => {
               if (node.type === "capability") count++;
             });
             data.data.propertiesValueMap["source"] = count;
@@ -275,11 +265,8 @@ export default function StudioCanvas({}: OwnProps) {
                 });
               }
             );
-          store.dispatch({ type: "ADD_NODE", payload: data });
+          dispatch({ type: "ADD_NODE", payload: data });
           setNodes([...canvasNodes, data]);
-          // getAccessTokenSilently().then((token) =>
-          dispatch(fetchComponentDependencies({ componentID: componentID }));
-          // );
         }
       }
     }
@@ -368,7 +355,7 @@ export default function StudioCanvas({}: OwnProps) {
         onNodesDelete={removeNode}
         onEdgesDelete={removeEdge}
         onDrop={(e) => {
-          onDrop(e, components, dispatch);
+          onDrop(e, components);
         }}
         onDragOver={(e) => {
           e.preventDefault();

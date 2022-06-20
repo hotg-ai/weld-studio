@@ -7,21 +7,23 @@ import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api/tauri";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
-
 import Header from "../../components/Header";
 import Home from "../../components/Home";
 import Dataset from "../../components/Dataset";
 import Anaysis from "../../components/Analysis";
 
+import {
+  TableData,
+  FileDropEvent,
+  FieldSchema,
+  QueryData,
+  AppState,
+  WeldProject,
+} from "../../types";
 
-
-import { TableData, FileDropEvent, FieldSchema, QueryData, AppState, WeldProject } from "../../types";
-
-
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from "uuid";
 
 class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
-  
   state = {
     id: uuidv4(),
     data: [],
@@ -33,14 +35,14 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
     isQueryLoading: false,
     datasetRegistry: {},
     selectedDatasets: [],
-    searchValue: '',  
+    searchValue: "",
   };
 
   unsubscribers: UnlistenFn[] = [];
 
   constructor(props: WeldProject) {
     super(props);
-    this.setState({...props});
+    this.setState({ ...props });
   }
 
   componentDidMount() {
@@ -62,10 +64,13 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
     });
 
     listen("save_ended", (saved) => {
-      this.setState({ isQueryLoading: false, queryError: `Saved ${saved} records` });
+      this.setState({
+        isQueryLoading: false,
+        queryError: `Saved ${saved} records`,
+      });
     }).then((u) => {
       if (u) this.unsubscribers.push(u);
-    })
+    });
 
     listen("load_csv_complete", (payload: unknown) =>
       this.eventHandlerLoadCSVComplete([payload])
@@ -98,37 +103,38 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
         if (u) this.unsubscribers.push(u);
       }
     );
-    this.preloadDatafiles().then(() => {
-      this.getTables(true)
-    }).finally(() => {
-      this.getTables();
-    });
+    this.preloadDatafiles()
+      .then(() => {
+        this.getTables(true);
+      })
+      .finally(() => {
+        this.getTables();
+      });
   }
 
   async preloadDatafiles() {
-    await invoke('log_message', { message: "trying to preload files" });
+    await invoke("log_message", { message: "trying to preload files" });
     try {
-      const entries = await readDir('preload_tables', { dir: BaseDirectory.Resource, recursive: false });
+      const entries = await readDir("preload_tables", {
+        dir: BaseDirectory.Resource,
+        recursive: false,
+      });
 
       this.setState({ isLoadingTable: true });
       for (const file of entries) {
-        await invoke('log_message', { message: `preloading ${file.path}` });
+        await invoke("log_message", { message: `preloading ${file.path}` });
         console.log(`Entry: ${file.path}`);
-        let res = await invoke("load_csv", { invokeMessage: file.path })
+        let res = await invoke("load_csv", { invokeMessage: file.path });
         let result = res as string;
-
       }
 
-      
       this.setState({ isLoadingTable: false });
       this.setState({ queryError: "Finished loading preloading datasets" });
-
     } catch (e) {
-      await invoke('log_message', { message: e });
+      await invoke("log_message", { message: e });
       this.setState({ queryError: e.message });
       this.setState({ isLoadingTable: false });
     }
-
   }
 
   // constructor(props: any) {
@@ -140,16 +146,16 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
   }
 
   getTables(preload?: boolean) {
-    invoke("get_tables", {preload}).then((tableResults: any[]) => {
+    invoke("get_tables", { preload }).then((tableResults: any[]) => {
       const tables = tableResults as TableData[];
       const curTables = this.state.tables;
       tables.forEach((table) => {
         if (!curTables[table.table_name]) {
-          curTables[table.table_name] = {...table, selected: true};
+          curTables[table.table_name] = { ...table, selected: true };
         }
-      })
-      this.setState({ ...this.state, tables: curTables}, () => {
-        console.log("CURRENT TABLE", curTables)
+      });
+      this.setState({ ...this.state, tables: curTables }, () => {
+        console.log("CURRENT TABLE", curTables);
       });
     });
   }
@@ -229,50 +235,56 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       tables,
       isQueryLoading,
       datasetRegistry,
-      searchValue
+      searchValue,
     } = this.state;
 
+    const filteredData: Record<string, QueryData> = Object.keys(datasetRegistry)
+      .filter((dataset_name: string) => {
+        const dataset: QueryData = datasetRegistry[dataset_name];
+        return (
+          dataset_name.toLowerCase().includes(searchValue) ||
+          dataset.query.toLowerCase().includes(searchValue)
+        );
+      })
+      .reduce<Record<string, QueryData>>((acc, key) => {
+        acc[key] = datasetRegistry[key];
+        return acc;
+      }, {} as Record<string, QueryData>);
 
-    const filteredData: Record<string, QueryData> = Object.keys(datasetRegistry).filter((dataset_name: string) => {
-      const dataset: QueryData = datasetRegistry[dataset_name];
-      return (dataset_name.toLowerCase().includes(searchValue) || dataset.query.toLowerCase().includes(searchValue));
-    }
-    ).reduce<Record<string, QueryData>>((acc, key) => {
-      acc[key] = datasetRegistry[key];
-      return acc;
-    }, {} as Record<string, QueryData>);
+    const selectedDatasets: Record<string, QueryData> = Object.keys(
+      datasetRegistry
+    )
+      .filter((dataset_name: string) => {
+        const dataset: QueryData = datasetRegistry[dataset_name];
+        return dataset.selected;
+      })
+      .reduce<Record<string, QueryData>>((acc, key) => {
+        acc[key] = datasetRegistry[key];
+        return acc;
+      }, {} as Record<string, QueryData>);
 
-
-    const selectedDatasets: Record<string, QueryData> = Object.keys(datasetRegistry).filter((dataset_name: string) => {
-      const dataset: QueryData = datasetRegistry[dataset_name];
-      return dataset.selected;
-    }
-    ).reduce<Record<string, QueryData>>((acc, key) => {
-      acc[key] = datasetRegistry[key];
-      return acc;
-    }, {} as Record<string, QueryData>);
-
-
-    const filteredTables: TableData[] = Object.keys(tables).filter((table_name: string) => { 
-      const t: TableData = tables[table_name];
-      return (t.table_name.toLowerCase().includes(searchValue));
-     }).reduce<TableData[]>((acc, key) => {
-        acc.push(tables[key])
+    const filteredTables: TableData[] = Object.keys(tables)
+      .filter((table_name: string) => {
+        const t: TableData = tables[table_name];
+        return t.table_name.toLowerCase().includes(searchValue);
+      })
+      .reduce<TableData[]>((acc, key) => {
+        acc.push(tables[key]);
         return acc;
       }, [] as TableData[]);
 
-    const selectedTables: TableData[] = Object.keys(tables).filter((table_name: string) => { 
-      const t: TableData = tables[table_name];
-      return t.selected }).reduce<TableData[]>((acc, key) => {
-        acc.push(tables[key])
+    const selectedTables: TableData[] = Object.keys(tables)
+      .filter((table_name: string) => {
+        const t: TableData = tables[table_name];
+        return t.selected;
+      })
+      .reduce<TableData[]>((acc, key) => {
+        acc.push(tables[key]);
         return acc;
       }, [] as TableData[]);
-
-
-
 
     return (
-        <>  
+      <>
         <div
           className="spinner__container"
           style={{ display: isLoadingTable ? "flex" : "none" }}
@@ -297,19 +309,25 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                     tables={selectedTables}
                     isQueryLoading={isQueryLoading}
                     datasetRegistry={selectedDatasets}
-                    setIsQueryLoading={(isQueryLoading: boolean) => this.setState({ isLoadingTable: isQueryLoading })}
-                    numberSelectedDatasets={Object.keys(selectedDatasets).length}
+                    setIsQueryLoading={(isQueryLoading: boolean) =>
+                      this.setState({ isLoadingTable: isQueryLoading })
+                    }
+                    numberSelectedDatasets={
+                      Object.keys(selectedDatasets).length
+                    }
                     setQueryError={(error: string) =>
                       this.setState({ queryError: error })
                     }
                     selectDataset={(name, toggle) => {
                       this.setState({
                         datasetRegistry: {
-                          ...this.state.datasetRegistry, [name]: {
-                            ...this.state.datasetRegistry[name], selected: toggle
-                          }
-                        }
-                      })
+                          ...this.state.datasetRegistry,
+                          [name]: {
+                            ...this.state.datasetRegistry[name],
+                            selected: toggle,
+                          },
+                        },
+                      });
                     }}
                     setQueryData={(name: string, query_data: QueryData) =>
                       this.setState({
@@ -331,8 +349,14 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                     data={data}
                     queryError={queryError}
                     isLoadingTable={isLoadingTable}
-                    setIsLoadingTable={(isLoadingTable: boolean) => this.setState({ isLoadingTable }, () => console.log("SETTING IS LOADING TABLE", isLoadingTable))}
-                    setQueryError={(error: string) => this.setState({ queryError: error })}
+                    setIsLoadingTable={(isLoadingTable: boolean) =>
+                      this.setState({ isLoadingTable }, () =>
+                        console.log("SETTING IS LOADING TABLE", isLoadingTable)
+                      )
+                    }
+                    setQueryError={(error: string) =>
+                      this.setState({ queryError: error })
+                    }
                   />
                 }
               />
@@ -340,39 +364,43 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                 path="/"
                 element={
                   <Home
-                    setTableGroup={
-                      (group, name) => {
-                        this.setState({
-                          tables: {
-                            ...this.state.tables, [name]: {
-                              ...this.state.tables[name], group
-                            }
-                          }
-                        })
-                      }
-                    }
-                    setDatasetGroup={
-                      (group, name) => {
-                        this.setState({
-                          datasetRegistry: {
-                            ...this.state.datasetRegistry, [name]: {
-                              ...this.state.datasetRegistry[name], group
-                            }
-                          }
-                        })
-                      }
-                    }
+                    setTableGroup={(group, name) => {
+                      this.setState({
+                        tables: {
+                          ...this.state.tables,
+                          [name]: {
+                            ...this.state.tables[name],
+                            group,
+                          },
+                        },
+                      });
+                    }}
+                    setDatasetGroup={(group, name) => {
+                      this.setState({
+                        datasetRegistry: {
+                          ...this.state.datasetRegistry,
+                          [name]: {
+                            ...this.state.datasetRegistry[name],
+                            group,
+                          },
+                        },
+                      });
+                    }}
                     queryError={queryError}
-                    clearAllSelected={() => { 
-                      const tables = Object.keys(this.state.tables).reduce<Record<string, TableData>>((acc, key) => {
+                    clearAllSelected={() => {
+                      const tables = Object.keys(this.state.tables).reduce<
+                        Record<string, TableData>
+                      >((acc, key) => {
                         const tables = this.state.tables;
-                         tables[key].selected = false;
+                        tables[key].selected = false;
                         acc[key] = tables[key];
                         return acc;
                       }, {} as Record<string, TableData>);
                       this.setState({ tables });
 
-                      const datasets = Object.keys(this.state.datasetRegistry).reduce<Record<string, QueryData>>((acc, key) => {
+                      const datasets = Object.keys(
+                        this.state.datasetRegistry
+                      ).reduce<Record<string, QueryData>>((acc, key) => {
                         const datasets = this.state.datasetRegistry;
                         datasets[key].selected = false;
                         acc[key] = datasets[key];
@@ -380,31 +408,40 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                       }, {} as Record<string, QueryData>);
 
                       this.setState({ datasetRegistry: datasets });
-                   
                     }}
-                    setSql={(sql: string) => this.setState({ sql }, () => this.executeQuery(sql))}
-                    numberSelectedDatasets={Object.keys(selectedDatasets).length}
+                    setSql={(sql: string) =>
+                      this.setState({ sql }, () => this.executeQuery(sql))
+                    }
+                    numberSelectedDatasets={
+                      Object.keys(selectedDatasets).length
+                    }
                     numberSelectedTables={selectedTables.length}
                     selectTable={(name, toggle) => {
                       this.setState({
                         tables: {
-                          ...this.state.tables, [name]: {
-                            ...this.state.tables[name], selected: toggle
-                          }
-                        }
-                      })
+                          ...this.state.tables,
+                          [name]: {
+                            ...this.state.tables[name],
+                            selected: toggle,
+                          },
+                        },
+                      });
                     }}
                     selectDataset={(name, toggle) => {
                       this.setState({
                         datasetRegistry: {
-                          ...this.state.datasetRegistry, [name]: {
-                            ...this.state.datasetRegistry[name], selected: toggle
-                          }
-                        }
-                      })
+                          ...this.state.datasetRegistry,
+                          [name]: {
+                            ...this.state.datasetRegistry[name],
+                            selected: toggle,
+                          },
+                        },
+                      });
                     }}
                     searchValue={searchValue}
-                    setSearchValue={(searchValue: string) => this.setState({ searchValue })}
+                    setSearchValue={(searchValue: string) =>
+                      this.setState({ searchValue })
+                    }
                     datasets={filteredData}
                     tables={Object.values(filteredTables)}
                     setQueryError={(queryError) =>
@@ -423,7 +460,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
             </Routes>
           </Router>
         </div>
-        </>
+      </>
     );
   }
 }

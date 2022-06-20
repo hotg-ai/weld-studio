@@ -20,6 +20,7 @@ export const store = configureStore({
         // Ignore these action types
         ignoredActions: [
           "builder/UpdateComponents",
+          "builder/RefreshComponents",
           "builder/SetForgeCredentials",
           "SELECT_NODE",
           "BUILD_PROJECT",

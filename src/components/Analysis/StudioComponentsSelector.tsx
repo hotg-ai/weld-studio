@@ -416,15 +416,30 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
   });
 
   useMemo(() => {
-    dispatch(
-      UpdateComponents({
-        // ...prefixKeys(
-        //   generateCapabilities(querySchema, (data as any[]).length)
-        // ),
-        ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
-        ...prefixKeys(outputs()),
-      })
-    );
+    let procBlocksOnly: Record<string, Component> = {};
+    if (components === undefined || !components) {
+      dispatch(
+        UpdateComponents({
+          ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
+          ...prefixKeys(outputs()),
+        })
+      );
+    } else {
+      Object.entries(components)
+        .filter(([, c]: [string, Component]) => {
+          return c.type === "proc-block";
+        })
+        .forEach(([k, v]: [string, Component]) => {
+          if (k && v) procBlocksOnly[k] = v;
+        });
+      dispatch(
+        UpdateComponents({
+          ...prefixKeys(procBlocksOnly),
+          ...prefixKeys(generateDatasetCapabilities(datasetRegistry)),
+          ...prefixKeys(outputs()),
+        })
+      );
+    }
   }, [datasetRegistry]);
 
   // dispatch(ClearComponents());

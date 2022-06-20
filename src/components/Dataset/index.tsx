@@ -10,8 +10,7 @@ import Table from "./components/table";
 import "./dataset.css";
 import { QueryData, TableData } from "../../types";
 import { useAppDispatch } from "src/hooks/hooks";
-import { loadProcBlocks } from "src/redux/actions/project/loadProject";
-import { UpdateComponents } from "src/redux/builderSlice";
+import { RefreshComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
 import _ from "lodash";
 import { FieldSchema } from "../../types";
@@ -20,6 +19,7 @@ import { ElementType, Tensor } from "@hotg-ai/rune";
 import { downloadIcon, sqlTableIcon } from "../../assets";
 import { open } from "@tauri-apps/api/dialog";
 import { downloadDir, join } from "@tauri-apps/api/path";
+import { loadProcBlocks } from "./procBlocks";
 
 type IntegerColumnType = {
   type: "INTEGER";
@@ -106,7 +106,7 @@ const Dataset = ({
         ] as const;
       });
       await dispatch(
-        UpdateComponents({
+        RefreshComponents({
           ...Object.fromEntries(pbs),
         })
       );
@@ -612,7 +612,7 @@ const GrouppedTables = ({
           setHidden({ ...hidden, [groupName]: toggle });
 
         return (
-          <div>
+          <div key={`table-${groupName}`}>
             <hr />
             <span
               style={{
