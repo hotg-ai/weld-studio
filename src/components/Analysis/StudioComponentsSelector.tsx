@@ -591,8 +591,3 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
     </>
   );
 };
-
-
-
-Record <string, ResultColumns[]>
-
