@@ -1,4 +1,5 @@
 import { Tabs } from "antd";
+
 import React, { useEffect, useState } from "react";
 import { HeaderTabCloseIcon } from "src/assets";
 import { WeldProject } from "src/types";
@@ -19,6 +20,7 @@ const HeaderTabItem = ({
   onEditName: (name: string) => void;
 }) => {
   const [localName, setLocalName] = useState<string>(name);
+
 
   return (
     <div
@@ -84,6 +86,8 @@ const Header = ({
   onClose: (tab: string) => void;
   onAddTab: () => void;
 }) => {
+
+
   const [appVersion, setAppVersion] = useState<string | undefined>()
 
   useEffect( () => {
