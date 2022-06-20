@@ -1,8 +1,9 @@
 import { Tabs } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HeaderTabCloseIcon } from "src/assets";
 import { WeldProject } from "src/types";
 import "./header.css";
+import { getVersion } from '@tauri-apps/api/app';
 
 const HeaderTabItem = ({
   name,
@@ -83,6 +84,13 @@ const Header = ({
   onClose: (tab: string) => void;
   onAddTab: () => void;
 }) => {
+  const [appVersion, setAppVersion] = useState<string | undefined>()
+
+  useEffect( () => {
+      getVersion().then((appVersion: string) => {
+        setAppVersion(appVersion)
+      })
+  })
   return (
     <div className="header__container">
       {/* <div className="header--home__tab">
@@ -112,7 +120,7 @@ const Header = ({
           alt="DeSilo"
           className="header-logo"
         />
-        <>WeldStudio <h6>RC-5</h6></> 
+        <>WeldStudio <h6>v{appVersion}</h6></> 
       </a>
       <div>
         <span>Powered by</span>
