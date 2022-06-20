@@ -110,7 +110,10 @@ import EmailVerificationPng from "./img/images/EmailVerificationPng.png";
 import testDatasetScreenshot from "./img/images/testDatasetScreenshot.png";
 import addDatasetIcon from "./img/icons/addDatasetIcon.svg";
 import databaseIcon from "./img/icons/database-icon.svg";
+import HeaderTabCloseIcon from "./img/icons/header-tab-close.svg";
+
 export {
+  HeaderTabCloseIcon,
   databaseIcon,
   addDatasetIcon,
   testDatasetScreenshot,
