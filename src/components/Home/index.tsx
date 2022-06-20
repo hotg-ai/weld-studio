@@ -59,7 +59,10 @@ function Home({
   const [introModalVisible, setIntroModalVisible] = useState(false);
 
   useEffect(() => {
-    setIntroModalVisible(true);
+    if (sessionStorage.getItem("home_intro") !== "seen") {
+      setIntroModalVisible(true);
+      sessionStorage.setItem("home_intro", "seen");
+    }
   }, []);
 
   const [appVersion, setAppVersion] = useState<string | undefined>()
