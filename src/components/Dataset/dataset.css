@@ -15,7 +15,7 @@
   display: flex;
   justify-content: center;
 }
-.table__container thead{
+.table__container thead {
   position: sticky;
   top: 0;
 }
@@ -119,14 +119,43 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .dropdown .dropdown-content {
   padding: 16px 0 0 0;
 }
 .dataset__sidebar__container.right .selectedColumns__container > div {
-  padding: 0 25px;
-  padding-top: 0.5rem;
+  padding: 12px 25px;
 }
-.dataset__sidebar__container.right .dropdownOption__Content > h3 {
+
+.selectedColumns__container .dropdownOption__Content .title-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.selectedColumns__container .dropdownOption__Content .title-content > button {
+  width: 40%;
+  display: flex;
+  padding: 5px 10px;
+  background-color: transparent;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  outline: none;
+  color: #000;
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+}
+.selectedColumns__container
+  .dropdownOption__Content
+  .title-content
+  > button
+  img {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.2rem;
+}
+.dataset__sidebar__container.right .dropdownOption__Content .title-content h3 {
   font-weight: bold;
   font-size: 18px;
   color: #000;
@@ -143,13 +172,17 @@
   cursor: pointer;
   z-index: 1000;
 }
-.dataset__sidebar__container.right .dropdownOption__Content > .dropdown {
-  padding: 0;
+.dataset__sidebar__container.right .dropdownOption__Content .dropdown {
+  padding: 0 !important;
+  margin-bottom: 0 !important;
 }
 
+.dataset__sidebar__container.left .dropdown .dropbtn {
+  width: 85% !important;
+}
 .dataset__sidebar__container.right
   .dropdownOption__Content
-  > .dropdown
+  .dropdown
   .dropbtn
   > span {
   font-size: 14px;
@@ -218,7 +251,7 @@
 }
 
 .dataset__sidebar__container.center {
-  background-color: #d9d9d9;
+  background-color: #e6e6e6;
   width: 50%;
   padding: 30px 25px;
   height: 100%;
@@ -241,6 +274,13 @@
 .dataset__sidebar__container.center
   .code__container
   .code__container-header
+  > span {
+  margin: 0 0.3rem 0 auto;
+}
+
+.dataset__sidebar__container.center
+  .code__container
+  .code__container-header
   button {
   background: #00b594;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -254,12 +294,24 @@
   transition: all 0.3s ease;
 }
 .code__container-header .addAsDataset_btn {
-  background: #00b594;
+  color: #00b594 !important;
+  border: 1px solid #00b594 !important;
+  background: transparent !important;
+  padding: 0px 15px !important;
+  height: 30px;
+  width: 200px !important;
+  margin-right: 0.3rem;
+}
+.code__container-header .addAsDataset_btn:hover {
+  background: #00b594 !important;
+  color: #fff !important;
+}
+.code__container-header .startAnalysis_btn {
   padding: 0px 15px !important;
   height: 30px;
   width: 200px !important;
 }
-.code__container-header .addAsDataset_btn:hover {
+.code__container-header .startAnalysis_btn:hover {
   background: #25d6b6 !important;
 }
 .dataset__sidebar__container.center
@@ -397,7 +449,7 @@
   padding: 0 0 40px 0;
 }
 .dataset__sidebar__container.right .selectedColumns__container .activeDataset {
-  background-color: #d9d9d9;
+  background-color: #eee7ff;
 }
 
 .code__container-datasetname-input {
@@ -407,12 +459,12 @@
   width: fit-content;
 }
 
-.table__container::-webkit-scrollbar{
+.table__container::-webkit-scrollbar {
   background: #faf8ff;
   width: 5px;
   border: 1px rgb(104, 104, 104) solid;
 }
-.table__container::-webkit-scrollbar-thumb{
+.table__container::-webkit-scrollbar-thumb {
   background: #dddd;
   width: 100%;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);

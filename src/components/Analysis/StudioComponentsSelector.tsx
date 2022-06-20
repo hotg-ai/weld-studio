@@ -85,7 +85,9 @@ const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
         onDragStart(event, component.type);
       }}
     >
-      <p style={{ margin: "0" }}>{component.displayName}</p>
+      <p style={{ margin: "0", wordBreak: "break-all" }}>
+        {component.displayName}
+      </p>
       <Popover
         style={{
           fontWeight: "600",
@@ -403,10 +405,7 @@ const generateCapabilities = (
   return result;
 };
 
-export const ComponentsSelector = ({
-  querySchema,
-  datasetRegistry,
-}) => {
+export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
   const dispatch = useAppDispatch();
   const components = useAppSelector((s) => s.builder.components);
   const [nodesType, setNodesType] = useState<Component["source"]>("builtin");

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/tauri";
-import { resourceDir } from '@tauri-apps/api/path';
+import { resourceDir } from "@tauri-apps/api/path";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "../common/dropdown";
 import CodeEditor from "./components/editor";
@@ -17,7 +17,7 @@ import _ from "lodash";
 import { FieldSchema } from "../../types";
 import { arrowDataTypeToRunicElementType } from "../Analysis/utils/ArrowConvert";
 import { ElementType, Tensor } from "@hotg-ai/rune";
-import { sqlTableIcon } from "../../assets";
+import { downloadIcon, sqlTableIcon } from "../../assets";
 import { open } from "@tauri-apps/api/dialog";
 import { downloadDir, join } from "@tauri-apps/api/path";
 
@@ -40,20 +40,18 @@ type TableColumnType = IntegerColumnType | DoubleColumnType | VarcharColumnType;
 type TableColumnTypes = Record<string, TableColumnType>;
 export type DatasetTypes = Record<string, TableColumnTypes>;
 
-
 const sortByGroup = (a: QueryData | TableData, b: QueryData | TableData) => {
   const aG = a.group;
   const bG = b.group;
 
   if (aG > bG) {
-    return 1
+    return 1;
   } else if (aG === bG) {
     return 0;
   } else {
     return -1;
   }
-
-}
+};
 
 const Dataset = ({
   setSql,
@@ -68,7 +66,7 @@ const Dataset = ({
   setQueryData,
   setQueryError,
   selectDataset,
-  setIsQueryLoading
+  setIsQueryLoading,
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -91,15 +89,17 @@ const Dataset = ({
   const [datasetName, setDatasetName] = useState("untitled_dataset");
   const history = useNavigate();
 
-
   useEffect(() => {
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
-      const $RESOURCE =  await resourceDir();
+      const $RESOURCE = await resourceDir();
       const allProckBlocks: any[] = await invoke("known_proc_blocks");
       const pbs = Object.entries(pb).map(([name, procBlock]) => {
         const match = allProckBlocks.filter((p) => p["name"] === name);
-        const matchUrl = match[0]["publicUrl"].replace('$RESOURCE', `${$RESOURCE}/preload_proc_blocks`);
+        const matchUrl = match[0]["publicUrl"].replace(
+          "$RESOURCE",
+          `${$RESOURCE}/preload_proc_blocks`
+        );
         return [
           `proc-block/${name}`,
           metadataToComponent(name, procBlock, matchUrl),
@@ -149,21 +149,18 @@ const Dataset = ({
     });
   });
 
-
-  const groups: Record<string, TableData[]> = {}; 
+  const groups: Record<string, TableData[]> = {};
   tables.forEach((t) => {
-    let group = 'ungrouped';
+    let group = "ungrouped";
     if (t.group) {
-      group = t.group
+      group = t.group;
     }
-    if (!groups[group])
-      groups[group] = [t]
-    else
-      groups[group].push(t)
-
+    if (!groups[group]) groups[group] = [t];
+    else groups[group].push(t);
   });
 
-    return (<div className="dataset_page">
+  return (
+    <div className="dataset_page">
       <div
         className="spinner__container"
         style={{ display: isQueryLoading ? "flex" : "none" }}
@@ -218,11 +215,11 @@ const Dataset = ({
                   }
                 }}
               >
-                Add CSV 
+                Add CSV
               </button>
             </div>
-              
-            <GrouppedTables groups={groups} sql={sql} setSql={setSql}/>
+
+            <GrouppedTables groups={groups} sql={sql} setSql={setSql} />
           </div>
           {/* <div className="models__container">
           <div className="title">
@@ -254,22 +251,14 @@ const Dataset = ({
                   />
                 </span>
               </div>
-
               <ClipLoader color="purple" loading={isQueryLoading} size={25} />
-              <div>
               <button
                 className="addAsDataset_btn"
-                style={{
-                  borderTopRightRadius: "0px",
-                  borderBottomRightRadius: "0px",
-                }}
                 onClick={() => {
                   const name = datasetName;
                   try {
                     const dataset = createQueryDataset(data, querySchema, sql);
-
                     setQueryData(name, dataset);
-
                     setQueryError("Registered DataSet: " + name);
                   } catch (e) {
                     setQueryError("Cannot create dataset: \n" + e.message);
@@ -279,23 +268,20 @@ const Dataset = ({
                 <span>Prepare for Analysis</span>
               </button>
               <button
-                className="addAsDataset_btn"
+                className="startAnalysis_btn"
                 style={{
                   backgroundColor:
-                  Object.keys(datasetRegistry).length === 0 ? "gray" : "#00b594",
-                   borderLeft: "1px solid white",
-                    borderTopLeftRadius: "0px",
-                    borderBottomLeftRadius: "0px",
-         
+                    Object.keys(datasetRegistry).length === 0
+                      ? "gray"
+                      : "#00b594",
                 }}
                 disabled={Object.keys(datasetRegistry).length === 0}
                 onClick={() => {
-                 history("/analysis/1");
+                  history("/analysis/1");
                 }}
               >
                 <span>Start Analysis </span>
               </button>
-              </div>
             </div>
             <CodeEditor setSql={(v) => setSql(v)} sql={sql} />
           </div>
@@ -317,17 +303,19 @@ const Dataset = ({
                 <div
                   className={datasetName === name ? "activeDataset" : undefined}
                   key={`DropdownOption-${name}-${iddx}`}
-                //  onClick={() => selectDataset(name, !dataset.selected)}
+                  //  onClick={() => selectDataset(name, !dataset.selected)}
                 >
                   <div key={name} className="dropdownOption__Content">
-                    <h3
-                      onClick={() => {
-                        setSql(dataset.query);
-                        setDatasetName(name);
-                      }}
-                    >
-                      {name}
-                    </h3>
+                    <div className="title-content">
+                      <h3
+                        onClick={() => {
+                          setSql(dataset.query);
+                          setDatasetName(name);
+                        }}
+                      >
+                        {name}
+                      </h3>
+                    </div>
                     <span
                       onClick={() => {
                         setSql(dataset.query);
@@ -337,7 +325,7 @@ const Dataset = ({
                       {dataset.query}
                     </span>
                     {data && data.length > 0 && datasetName === name && (
-                      <Dropdown title="Query Result Schema" >
+                      <Dropdown title="Query Result Schema">
                         {querySchema.fields.map(
                           (field: FieldSchema, idx: number) => {
                             return (
@@ -371,25 +359,29 @@ const Dataset = ({
                 <h5>
                   {data.length} Rows, {Object.keys(data[0]).length} Columns
                 </h5>
-                <div className="saveBtn" onClick={async () => {
-                   let fileLoc = await open({
-                    title: "Select a location to save CSV file",
-                    directory: true,
-                    multiple: false,
-                    defaultPath: await downloadDir(),
-                  }) as string;
-                  if (typeof fileLoc === "string") {
-                    // append data name
-                    fileLoc = await join(fileLoc, `${datasetName}.csv`); 
+                <div
+                  className="saveBtn"
+                  onClick={async () => {
+                    let fileLoc = (await open({
+                      title: "Select a location to save CSV file",
+                      directory: true,
+                      multiple: false,
+                      defaultPath: await downloadDir(),
+                    })) as string;
+                    if (typeof fileLoc === "string") {
+                      // append data name
+                      fileLoc = await join(fileLoc, `${datasetName}.csv`);
 
-                    invoke('save_data', {sql, fileLoc}).then((rows) => {
-                      setQueryError(`Saved ${rows} to ${fileLoc}`);
-                      
-                    }).catch((e) => {
-                      setQueryError("Error saving file: " + e);
-                    })
-                  }
-                }}>
+                      invoke("save_data", { sql, fileLoc })
+                        .then((rows) => {
+                          setQueryError(`Saved ${rows} to ${fileLoc}`);
+                        })
+                        .catch((e) => {
+                          setQueryError("Error saving file: " + e);
+                        });
+                    }
+                  }}
+                >
                   Export
                 </div>
               </>
@@ -466,7 +458,9 @@ function createQueryDataset(
   if (!dataType) {
     // We weren't able to determine the common data type (e.g. because one
     // column is a u32 while the rest are f64).
-    throw new Error("Analysis features must be common datatype.\n i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using cast `::double` or `(column as DOUBLE)`");
+    throw new Error(
+      "Analysis features must be common datatype.\n i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using cast `::double` or `(column as DOUBLE)`"
+    );
   }
 
   const tensor = mergeColumnsIntoTensor(
@@ -599,60 +593,97 @@ function mergeColumnsIntoTensor(
   }
 }
 
+const GrouppedTables = ({
+  groups,
+  sql,
+  setSql,
+}: {
+  groups: Record<string, TableData[]>;
+  sql: string;
+  setSql: (sql: string) => void;
+}) => {
+  const [hidden, setHidden] = useState<Record<string, boolean>>({});
+  return (
+    <div>
+      {Object.keys(groups).map((groupName) => {
+        const tables = groups[groupName];
+        const hide = hidden[groupName];
+        const setHide = (toggle) =>
+          setHidden({ ...hidden, [groupName]: toggle });
 
-const GrouppedTables = ({groups, sql, setSql}: {groups: Record<string, TableData[]>, sql:string, setSql:(sql: string) => void}) => {
-  const [hidden, setHidden] = useState<Record<string, boolean>>({})
-  return (<div>{Object.keys(groups).map(groupName => {
-    const tables = groups[groupName];
-    const hide = hidden[groupName];
-    const setHide = (toggle) => setHidden({...hidden, [groupName]: toggle})
-
-    return <div> 
+        return (
+          <div>
             <hr />
-            <span style={{display: "flex", flexDirection:"row", alignItems: "center", justifyContent:"space-between", width:"100%"}} onClick={() => {
-              setHide(!hide)
-            }}>
-              
-              <h3><b>{groupName}</b></h3> <img
-            src={`/assets/dropdown${!hide ? "open" : "Close"}.svg`}
-            alt=""
-          /> </span>
-           <div style={{display: hide ? "none" : "block"}}>
-            <GrouppedTableInner tables={tables} sql={sql} setSql={setSql} />
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+              onClick={() => {
+                setHide(!hide);
+              }}
+            >
+              <h3>
+                <b>{groupName}</b>
+              </h3>{" "}
+              <img
+                src={`/assets/dropdown${!hide ? "open" : "Close"}.svg`}
+                alt=""
+              />{" "}
+            </span>
+            <div style={{ display: hide ? "none" : "block" }}>
+              <GrouppedTableInner tables={tables} sql={sql} setSql={setSql} />
+            </div>
           </div>
-        
-      </div>
-  })}</div>)
-}
+        );
+      })}
+    </div>
+  );
+};
 
-const GrouppedTableInner = ({tables, setSql, sql}: {tables: TableData[], sql:string, setSql:(sql: string) => void}) => {
-  return (<>
-    {tables.sort((a, b) => sortByGroup(a, b)).map((table: TableData, tidx: number) => (
-      <Dropdown
-        key={`Dropdown-${tidx}`}
-        title={table.table_name}
-        selectBtnIcon={sqlTableIcon}
-        onSelect={() => {
-          setSql(
-            `${sql ? sql + "\n" : ""} select * from ${
-              table.table_name
-            } limit 10`
-          );
-        }}
-      >
-        {table.column_names.map((item, idx) => {
-          return (
-            <DropdownOption key={`DropdownOption-${tidx}-${idx}`}>
-              <div className="dropdownOption__Content">
-                <span>
-                  {item}: {table.column_types[idx]}
-                </span>
-                {/* <ProgressBar percent={item.percent} /> */}
-              </div>
-            </DropdownOption>
-          );
-        })}
-      </Dropdown>
-    ))}
-  </>)
-}
+const GrouppedTableInner = ({
+  tables,
+  setSql,
+  sql,
+}: {
+  tables: TableData[];
+  sql: string;
+  setSql: (sql: string) => void;
+}) => {
+  return (
+    <>
+      {tables
+        .sort((a, b) => sortByGroup(a, b))
+        .map((table: TableData, tidx: number) => (
+          <Dropdown
+            key={`Dropdown-${tidx}`}
+            title={table.table_name}
+            selectBtnIcon={sqlTableIcon}
+            onSelect={() => {
+              setSql(
+                `${sql ? sql + "\n" : ""} select * from ${
+                  table.table_name
+                } limit 10`
+              );
+            }}
+          >
+            {table.column_names.map((item, idx) => {
+              return (
+                <DropdownOption key={`DropdownOption-${tidx}-${idx}`}>
+                  <div className="dropdownOption__Content">
+                    <span>
+                      {item}: {table.column_types[idx]}
+                    </span>
+                    {/* <ProgressBar percent={item.percent} /> */}
+                  </div>
+                </DropdownOption>
+              );
+            })}
+          </Dropdown>
+        ))}
+    </>
+  );
+};
