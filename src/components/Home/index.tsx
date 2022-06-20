@@ -297,13 +297,11 @@ function Home({
       {introModalVisible && (
         <Modal
           className="intro_modal__container"
-          title="Getting started"
+          title="Getting started (Build: weld-studio_0.1.0-RC5_x64)"
           setModalVisible={setIntroModalVisible}
         >
           <p className="modal-description">
-            This is a no code editor for you to rapidly test out statistical
-            models on your private data. Add and prepare datasets for analysis
-            such as logistic/linear etc with 3 steps.
+          Weld allows you to run analytics and apply machine learning on local data blazingly fast. No need to move your data to a data lake or 3rd party cloud.
           </p>
           <Carousel arrows prevArrow={<button>Back</button>}>
             <div className="step-one">
@@ -311,29 +309,37 @@ function Home({
                 <img src={introModalStepOne} alt="" />
               </div>
               <p>
-                <b>Using the SQL editor</b> you can quickly create datasets.
-                Datasets are derived from your private files. For example:
-                `select * from datga.csv` Get started by connecting data
+                <b>You can do three things incredibly fast with Weld:</b> <br/><br/>
+                <ol>
+                <li>1. Rapid analysis of multiple csv files. Add CSV files and run SQL queries on them, including creating joins on data that is hard to do with excel.
+               </li>
+                <li>2.Build predictive models (such as logistic regression) by selecting features and outcome variables from the query and using no code - drag and drop editor. 
+                </li>
+                <li>3.Compare multiple models to pick the best features, rapidly.</li>
+                </ol>
               </p>
             </div>
             <div className="step-two">
               <img src={testDatasetScreenshot} alt="" />
               <div className="step-two-content">
-                <h3>1. DataSet: Creating features for procblocks</h3>
-                <span>To perpare data for logistic regression we will </span>
+                <h3>1.Create SQL analysis and select features and targets for predictive analytics</h3>
+                <span>
+                  Import any number of CSV files and use standard SQL to query them. Perform joins blazingly fast. Select feature and outcome columns for further ML analysis. 
+                </span>
               </div>
             </div>
             <div className="step-three">
               <img src={studioCanvasScreenshot} alt="" />
               <div className="step-three-content">
-                <h3>2. Adding blocks to the canvas</h3>
-                <span>To perpare data for logistic regression we will </span>
+                <h3>2. Build predictive models on selected data</h3>
+                <span>You can use our drag and drop no code editor to build predictive models on the features data to predict the selected outcome data. You can use out of the box analysis blocks like train-test-split, logistic regression, and others to rapidly build and test this. </span>
               </div>
             </div>
             <div className="step-four">
               <img src={image6} alt="" />
               <div className="step-four-content">
-                <h3>3. Execute and compare models</h3>
+                <h3>3. Compare and share the analysis</h3>
+                <span>You can build and test several models as well as test several features rapidly. You can compare each result with all previous runs and pick the best models and share it with others on your data team.</span>
               </div>
             </div>
           </Carousel>
