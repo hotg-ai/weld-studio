@@ -8,16 +8,16 @@ import Header from "./components/Header";
 import {v4 as uuidv4} from 'uuid'
 
 class App extends React.Component<{}, AppState> {
-  state = {
+  state : AppState = {
     selectedTab: undefined,
     tabs: []
-  }
+  } 
 
   addTab() {
     const tabs: WeldProject[] = this.state.tabs; 
-    
+    const id = uuidv4();
     tabs.push({
-      id: uuidv4(),
+      id ,
       name: `Weld ${this.state.tabs.length}`,
       data: [],
       querySchema: { fields: [] },
@@ -30,7 +30,7 @@ class App extends React.Component<{}, AppState> {
       selectedDatasets: [],
       searchValue: '',  
     });
-    this.setState({tabs})
+    this.setState({tabs, selectedTab: this.state.selectedTab ? this.state.selectedTab: id})
   }
   
   render(): React.ReactNode {
@@ -40,11 +40,11 @@ class App extends React.Component<{}, AppState> {
       
       <Header selectedTabId={this.state.selectedTab} weldProjects={this.state.tabs} 
       
-      onSelect={(tab) => {}}
+      onSelect={(selectedTab) => this.setState({selectedTab})}
       
       onClose={(tabId) => {
         const newTabs = this.state.tabs.filter((t) => t.id !== tabId);
-        console.log(newTabs, this.state.tabs)
+
         this.setState({tabs: newTabs});
       }} 
       

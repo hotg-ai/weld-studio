@@ -7,10 +7,11 @@ import "./header.css";
 const HeaderTabItem = ({name, onSelect, onClose, onEditName, selected}: {name:string, selected: boolean, onSelect: () => void, onClose: () => void, onEditName: (name: string) => void}) => {
   const [localName, setLocalName] = useState<string>(name);
 
-  return <div className="header--project_tab_bar_item" style={selected? {backgroundColor: "green"} : {}} onClick={() => onSelect()}>
+  return <div className="header--project_tab_bar_item" style={selected ? { boxShadow: "0px -3.45133px 12.9425px rgba(0, 0, 0, 0.1)", zIndex:10} : {}} onClick={() => onSelect()}>
 
     <span className="header--project_tab_bar_title">
-      <input style={{textAlign: "center", outline: "none", border:"none"}} value={localName} onChange={(e) => { setLocalName(e.currentTarget.value)}} 
+     
+      <input style={{textAlign: "center", outline: "none", border:"none", backgroundColor: "transparent", color: !selected ? "black" : "#00b594"}} value={localName} onChange={(e) => { setLocalName(e.currentTarget.value)}} 
         onKeyUp={(e)  => {
           if (e.key === "Enter") {
             onEditName(localName);
