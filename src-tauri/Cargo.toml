@@ -20,6 +20,7 @@ arrow = { version = "12.0.0", features = ["prettyprint"] }
 change-case = "0.2.0"
 directories = "4.0.1"
 duckdb = { version = "0.3.4", features = ["bundled"] }
+futures = "0.3.21"
 graphql_client = { version = "0.10.0", features = ["reqwest"] }
 hotg-rune-compiler = { git = "https://github.com/hotg-ai/rune", rev = "26c1d7c1a1285c3020af78224bf17b0632960186" }
 hotg-rune-runtime = { git = "https://github.com/hotg-ai/rune", rev = "26c1d7c1a1285c3020af78224bf17b0632960186", features = ["builtins", "wasmer", "zune"], default-features = false }

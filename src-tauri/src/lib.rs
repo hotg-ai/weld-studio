@@ -1,6 +1,8 @@
+mod app;
+mod app_state;
 pub mod compiler;
 mod legacy;
 pub mod runtime;
 pub mod wapm;
 
-pub use crate::legacy::*;
+pub use crate::{app::configure, app_state::AppState};

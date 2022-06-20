@@ -5437,6 +5437,7 @@ dependencies = [
  "change-case",
  "directories",
  "duckdb",
+ "futures",
  "graphql_client",
  "hotg-rune-compiler",
  "hotg-rune-runtime",

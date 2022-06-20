@@ -1,29 +1,22 @@
 use arrow::{json, record_batch::RecordBatch};
-use change_case::snake_case;
-use duckdb::{params, Connection, Result};
 use std::{
     path::Path,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Mutex,
-    },
+    sync::atomic::{AtomicBool, Ordering},
 };
 
-#[derive(Debug)]
+use crate::AppState;
+
+#[derive(Debug, Default)]
 pub struct Running(pub AtomicBool);
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Cancelled(pub AtomicBool);
-
-pub struct DefragStudioState {
-    pub conn: Mutex<Connection>,
-}
 
 #[tauri::command]
 #[tracing::instrument(skip(state, window), err)]
 pub async fn load_csv(
     invoke_message: String,
-    state: tauri::State<'_, DefragStudioState>,
+    state: tauri::State<'_, AppState>,
     window: tauri::Window,
 ) -> Result<String, String> {
     let invoke_message: Vec<String> = vec![invoke_message];
@@ -34,7 +27,7 @@ pub async fn load_csv(
         .unwrap()
         .split('.')
         .collect::<Vec<&str>>()[0];
-    let table_name = snake_case(table_name);
+    let table_name = change_case::snake_case(table_name);
 
     // let file = File::open(&invoke_message[0]).unwrap();
     // let reader = csv::ReaderBuilder::new().has_header(true).infer_schema(Some(100));
@@ -47,9 +40,9 @@ pub async fn load_csv(
     );
 
     tracing::info!("CSV file loaded with schema: {}", &create_table);
-    let conn = state.conn.lock().unwrap();
+    let conn = state.db().await;
     let res = conn
-        .execute(&create_table[..], params![])
+        .execute(&create_table[..], duckdb::params![])
         .map_err(|e| e.to_string())?;
     window
         .emit("load_csv_complete", serde_json::json!(res))
@@ -75,20 +68,17 @@ struct TableData {
 #[tauri::command]
 #[tracing::instrument(skip(state), err)]
 pub async fn get_tables(
-    state: tauri::State<'_, DefragStudioState>,
+    state: tauri::State<'_, AppState>,
     preload: Option<bool>,
 ) -> Result<Vec<serde_json::Map<String, serde_json::Value>>, String> {
-    let conn = state
-        .conn
-        .lock()
-        .map_err(|_e| String::from("Could not lock connection"))?;
+    let conn = state.db().await;
 
     let mut stmt = conn.prepare("show").map_err(|e| e.to_string())?;
 
     tracing::info!("querying");
 
     let batches: Vec<RecordBatch> = stmt
-        .query_arrow(params![])
+        .query_arrow(duckdb::params![])
         .map_err(|e| e.to_string())?
         .collect();
 
@@ -128,7 +118,7 @@ pub async fn save_data(
     sql: String,
     file_loc: String,
     //format: SaveFormat, // CSV, JSON, Parquey for now CSV only
-    state: tauri::State<'_, DefragStudioState>,
+    state: tauri::State<'_, AppState>,
     cancel: tauri::State<'_, Cancelled>,
     running: tauri::State<'_, Running>,
     window: tauri::Window,
@@ -146,10 +136,7 @@ pub async fn save_data(
         sql,
         path.display()
     );
-    let conn = state
-        .conn
-        .lock()
-        .map_err(|_e| String::from("Could not lock connection"))?;
+    let conn = state.db().await;
     let mut stmt = conn
         .prepare(&sql[..])
         .map_err(|_e| format!("Could not prepare statement: {_e}"))?;
@@ -162,7 +149,7 @@ pub async fn save_data(
     window.emit("save_started", "").map_err(|e| e.to_string())?;
 
     let rows = stmt
-        .query_map(params![], |row| {
+        .query_map(duckdb::params![], |row| {
             let saved_amt: u32 = row.get(0)?;
             Ok(saved_amt)
         })
@@ -184,7 +171,7 @@ pub async fn save_data(
 #[tracing::instrument(skip(state, window), err)]
 pub async fn run_sql(
     sql: String,
-    state: tauri::State<'_, DefragStudioState>,
+    state: tauri::State<'_, AppState>,
     cancel: tauri::State<'_, Cancelled>,
     running: tauri::State<'_, Running>,
     window: tauri::Window,
@@ -195,10 +182,7 @@ pub async fn run_sql(
         running.0.store(false, Ordering::Relaxed);
         tracing::info!("Running qsl");
     }
-    let conn = state
-        .conn
-        .lock()
-        .map_err(|_e| String::from("Could not lock connection"))?;
+    let conn = state.db().await;
     let mut stmt = conn
         .prepare(&sql[..])
         .map_err(|_e| format!("Could not prepare statement: {_e}"))?;
@@ -212,7 +196,9 @@ pub async fn run_sql(
         .emit("query_started", "")
         .map_err(|e| e.to_string())?;
 
-    let batches = stmt.query_arrow(params![]).map_err(|e| e.to_string())?;
+    let batches = stmt
+        .query_arrow(duckdb::params![])
+        .map_err(|e| e.to_string())?;
     cancel.0.store(false, Ordering::Relaxed);
     running.0.store(true, Ordering::Relaxed);
     let mut sum: i64 = 0;
