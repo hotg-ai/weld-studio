@@ -58,20 +58,24 @@ function Home({
       <div className="home_content">
         <div className="home_content-header">
           <div className="home-header-cards__container">
+            <Link to="/analysis/0">
             <div className="header-card" style={{ background: "#00B59433" }}>
               <div>
-                <Link to="/">Start with No Code</Link>
+                Start with No Code
                 <img src={databaseIcon} alt="" />
               </div>
               <span>Drag and drop analysis</span>
             </div>
+            </Link>
+            <Link to="/dataset/0">
             <div className="header-card" style={{ background: "#DEE5FF" }}>
               <div>
-                <Link to="/">Start with SQL</Link>
+                Start with SQL
                 <img src={sqlTableIcon} alt="" />
               </div>
               <span>SQL editor analysis</span>
             </div>
+            </Link>
           </div>
 
           <form className="search_container">

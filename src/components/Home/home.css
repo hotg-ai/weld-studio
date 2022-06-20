@@ -91,6 +91,11 @@
   align-items: flex-start;
   justify-content: space-between;
 }
+
+.header-card span,div {
+  color:#000000
+}
+
 .home_content
   .home_content-header
   .home-header-cards__container
