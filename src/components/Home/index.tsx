@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./home.css";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open } from "@tauri-apps/api/dialog";
@@ -10,10 +10,14 @@ import {
   testDatasetScreenshot,
   sqlTableIcon,
   databaseIcon,
+  introModalStepOne,
+  studioCanvasScreenshot,
+  image6,
 } from "../../assets";
-import { Checkbox } from "antd";
+import { Carousel, Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import { CloseOutlined, InfoCircleFilled } from "@ant-design/icons";
+import Modal from "../Dataset/components/modal";
 
 function Home({
   setQueryError,
@@ -49,6 +53,11 @@ function Home({
   queryError: string;
 }) {
   const history = useNavigate();
+  const [introModalVisible, setIntroModalVisible] = useState(false);
+
+  useEffect(() => {
+    setIntroModalVisible(true);
+  }, []);
 
   return (
     <div className="home__container">
@@ -59,22 +68,22 @@ function Home({
         <div className="home_content-header">
           <div className="home-header-cards__container">
             <Link to="/analysis/0">
-            <div className="header-card" style={{ background: "#00B59433" }}>
-              <div>
-                Start with No Code
-                <img src={databaseIcon} alt="" />
+              <div className="header-card" style={{ background: "#00B59433" }}>
+                <div>
+                  Start with No Code
+                  <img src={databaseIcon} alt="" />
+                </div>
+                <span>Drag and drop analysis</span>
               </div>
-              <span>Drag and drop analysis</span>
-            </div>
             </Link>
             <Link to="/dataset/0">
-            <div className="header-card" style={{ background: "#DEE5FF" }}>
-              <div>
-                Start with SQL
-                <img src={sqlTableIcon} alt="" />
+              <div className="header-card" style={{ background: "#DEE5FF" }}>
+                <div>
+                  Start with SQL
+                  <img src={sqlTableIcon} alt="" />
+                </div>
+                <span>SQL editor analysis</span>
               </div>
-              <span>SQL editor analysis</span>
-            </div>
             </Link>
           </div>
 
@@ -277,6 +286,57 @@ function Home({
           </div>
         </div>
       </div>
+      {introModalVisible && (
+        <Modal
+          className="intro_modal__container"
+          title="Getting started"
+          setModalVisible={setIntroModalVisible}
+        >
+          <p className="modal-description">
+            This is a no code editor for you to rapidly test out statistical
+            models on your private data. Add and prepare datasets for analysis
+            such as logistic/linear etc with 3 steps.
+          </p>
+          <Carousel arrows prevArrow={<button>Back</button>}>
+            <div className="step-one">
+              <div className="example-sql__container">
+                <img src={introModalStepOne} alt="" />
+              </div>
+              <p>
+                <b>Using the SQL editor</b> you can quickly create datasets.
+                Datasets are derived from your private files. For example:
+                `select * from datga.csv` Get started by connecting data
+              </p>
+            </div>
+            <div className="step-two">
+              <img src={testDatasetScreenshot} alt="" />
+              <div className="step-two-content">
+                <h3>1. DataSet: Creating features for procblocks</h3>
+                <span>To perpare data for logistic regression we will </span>
+              </div>
+            </div>
+            <div className="step-three">
+              <img src={studioCanvasScreenshot} alt="" />
+              <div className="step-three-content">
+                <h3>2. Adding blocks to the canvas</h3>
+                <span>To perpare data for logistic regression we will </span>
+              </div>
+            </div>
+            <div className="step-four">
+              <img src={image6} alt="" />
+              <div className="step-four-content">
+                <h3>3. Execute and compare models</h3>
+              </div>
+            </div>
+          </Carousel>
+          <button
+            className="intro-modal-skip_btn"
+            onClick={() => setIntroModalVisible(false)}
+          >
+            Skip
+          </button>
+        </Modal>
+      )}
     </div>
   );
 }
