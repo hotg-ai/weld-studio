@@ -136,6 +136,17 @@ export const builderSlice = createSlice({
       return {
         ...state,
         components: {
+          ...action.payload,
+        },
+      };
+    },
+    RefreshComponents: (
+      state: builderState,
+      action: PayloadAction<Record<string, Component>>
+    ) => {
+      return {
+        ...state,
+        components: {
           ...state.components,
           ...action.payload,
         },
