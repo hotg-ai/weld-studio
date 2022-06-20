@@ -108,9 +108,20 @@ import AppleIcon from "./img/icons/icon_apple.svg";
 import CookieIcon from "./img/icons/icon_cookie_multicolor.svg";
 import EmailVerificationPng from "./img/images/EmailVerificationPng.png";
 import testDatasetScreenshot from "./img/images/testDatasetScreenshot.png";
+import studioCanvasScreenshot from "./img/images/studioCanvasScreenshot.svg";
 import addDatasetIcon from "./img/icons/addDatasetIcon.svg";
 import databaseIcon from "./img/icons/database-icon.svg";
+import HeaderTabCloseIcon from "./img/icons/header-tab-close.svg";
+import downloadIcon from "./img/icons/downloadIcon.svg";
+import introModalStepOne from "./img/images/introModalStepOne.svg";
+import image6 from "./img/images/image-6.svg";
+
 export {
+  HeaderTabCloseIcon,
+  image6,
+  studioCanvasScreenshot,
+  introModalStepOne,
+  downloadIcon,
   databaseIcon,
   addDatasetIcon,
   testDatasetScreenshot,

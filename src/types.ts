@@ -30,3 +30,23 @@ export type QueryData = {
   createdAt: Date;
   group?: string;
 };
+
+export type AppState = {
+  tabs  : WeldProject[],
+  selectedTab? : string,
+};
+
+export type WeldProject = {
+  id: string;
+  name?: string;
+  data: any[];
+  querySchema: { fields: FieldSchema[] };
+  sql: string | undefined;
+  queryError: string | undefined;
+  tables: Record<string, TableData>;
+  isLoadingTable: boolean;
+  isQueryLoading: boolean;
+  datasetRegistry: Record<string, QueryData>;
+  selectedDatasets: string[];
+  searchValue: string;
+}
