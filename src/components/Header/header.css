@@ -47,14 +47,14 @@
 
 
 
-.header--tab__container {
+.header--tab__container__add {
   display: flex;
   border: none;
   background-color: #00b594;
   color: #fff;
   border-radius: 5px;
+  border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
   border-bottom: 0px solid transparent;
   align-items: flex-end;
   height: 30px;

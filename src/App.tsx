@@ -9,7 +9,7 @@ import {v4 as uuidv4} from 'uuid'
 
 class App extends React.Component<{}, AppState> {
   state = {
-    selectedTab: 0,
+    selectedTab: undefined,
     tabs: []
   }
 
@@ -38,7 +38,7 @@ class App extends React.Component<{}, AppState> {
     const tabState = this.state.tabs[0]
     return (<div className="App" >
       
-      <Header weldProjects={this.state.tabs} 
+      <Header selectedTabId={this.state.selectedTab} weldProjects={this.state.tabs} 
       
       onSelect={(tab) => {}}
       
@@ -48,10 +48,10 @@ class App extends React.Component<{}, AppState> {
         this.setState({tabs: newTabs});
       }} 
       
-      onTabNameEdit={(tab, name) => {
+      onTabNameEdit={(tabId, name) => {
         
         const tabs = this.state.tabs.map((t) => {
-          if (t.name === tab ) {
+          if (t.id === tabId ) {
             t.name = name
           } 
           return t

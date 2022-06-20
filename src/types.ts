@@ -33,7 +33,7 @@ export type QueryData = {
 
 export type AppState = {
   tabs  : WeldProject[],
-  selectedTab : number,
+  selectedTab? : string,
 };
 
 export type WeldProject = {
