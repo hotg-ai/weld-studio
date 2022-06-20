@@ -19,6 +19,9 @@ import { Link } from "react-router-dom";
 import { CloseOutlined, InfoCircleFilled } from "@ant-design/icons";
 import Modal from "../Dataset/components/modal";
 
+
+import { getVersion } from '@tauri-apps/api/app';
+
 function Home({
   setQueryError,
   setIsLoadingTable,
@@ -58,6 +61,14 @@ function Home({
   useEffect(() => {
     setIntroModalVisible(true);
   }, []);
+
+  const [appVersion, setAppVersion] = useState<string | undefined>()
+
+  useEffect( () => {
+      getVersion().then((appVersion: string) => {
+        setAppVersion(appVersion)
+      })
+  })
 
   return (
     <div className="home__container">
@@ -101,6 +112,7 @@ function Home({
         </div>
         <div className="datasets__container">
           <h5>Get Started</h5>
+          <i style={{fontSize: "8px"}}>v{appVersion}</i>
           {numberSelectedDatasets + numberSelectedTables > 0 && (
             <div className="clearall_btn" onClick={clearAllSelected}>
               <button>
