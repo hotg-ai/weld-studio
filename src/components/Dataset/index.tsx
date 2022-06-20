@@ -10,7 +10,7 @@ import Table from "./components/table";
 import "./dataset.css";
 import { QueryData, TableData } from "../../types";
 import { useAppDispatch } from "src/hooks/hooks";
-import { UpdateComponents } from "src/redux/builderSlice";
+import { RefreshComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
 import _ from "lodash";
 import { FieldSchema } from "../../types";
@@ -106,7 +106,7 @@ const Dataset = ({
         ] as const;
       });
       await dispatch(
-        UpdateComponents({
+        RefreshComponents({
           ...Object.fromEntries(pbs),
         })
       );

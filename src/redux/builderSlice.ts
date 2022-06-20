@@ -182,5 +182,6 @@ export const {
   RefreshDimensions,
   ClearComponents,
   UpdateComponents,
+  RefreshComponents,
 } = builderSlice.actions;
 export default builderSlice.reducer;
