@@ -55,7 +55,7 @@ pub async fn load_csv(
         .emit("load_csv_complete", serde_json::json!(res))
         .map_err(|e| e.to_string())?;
     tracing::info!("{}", res);
-    Ok(format!("{}", table_name))
+    Ok(table_name)
 }
 
 #[derive(serde::Serialize, Debug, serde::Deserialize)]
@@ -95,13 +95,9 @@ pub async fn get_tables(
     let mut json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
         json::writer::record_batches_to_json_rows(&batches[..]).map_err(|e| e.to_string())?;
 
-    // let rbs: Vec<bool> = rbs.map(|m| m.unwrap()).collect();
     if (preload != None) && preload.unwrap() {
-        let jrws = &mut json_rows;
         for json_row in json_rows.iter_mut() {
-            let mut m = &mut *json_row;
-
-            m.insert(
+            json_row.insert(
                 String::from("group"),
                 serde_json::Value::String(String::from("preloaded")),
             );
@@ -148,7 +144,7 @@ pub async fn save_data(
     let sql = format!(
         "COPY ({}) to '{}' WITH (HEADER 1, DELIMITER ',', FORMAT CSV, ENCODING 'UTF-8')",
         sql,
-        path.display().to_string()
+        path.display()
     );
     let conn = state
         .conn
@@ -156,7 +152,7 @@ pub async fn save_data(
         .map_err(|_e| String::from("Could not lock connection"))?;
     let mut stmt = conn
         .prepare(&sql[..])
-        .map_err(|_e| format!("Could not prepare statement: {}", _e.to_string()))?;
+        .map_err(|_e| format!("Could not prepare statement: {_e}"))?;
     // let rbs = stmt.query_map([], |row| {
     //     let foo: bool = row.get(0)?;
     //     Ok(foo)
@@ -205,7 +201,7 @@ pub async fn run_sql(
         .map_err(|_e| String::from("Could not lock connection"))?;
     let mut stmt = conn
         .prepare(&sql[..])
-        .map_err(|_e| format!("Could not prepare statement: {}", _e.to_string()))?;
+        .map_err(|_e| format!("Could not prepare statement: {_e}"))?;
     // let rbs = stmt.query_map([], |row| {
     //     let foo: bool = row.get(0)?;
     //     Ok(foo)
@@ -242,7 +238,7 @@ pub async fn run_sql(
             let json_rows: Vec<serde_json::Map<String, serde_json::Value>> =
                 json::writer::record_batches_to_json_rows(&vec![batch][..])
                     .map_err(|e| e.to_string())?;
-            sum = sum + json_rows.len() as i64;
+            sum += json_rows.len() as i64;
 
             window
                 .emit("load_arrow_row_batch", json_rows)

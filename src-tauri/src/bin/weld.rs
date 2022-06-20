@@ -74,7 +74,7 @@ fn main() -> Result<(), Error> {
             weld::run_sql,
             weld::get_tables,
             weld::compiler::compile,
-            weld::compiler::reune,
+            weld::runtime::reune,
             weld::wapm::known_proc_blocks,
             weld::save_data,
         ])

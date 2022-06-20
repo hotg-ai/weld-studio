@@ -13,9 +13,7 @@ pub struct GetNamespace;
 const WELD_REGISTRY: &str = include_str!("../local_manifest.json");
 #[tauri::command]
 #[tracing::instrument(skip_all, err)]
-pub async fn known_proc_blocks(
-) -> Result<Vec<Package>, String> {
-
+pub async fn known_proc_blocks() -> Result<Vec<Package>, String> {
     let packages: Vec<Package> = serde_json::from_str(WELD_REGISTRY).map_err(|e| e.to_string())?;
 
     // let query = GetNamespace::build_query(get_namespace::Variables {
