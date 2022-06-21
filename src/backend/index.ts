@@ -1,16 +1,23 @@
 import { invoke } from "@tauri-apps/api";
+import { tableFromIPC, Table } from "apache-arrow";
+
 import { SerializableError } from "./types/SerializableError";
 import { ValidationFailed } from "./types/ValidationFailed";
 import { DatasetInfo } from "./types/DatasetInfo";
-import { ValidationResponse } from "./types/ValidationResponse";
+import { ValidationResponse as RawValidationResponse  } from "./types/ValidationResponse";
+
+export type ValidationResponse  = {
+    numRows: number;
+    preview: Table;
+};
 
 export type Result<T, E = SerializableError<unknown>> = { type: "ok", value: T } | { type: "err", error: E };
 
-export function ok<T>(value: T): Result<T, never> {
+function ok<T>(value: T): Result<T, never> {
     return { type: "ok", value };
 }
 
-export function err<E>(error: E): Result<never, E> {
+function err<E>(error: E): Result<never, E> {
     return { type: "err", error };
 }
 
@@ -22,8 +29,12 @@ export function err<E>(error: E): Result<never, E> {
  */
 export async function validate_sql(sql: string, maxRows?: number): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
     try {
-        const response = await invoke("validate_sql", { sql, max_rows: maxRows });
-        return ok(response as ValidationResponse);
+        const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql, max_rows: maxRows });
+
+        return ok({
+            numRows: row_count,
+            preview: tableFromIPC(preview),
+        });
     } catch(e) {
         return err(is_serializable_error(e) ? e : to_serializable_error(e));
     }
