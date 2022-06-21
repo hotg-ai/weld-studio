@@ -310,7 +310,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                     isQueryLoading={isQueryLoading}
                     datasetRegistry={selectedDatasets}
                     setIsQueryLoading={(isQueryLoading: boolean) =>
-                      this.setState({ isLoadingTable: isQueryLoading })
+                      this.setState({ isQueryLoading })
                     }
                     numberSelectedDatasets={
                       Object.keys(selectedDatasets).length
