@@ -58,6 +58,7 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
             crate::compiler::compile,
             crate::runtime::reune,
             crate::wapm::known_proc_blocks,
+            crate::sql::validate_sql,
         ]);
 
     Ok(builder)

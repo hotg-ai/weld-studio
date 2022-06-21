@@ -34,6 +34,7 @@ tauri = { version = "1.0.0-rc.9", features = ["api-all"] }
 tokio = { version = "1.18.0", features = ["rt-multi-thread"] }
 tracing = { version = "0.1.34", features = ["attributes"] }
 tracing-subscriber = { version = "0.3.11", features = ["env-filter", "json", "time", "local-time"] }
+ts-rs = "6.2.0"
 uriparse = "0.6.4"
 
 [features]
