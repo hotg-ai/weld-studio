@@ -3,7 +3,7 @@
 export 
 interface SerializableError<E> {
     message: string,
-    cause: string[],
+    causes: string[],
     verbose: string,
     state?: E,
 }

@@ -49,7 +49,7 @@ fn serialize_preview(record: &RecordBatch) -> Result<Vec<u8>, arrow::error::Arro
 
 /// Extra context for why a SQL statement might not be valid.
 #[derive(Debug, serde::Serialize, serde::Deserialize, ts_rs::TS)]
-#[ts(export, export_to = "../src/backend/")]
+#[ts(export, export_to = "../src/backend/types/")]
 #[serde(tag = "type", content = "value")]
 pub enum ValidationFailed {
     /// Something else.
@@ -75,7 +75,7 @@ impl Display for ValidationFailed {
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, ts_rs::TS)]
-#[ts(export, export_to = "../src/backend/")]
+#[ts(export, export_to = "../src/backend/types/")]
 pub struct ValidationResponse {
     /// The total number of rows that were selected.
     pub row_count: usize,

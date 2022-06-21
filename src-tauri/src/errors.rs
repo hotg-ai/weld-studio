@@ -163,7 +163,7 @@ impl<E> Display for SerializableError<E> {
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, serde::Serialize, serde::Deserialize, ts_rs::TS)]
-#[ts(export, export_to = "../src/backend/")]
+#[ts(export, export_to = "../src/backend/types/")]
 pub enum Infallible {}
 
 impl Display for Infallible {
@@ -185,7 +185,7 @@ struct Repr<'a, E> {
 }
 
 impl<E: TS> TS for SerializableError<E> {
-    const EXPORT_TO: Option<&'static str> = Some("../src/backend/SerializableError.ts");
+    const EXPORT_TO: Option<&'static str> = Some("../src/backend/types/SerializableError.ts");
 
     fn name() -> String {
         "SerializableError".to_string()
@@ -209,7 +209,7 @@ impl<E: TS> TS for SerializableError<E> {
         r#"
 interface SerializableError<E> {
     message: string,
-    cause: string[],
+    causes: string[],
     verbose: string,
     state?: E,
 }"#
