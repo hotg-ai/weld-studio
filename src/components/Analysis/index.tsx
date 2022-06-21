@@ -1,7 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { storm2rune } from "src/canvas2rune";
 import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
 import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
 import { FlowElements } from "src/redux/reactFlowSlice";
@@ -14,7 +13,7 @@ import OutputDimensions from "./OutputDimensions";
 import Properties from "./Properties";
 import StudioCanvas from "./StudioCanvas";
 import { ComponentsSelector } from "./StudioComponentsSelector";
-import { diagramToRuneCanvas } from "./utils/FlowUtils";
+
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
@@ -30,6 +29,8 @@ import {
   studioCanvasScreenshot,
   testDatasetScreenshot,
 } from "src/assets";
+import { storm2rune } from "src/canvas2rune";
+import { diagramToRuneCanvas } from "./utils/FlowUtils";
 
 function Analysis({
   data,

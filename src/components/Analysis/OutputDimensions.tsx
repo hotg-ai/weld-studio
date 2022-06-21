@@ -3,7 +3,7 @@ import Dimension from "./Dimension";
 import { Node } from "react-flow-renderer";
 import { PropertiesIcon } from "../../assets";
 import { AllElementTypes } from "./model";
-import { Port } from "./model/Storm";
+import { Port } from "./model/Legacy";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { RefreshDimensions } from "../../redux/builderSlice";
 import { FlowElements } from "../../redux/reactFlowSlice";

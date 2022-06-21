@@ -15,7 +15,7 @@ import {
 } from "../utils/ForgeNodeUtils";
 import deleteBlackSvg from "../icons/deleteBlack.svg";
 
-import { Port, PortErrorComponent } from "./Storm";
+import { Port, PortErrorComponent } from "./Legacy";
 import { useState } from "react";
 
 export type ForgeNodeData = {

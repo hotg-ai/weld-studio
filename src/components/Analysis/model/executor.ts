@@ -1,6 +1,6 @@
 import { CanvasLink, CanvasNode, RuneCanvas } from "../utils/FlowUtils";
 
-import { Port } from "./Storm";
+import { Port } from "./Legacy";
 import { TensorDescriptionModel } from ".";
 
 export const getSourceNode = (

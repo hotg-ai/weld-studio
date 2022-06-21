@@ -6,11 +6,7 @@ import {
   TensorDescriptionModel,
 } from "../components/Analysis/model";
 import { FlowNodeData } from "../components/Analysis/model/FlowNodeComponent";
-import { Port, PortErrorComponent } from "../components/Analysis/model/Storm";
-import { calculateSizebyDataType } from "../components/Analysis/Properties";
-import capabilities from "../components/Analysis/model/capabilities";
-import { isPropertyValueValid } from "../utils/FlowValidator";
-import { nodeModuleNameResolver } from "typescript";
+import { Port, PortErrorComponent } from "../components/Analysis/model/Legacy";
 
 export type FlowElements = {
   nodes: Node<FlowNodeData>[];

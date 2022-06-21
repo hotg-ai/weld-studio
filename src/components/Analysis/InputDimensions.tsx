@@ -2,7 +2,7 @@ import { useAppSelector } from "./../../hooks/hooks";
 import { Node } from "react-flow-renderer";
 import _ from "lodash";
 import { FlowNodeData } from "./model/FlowNodeComponent";
-import { Port } from "./model/Storm";
+import { Port } from "./model/Legacy";
 import { FlowElements } from "../../redux/reactFlowSlice";
 
 // eslint-disable-next-line

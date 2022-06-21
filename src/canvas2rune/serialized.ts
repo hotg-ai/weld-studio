@@ -1,9 +1,3 @@
-// In theory, this should be synchronised with the serialized diagram from forge:
-// https://github.com/hotg-ai/hammer-forge/blob/2d7257ec696e07d59dc52530ed27ba8a890c188c/forge/src/screens/Studio/StormApplication.tsx
-//
-// Which comes from here:
-// https://github.com/projectstorm/react-diagrams/blob/3d0521cc934b1430d6c8f3b109d9ec6d0b19f3e2/packages/react-canvas-core/src/entities/canvas/CanvasModel.ts#L159-L170
-
 import { ResourceDeclaration } from "./Runefile";
 
 export type SerializedFlowDiagram = {

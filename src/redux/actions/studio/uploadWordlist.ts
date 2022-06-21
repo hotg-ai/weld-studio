@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ResourceDeclaration } from "../../../components/Analysis/model/Storm";
+import { ResourceDeclaration } from "../../../components/Analysis/model/Legacy";
 import { ThunkApiConfig } from "../project";
 import { base64Encode } from "./uploadModel";
 

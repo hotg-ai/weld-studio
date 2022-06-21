@@ -7,7 +7,7 @@ import { Node } from "react-flow-renderer";
 import { calculateSizebyDataType } from "./Properties";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { PortErrorComponent } from "../Analysis/model/Storm";
+import { PortErrorComponent } from "./model/Legacy";
 import { isDiagramValid } from "./utils/FlowValidator";
 const { Option } = Select;
 type Props = {
@@ -46,12 +46,6 @@ export default function Dimension({
 
   const [dimensionText, setDimensionText] = useState("");
 
-  // We need to make sure that whenever our dimension prop changes, the
-  // input box is updated to show the new dimensions instead of whatever was
-  // there previously.
-  //
-  // I'm not sure whether this is valid or just a hack because output tensors
-  // are attached to the StormApplication instead of React/Redux.
   useEffect(() => {
     setDimensionText(dimensions.join(", "));
   }, [dimensions]);
