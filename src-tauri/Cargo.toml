@@ -1,23 +1,27 @@
 [package]
-name = "app"
+name = "weld"
 version = "0.1.1"
 description = "A Tauri App"
-authors = ["you"]
+authors = ["The Hammer of the Gods Developers <developers@hotg.ai>"]
 license = ""
-repository = ""
-default-run = "app"
+repository = "https://github.com/hotg-ai/defrag-studio"
+default-run = "weld"
 edition = "2021"
 rust-version = "1.57"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.0.0-rc.8", features = [] }
+tauri-build = { version = "1.0.0", features = [] }
 
 [dependencies]
 anyhow = "1.0.57"
 arrow = { version = "12.0.0", features = ["prettyprint"] }
 change-case = "0.2.0"
+directories = "4.0.1"
+duckdb = { version = "0.3.4", features = ["bundled"] }
+futures = "0.3.21"
+graphql_client = { version = "0.10.0", features = ["reqwest"] }
 hotg-rune-compiler = { git = "https://github.com/hotg-ai/rune", rev = "26c1d7c1a1285c3020af78224bf17b0632960186" }
 hotg-rune-runtime = { git = "https://github.com/hotg-ai/rune", rev = "26c1d7c1a1285c3020af78224bf17b0632960186", features = ["builtins", "wasmer", "zune"], default-features = false }
 queryst = "2.1.0"
@@ -30,14 +34,9 @@ tauri = { version = "1.0.0-rc.9", features = ["api-all"] }
 tokio = { version = "1.18.0", features = ["rt-multi-thread"] }
 tracing = { version = "0.1.34", features = ["attributes"] }
 tracing-subscriber = { version = "0.3.11", features = ["env-filter", "json", "time", "local-time"] }
+ts-rs = { version = "6.2.0", features = ["uuid-impl"] }
 uriparse = "0.6.4"
-graphql_client = { version = "0.10.0", features = ["reqwest"] }
-directories = "4.0.1"
-
-[dependencies.duckdb]
-version = "0.3.4"
-features = ["bundled"]
-
+uuid = { version = "1.1.2", features = ["v4"] }
 
 [features]
 # by default Tauri runs in production mode
