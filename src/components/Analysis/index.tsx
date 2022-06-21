@@ -22,7 +22,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { QueryData } from "../../types";
 import { Tensor } from "@hotg-ai/rune";
 import { convertElementType, modelToTensorElementType } from "./model/metadata";
-import { Carousel } from "antd";
+import { Carousel, Tabs } from "antd";
 import {
   image6,
   introModalStepOne,
@@ -440,7 +440,21 @@ function Analysis({
           </div>
         </div>
         <div className="studio-table__container">
-          <Table data={tableData} />
+          <Tabs defaultActiveKey="1">
+            <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
+              <Table data={tableData} />
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              tab={
+                <>
+                  Logs <span className="count">100</span>
+                </>
+              }
+              key="2"
+            >
+              Logs
+            </Tabs.TabPane>
+          </Tabs>
         </div>
       </div>
 
