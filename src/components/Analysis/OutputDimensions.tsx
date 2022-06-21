@@ -39,23 +39,13 @@ export default function OutputDimensions() {
   const components = useAppSelector((s) => s.builder.components);
   const selected = useAppSelector((s) => s.builder.selected?.id);
   const diagram = useAppSelector((s) => s.flow);
-  const refreshDimensions = useAppSelector((s) => s.builder.refreshDimensions);
-
-  // const [, updateState] = useState<unknown>({});
-  // const forceRefresh = useCallback(() => updateState({}), []);
-
-  // useEffect(() => {
-  //   forceRefresh();
-  // }, [refreshDimensions]);
 
   const { ports, model } = outputPorts(diagram, selected);
 
   if (!model || (model && !model.data)) return null;
   const component = components[(model.data as FlowNodeData).componentID];
   if (!component) return null;
-  // const acceptedTypes = component.acceptedOutputElementTypes?.map(
-  //   item => item.elementTypes
-  // );
+
   const children = ports.map((port, i) => {
     const acceptedTypes =
       component.acceptedOutputElementTypes?.[i].elementTypes;

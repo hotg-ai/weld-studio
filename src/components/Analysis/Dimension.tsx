@@ -1,4 +1,4 @@
-import _, { trim } from "lodash";
+import _ from "lodash";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { Col, Select, Tooltip } from "antd";
 import { TensorDescriptionModel, ElementType } from "./model";

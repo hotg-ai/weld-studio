@@ -1,22 +1,11 @@
-// import * as wit from "@hotg-ai/rune-wit-files";
 import {
-  Metadata,
   ArgumentMetadata,
   TensorHint,
   ArgumentHint,
-  MediaHint,
-  Runtime,
-  Rune,
   TensorMetadata,
   ProcBlock,
-  Dimensions,
   ElementType,
-  Tensor,
-  TensorDescriptor,
-  SupportedArgumentType,
-  Tensors,
 } from "@hotg-ai/rune";
-import { runtime_v1 } from "@hotg-ai/rune-wit-files";
 import {
   Property,
   PropertyWithDefaultValue,
@@ -28,7 +17,7 @@ import {
 
 export function isTensorHint(item?: any): item is TensorHint {
   return (
-    (item && item.type == "supported-shape") || item.type == "interpret-as"
+    (item && item.type === "supported-shape") || item.type === "interpret-as"
   );
 }
 
@@ -47,7 +36,6 @@ export function metadataToComponent(
 ): Component {
   const {
     name,
-    version,
     description,
     homepage,
     repository,
@@ -102,7 +90,7 @@ function convertElementTypesTensor(tensor: TensorMetadata): ElementTypesTensor {
   const elementTypes: ModelElementType[] = [];
 
   for (const hint of hints) {
-    if (hint.type == "supported-shapes") {
+    if (hint.type === "supported-shapes") {
       const convertedTypes = hint.supportedElementTypes.map((ty) => {
         return convertElementType(ty);
       });
@@ -144,37 +132,36 @@ export function modelToTensorElementType(ty: ModelElementType): ElementType {
   switch (ty.toString()) {
     case "utf8":
       return ElementType.Utf8;
-      break;
+
     case "u8":
       return ElementType.U8;
-      break;
+
     case "u16":
       return ElementType.U16;
-      break;
+
     case "u32":
       return ElementType.U32;
-      break;
+
     case "u64":
       return ElementType.U64;
-      break;
+
     case "i8":
       return ElementType.I8;
-      break;
+
     case "i16":
       return ElementType.I16;
-      break;
+
     case "i32":
       return ElementType.I32;
-      break;
+
     case "i64":
       return ElementType.I64;
-      break;
+
     case "f32":
       return ElementType.F32;
-      break;
+
     case "f64":
       return ElementType.F64;
-      break;
   }
 }
 
@@ -208,14 +195,14 @@ function deriveExampleFromTensorHints(
   let elementType: ModelElementType | undefined;
   let dimensionType = "fixed";
   for (const hint of hints) {
-    if (hint.type == "supported-shapes") {
+    if (hint.type === "supported-shapes") {
       elementType = convertElementType(hint.supportedElementTypes[0]);
 
-      if (hint.dimensions.tag == "fixed") {
+      if (hint.dimensions.tag === "fixed") {
         dimensions = [];
         dimensionType = hint.dimensions.tag;
         hint.dimensions.val.forEach((d) => {
-          if (typeof d == "number") {
+          if (typeof d === "number") {
             dimensions.push(d);
           } else {
             // Note: This dimension may have an arbitrary length,
@@ -281,7 +268,6 @@ function convertDefaults(
         required: true,
         description,
       };
-      break;
     }
     case "non-negative-number": {
       return {
@@ -294,7 +280,6 @@ function convertDefaults(
           min: 0,
         },
       };
-      break;
     }
     case "number-in-range": {
       return {
@@ -310,7 +295,6 @@ function convertDefaults(
           max: parseFloat(typeHint[0].max),
         },
       };
-      break;
     }
     case "supported-argument-type": {
       return {
@@ -327,7 +311,6 @@ function convertDefaults(
           max: undefined,
         },
       };
-      break;
     }
   }
 }

@@ -69,7 +69,7 @@ export default function InputDimensions() {
                 <h5>Tensor Shape Example</h5>
                 <span>
                   {tensor?.dimensions
-                    .map((v, i) => (v == 0 ? "?" : v))
+                    .map((v, i) => (v === 0 ? "?" : v))
                     .join(", ")}
                 </span>
                 {description ? (

@@ -112,13 +112,13 @@ export default function reactFlowDiagramReducer(
     case "DELETE_EDGE":
       newState = {
         ...newState,
-        edges: newState.edges.filter((e) => e.id != action.payload),
+        edges: newState.edges.filter((e) => e.id !== action.payload),
       };
       break;
     case "DELETE_NODE":
       newState = {
         ...newState,
-        nodes: newState.nodes.filter((e) => e.id != action.payload),
+        nodes: newState.nodes.filter((e) => e.id !== action.payload),
       };
       break;
     case "REPOSITION_NODE":

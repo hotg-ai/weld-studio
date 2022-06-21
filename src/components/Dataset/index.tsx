@@ -12,11 +12,10 @@ import { QueryData, TableData } from "../../types";
 import { useAppDispatch } from "src/hooks/hooks";
 import { RefreshComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
-import _ from "lodash";
 import { FieldSchema } from "../../types";
 import { arrowDataTypeToRunicElementType } from "../Analysis/utils/ArrowConvert";
 import { ElementType, Tensor } from "@hotg-ai/rune";
-import { downloadIcon, sqlTableIcon } from "../../assets";
+import { sqlTableIcon } from "../../assets";
 import { open } from "@tauri-apps/api/dialog";
 import { downloadDir, join } from "@tauri-apps/api/path";
 import { loadProcBlocks } from "./procBlocks";
@@ -219,7 +218,7 @@ const Dataset = ({
               </button>
             </div>
 
-            <GrouppedTables groups={groups} sql={sql} setSql={setSql} />
+            <GroupedTables groups={groups} sql={sql} setSql={setSql} />
           </div>
           {/* <div className="models__container">
           <div className="title">
@@ -333,7 +332,7 @@ const Dataset = ({
                                 <div className="dropdownOption__Content">
                                   <span>
                                     {field.name}:{" "}
-                                    {typeof field.data_type == "string"
+                                    {typeof field.data_type === "string"
                                       ? field.data_type
                                       : Object.keys(field.data_type)[0]}
                                   </span>
@@ -491,7 +490,7 @@ function createQueryDataset(
 function commonDataType(schema: QuerySchema): ElementType | undefined {
   const [first, ...rest] = schema.fields;
 
-  if (rest.some((field) => field.data_type != first.data_type)) {
+  if (rest.some((field) => field.data_type !== first.data_type)) {
     // We've got a data frame where the columns have different types, so it's
     // not possible to construct a tensor using all the column data.
     return undefined;
@@ -514,14 +513,14 @@ function mergeColumnsIntoTensor(
   elementType: ElementType
 ): Tensor | undefined {
   const dimensions = Uint32Array.from(
-    [data.length, columnNames.length].filter((d) => d != 1)
+    [data.length, columnNames.length].filter((d) => d !== 1)
   );
   const elements: number[] = [];
 
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < columnNames.length; j++) {
       const element = data[i][columnNames[j]];
-      if (typeof element != "number") {
+      if (typeof element !== "number") {
         throw new Error();
       }
       elements.push(element);
@@ -593,7 +592,7 @@ function mergeColumnsIntoTensor(
   }
 }
 
-const GrouppedTables = ({
+const GroupedTables = ({
   groups,
   sql,
   setSql,
@@ -635,7 +634,7 @@ const GrouppedTables = ({
               />{" "}
             </span>
             <div style={{ display: hide ? "none" : "block" }}>
-              <GrouppedTableInner tables={tables} sql={sql} setSql={setSql} />
+              <GroupedTableInner tables={tables} sql={sql} setSql={setSql} />
             </div>
           </div>
         );
@@ -644,7 +643,7 @@ const GrouppedTables = ({
   );
 };
 
-const GrouppedTableInner = ({
+const GroupedTableInner = ({
   tables,
   setSql,
   sql,

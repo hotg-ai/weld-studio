@@ -7,7 +7,6 @@ import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api/tauri";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
-import Header from "../../components/Header";
 import Home from "../../components/Home";
 import Dataset from "../../components/Dataset";
 import Anaysis from "../../components/Analysis";
@@ -17,7 +16,6 @@ import {
   FileDropEvent,
   FieldSchema,
   QueryData,
-  AppState,
   WeldProject,
 } from "../../types";
 
@@ -154,20 +152,11 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
           curTables[table.table_name] = { ...table, selected: true };
         }
       });
-      this.setState({ ...this.state, tables: curTables }, () => {
-        console.log("CURRENT TABLE", curTables);
-      });
+      this.setState({ ...this.state, tables: curTables }, () => {});
     });
   }
 
   executeQuery(sql: string) {
-    // FIXME: This is a hack so we can test the Rune compiler
-    // invoke("compile", { runefile: sql }).then(console.log).catch(console.error);
-
-    // FIXME: This is a hack to make sure the backend can search WAPM for all
-    // proc-blocks
-    // invoke("known_proc_blocks").then(console.log).catch(console.error);
-
     this.setState({ data: [], querySchema: { fields: [] } });
     if (this.state.isQueryLoading) return;
 
