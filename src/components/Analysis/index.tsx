@@ -13,7 +13,7 @@ import OutputDimensions from "./OutputDimensions";
 import Properties from "./Properties";
 import StudioCanvas from "./StudioCanvas";
 import { ComponentsSelector } from "./StudioComponentsSelector";
-import { diagramToRuneCanvas } from "./utils/FlowUtils";
+
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
@@ -30,6 +30,7 @@ import {
   testDatasetScreenshot,
 } from "src/assets";
 import { storm2rune } from "src/canvas2rune";
+import { diagramToRuneCanvas } from "./utils/FlowUtils";
 
 function Analysis({
   data,
