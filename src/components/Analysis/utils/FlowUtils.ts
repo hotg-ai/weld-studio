@@ -17,7 +17,7 @@ import {
   ResourceDeclaration,
   SerializedComponent,
   SerializedDiagram,
-} from "../model/Storm";
+} from "../model/Legacy";
 
 export type CanvasNodePort = {
   name: string;
@@ -83,7 +83,7 @@ export type RuneCanvas = {
   resources?: Record<string, ResourceDeclaration>;
 };
 
-export const storm2flow = (
+export const legacy2flow = (
   project: ProjectInfo,
   diagram: SerializedDiagram
 ): RuneCanvas => {

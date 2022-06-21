@@ -1751,51 +1751,6 @@
     schema-utils "^3.0.0"
     source-map "^0.7.3"
 
-"@projectstorm/geometry@^6.7.4":
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/@projectstorm/geometry/-/geometry-6.7.4.tgz#972d9c65845fc83f48ead4b11a28b809d3d9c03d"
-  integrity sha512-9jTcQPzg+qT9OUMCUGmpkyk0ChHMobFL5d542dY5sb54bki35cawvQj2gMsIdNJ4WGxnuM+DKSSzm4JX35lGtw==
-
-"@projectstorm/react-canvas-core@^6.7.4":
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/@projectstorm/react-canvas-core/-/react-canvas-core-6.7.4.tgz#0bb33a47d99aa2f520e2fd6d5164643c0ed937bb"
-  integrity sha512-sY32kT//gQe5aw6RHkmKrbzBq9iWyfwyvvfRTplGPE1ll3zOBVCjbf3tdfw6vATCden+WR0TmirtBo2j3exiBg==
-  dependencies:
-    "@projectstorm/geometry" "^6.7.4"
-
-"@projectstorm/react-diagrams-core@^6.6.1", "@projectstorm/react-diagrams-core@^6.7.4":
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/@projectstorm/react-diagrams-core/-/react-diagrams-core-6.7.4.tgz#14a5b12f97c91349a70f0b6c8efe42ec14d80111"
-  integrity sha512-AeqH1u58Ugk8mif/GgLEUeOMmTPaWDpl1isA1OJHCPGMbvAytRfv5mrGMvG2E+pYDB29BQ4Yo2z9/TbAy6/nvA==
-  dependencies:
-    "@projectstorm/geometry" "^6.7.4"
-    "@projectstorm/react-canvas-core" "^6.7.4"
-
-"@projectstorm/react-diagrams-defaults@^6.7.4":
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/@projectstorm/react-diagrams-defaults/-/react-diagrams-defaults-6.7.4.tgz#d303f1099c051e3470e3e4b9439e84d52f29d488"
-  integrity sha512-j3pRlZq1Z5yIGKpI7VtVkvNK/kXKB2abNMVXTSLUECA4iRubPKDn08w6q4jg1nBZXLGidrHsrELqW+53G9VvLA==
-  dependencies:
-    "@projectstorm/react-diagrams-core" "^6.7.4"
-
-"@projectstorm/react-diagrams-routing@^6.7.4":
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/@projectstorm/react-diagrams-routing/-/react-diagrams-routing-6.7.4.tgz#954609769335bd43f5817e1fb9edd1e52fccab21"
-  integrity sha512-mB8YaRkNF6gdTlYvL0Cxc6m6XLwh7wvmjIsiEO6kW3j1uSvH7R7Gbl/iDYOdc0zUMqH9+pD+M064tWC4oAXa9A==
-  dependencies:
-    "@projectstorm/geometry" "^6.7.4"
-    "@projectstorm/react-diagrams-core" "^6.7.4"
-    "@projectstorm/react-diagrams-defaults" "^6.7.4"
-
-"@projectstorm/react-diagrams@^6.6.1":
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/@projectstorm/react-diagrams/-/react-diagrams-6.7.4.tgz#9bf4f1953de610e533253e49049d1126f932bce9"
-  integrity sha512-xK/bi7DqHKv15XZRESeSpvSmAVArJIXkV6E1mybSc/24toGmoE2imcS+puxG6wGS56NhR0gIrUiT5UYwBvyD5A==
-  dependencies:
-    "@projectstorm/react-diagrams-core" "^6.7.4"
-    "@projectstorm/react-diagrams-defaults" "^6.7.4"
-    "@projectstorm/react-diagrams-routing" "^6.7.4"
-
 "@reduxjs/toolkit@^1.8.2":
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.8.2.tgz#352fd17bc858af51d21ce8d28183a930cab9e638"

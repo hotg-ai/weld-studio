@@ -20,7 +20,7 @@ import {
 import { outputPorts } from "./OutputDimensions";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Node } from "react-flow-renderer";
-import { Port } from "./model/Storm";
+import { Port } from "./model/Legacy";
 const { Option } = Select;
 
 type InputType = {
@@ -318,45 +318,13 @@ export default function PropertiesForm() {
 
       const displayName = _.startCase(fileName.replace(/\..*$/, ""));
       let results: ResourceComponent | undefined = undefined;
-      if (wordList && fileName && displayName && id) {
-        setFileName(fileName);
-        // results = await dispatch(
-        //   uploadWordlist({
-        //     path: fileName,
-        //     wordList,
-        //     uploadedFilename: id.replace(/\-/g, ""),
-        //   })
-        // );
-      }
-
-      // if (results && results.meta.requestStatus !== "fulfilled") {
-      //   setProgressState({
-      //     show: false,
-      //     active: false,
-      //     done: false,
-      //   });
-      //   message.error(`${info.file.name} file upload failed with error.`);
-      //   return;
-      // }
-
-      // if (results && results.meta.requestStatus === "fulfilled") {
-      //   message.success(`${fileName} file uploaded successfully`);
-      //   setProgressState({
-      //     show: false,
-      //     active: false,
-      //     done: true,
-      //   });
-      //   return;
-      // }
+      if (wordList && fileName && displayName && id) setFileName(fileName);
     } catch (err) {
       message.error(`${info.file.name} file upload failed with error ${err}`);
     }
     return;
   };
 
-  // Hack: The StormApplication manages the state of the drawing, but because it
-  // lives outside of React and Redux, we need to manually trick Redux into
-  // rendering.
   const [, updateState] = useState<unknown>({});
   const forceRefresh = useCallback(() => updateState({}), []);
 

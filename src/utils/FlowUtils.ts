@@ -17,7 +17,7 @@ import {
   ResourceDeclaration,
   SerializedComponent,
   SerializedDiagram,
-} from "../components/Analysis/model/Storm";
+} from "../components/Analysis/model/Legacy";
 
 export type CanvasNodePort = {
   name: string;
@@ -81,88 +81,6 @@ export type RuneCanvas = {
   links: Record<string, CanvasLink>;
   components: Record<string, SerializedComponent>;
   resources?: Record<string, ResourceDeclaration>;
-};
-
-export const storm2flow = (
-  project: ProjectInfo,
-  diagram: SerializedDiagram
-): RuneCanvas => {
-  const nodes: Record<string, CanvasNode> = {};
-  const links: Record<string, CanvasLink> = {};
-  Object.entries(diagram.layers[1].models).forEach(
-    ([id, model]: [string, LayerNodeModel]) => {
-      const node: CanvasNode = {
-        component: model.type,
-        position: { x: model.x, y: model.y },
-        data: {
-          id,
-          type: model.type,
-          label: model.name.split("----")[0],
-          ports: model.ports.reduce(
-            (map: Record<string, Port>, port) => (
-              (map[port.id] = {
-                name: port.name,
-                idx: port.idx,
-                id: port.id,
-                type: port.type,
-                in: port.in,
-                parentNode: port.parentNode,
-                alignment: port.alignment,
-                label: port.label,
-                tensor: {
-                  elementType: port.tensor?.elementType,
-                  dimensions: port.tensor?.dimensions || [],
-                },
-              }),
-              map
-            ),
-            {}
-          ),
-          name: model.name,
-          propertiesValueMap: model.propertiesValueMap,
-          componentID: model.componentID,
-          componentIdentifier: model.componentIdentifier,
-        },
-      };
-      switch (model.type) {
-        case "capability":
-          node.sourcePosition = Position.Right;
-          break;
-        case "output":
-          node.targetPosition = Position.Left;
-          break;
-        default:
-          node.sourcePosition = Position.Right;
-          node.targetPosition = Position.Left;
-          break;
-      }
-      nodes[id] = node;
-    }
-  );
-  Object.entries(diagram.layers[0].models).forEach(
-    ([id, model]: [string, LayerLinkModel]) => {
-      const link: CanvasLink = {
-        id: model.id,
-        source: model.source,
-        sourceHandle: model.sourcePort,
-        target: model.target,
-        targetHandle: model.targetPort,
-      };
-      links[id] = link;
-    }
-  );
-  return {
-    runeCanvasVersion: "0.2.0",
-    name: project.name,
-    diagram: {
-      position: [diagram.offsetX, diagram.offsetY],
-      zoom: diagram.zoom,
-    },
-    nodes: nodes,
-    links: links,
-    components: diagram.customComponents,
-    resources: diagram.resources,
-  };
 };
 
 export const getDimensions = (

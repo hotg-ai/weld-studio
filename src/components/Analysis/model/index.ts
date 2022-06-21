@@ -1,28 +1,4 @@
-import capabilities from "./capabilities";
 import { ElementTypesTensor } from "./metadata";
-import models from "./models";
-import outputs from "./outputs";
-
-import {
-  Metadata,
-  ArgumentMetadata,
-  TensorHint,
-  ArgumentHint,
-  MediaHint,
-  Runtime,
-  Rune,
-  TensorMetadata,
-  Dimensions,
-  Tensor,
-  TensorDescriptor,
-  SupportedArgumentType,
-  Tensors,
-} from "@hotg-ai/rune";
-import { values } from "lodash";
-
-// export function isComponentProcBlock(item?: any): item is ProcBlock {
-//   return item && !item.value;
-// }
 
 export function prefixKeys(
   items: Record<string, Component>
@@ -47,12 +23,7 @@ export function prefixKeys(
  * @returns a description of known node.
  */
 export function builtinComponents(): Record<string, Component> {
-  return {
-    // ...prefixKeys(capabilities()),
-    // ...prefixKeys(procBlo)
-    // ...prefixKeys(models()),
-    // ...prefixKeys(outputs()),
-  };
+  return {};
 }
 
 /**

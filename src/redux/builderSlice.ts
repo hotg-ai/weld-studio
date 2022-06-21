@@ -6,7 +6,7 @@ import { Project } from "./actions/project";
 import { BuildInfo } from "./actions/build";
 import { uploadModel } from "./actions/studio/uploadModel";
 import _ from "lodash";
-import { ResourceDeclaration } from "../components/Analysis/model/Storm";
+import { ResourceDeclaration } from "../components/Analysis/model/Legacy";
 import { ProjectInfo } from "./reducers/builder";
 
 const RANDOM_BASE = 100000000;

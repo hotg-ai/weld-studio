@@ -1,7 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { storm2rune } from "src/canvas2rune";
 import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
 import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
 import { FlowElements } from "src/redux/reactFlowSlice";
@@ -30,6 +29,7 @@ import {
   studioCanvasScreenshot,
   testDatasetScreenshot,
 } from "src/assets";
+import { storm2rune } from "src/canvas2rune";
 
 function Analysis({
   data,
