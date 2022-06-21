@@ -15,10 +15,13 @@ export function err<E>(error: E): Result<never, E> {
 
 /**
  * Check whether a SQL query is valid.
+ * @param sql The SQL query.
+ * @param maxRows Limit the number of records in the 
+ * @returns
  */
-export async function validate_sql(sql: string): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
+export async function validate_sql(sql: string, maxRows?: number): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
     try {
-        const response = await invoke("validate_sql", { sql });
+        const response = await invoke("validate_sql", { sql, max_rows: maxRows });
         return ok(response as ValidationResponse);
     } catch(e) {
         return err(is_serializable_error(e) ? e : to_serializable_error(e));

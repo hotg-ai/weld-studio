@@ -4,13 +4,12 @@ use arrow::{ipc::writer::StreamWriter, record_batch::RecordBatch};
 
 use crate::{errors::SerializableError, AppState};
 
-const MAX_ROWS: usize = 128;
-
 #[tauri::command]
 #[tracing::instrument(skip_all)]
 pub async fn validate_sql(
     app: tauri::State<'_, AppState>,
     sql: &str,
+    max_rows: Option<usize>,
 ) -> Result<ValidationResponse, SerializableError<ValidationFailed>> {
     let db = app.db().await;
     let mut stmt = db.prepare(sql).map_err(ValidationFailed::from)?;
@@ -28,8 +27,10 @@ pub async fn validate_sql(
         num_records += frame.num_rows();
         records.push(frame);
 
-        if num_records >= MAX_ROWS {
-            break;
+        if let Some(max_rows) = max_rows {
+            if num_records >= max_rows {
+                break;
+            }
         }
     }
 
