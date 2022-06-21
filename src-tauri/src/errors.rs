@@ -208,9 +208,13 @@ impl<E: TS> TS for SerializableError<E> {
     fn decl() -> String {
         r#"
 interface SerializableError<E> {
+    /** A human-readable message explaining the top-most error. */
     message: string,
+    /** A list of errors that resulted in this error */
     causes: string[],
+    /** A verbose stacktrace of the error. */
     verbose: string,
+    /** Some optional, domain-specific data that describes this error. */
     state?: E,
 }"#
         .to_string()
