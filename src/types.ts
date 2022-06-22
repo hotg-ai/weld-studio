@@ -32,8 +32,8 @@ export type QueryData = {
 };
 
 export type AppState = {
-  tabs  : WeldProject[],
-  selectedTab? : string,
+  tabs: WeldProject[];
+  selectedTab?: string;
 };
 
 export type WeldProject = {
@@ -49,4 +49,5 @@ export type WeldProject = {
   datasetRegistry: Record<string, QueryData>;
   selectedDatasets: string[];
   searchValue: string;
-}
+  logs: any[];
+};
