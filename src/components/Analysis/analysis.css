@@ -457,6 +457,7 @@ input:checked + .slider:before {
   margin-left: -5px !important;
 }
 .studio-table__container .ant-tabs .ant-tabs-nav .ant-tabs-tab {
+  width: 150px;
   margin: 0 !important;
   padding: 0.3rem 2rem;
   display: flex;
@@ -482,7 +483,7 @@ input:checked + .slider:before {
 }
 .studio-table__container .ant-tabs .ant-tabs-nav .ant-tabs-tab-btn .count {
   position: absolute;
-  top: -3px;
+  top: 0;
   font-size: 10px;
   color: #c130b0;
 }
@@ -492,7 +493,7 @@ input:checked + .slider:before {
   width: 100%;
   height: 100%;
 }
-.studio-table__container .ant-tabs .ant-tabs-content-holder .data-table-tab {
+.studio-table__container .ant-tabs .ant-tabs-content-holder .ant-tabs-tabpane {
   overflow-y: scroll;
   height: 100%;
 }
@@ -999,7 +1000,7 @@ input:checked + .slider:before {
 }
 
 .intro_modal__container .modal {
-  width: 60%;
+  width: 850px;
 }
 .intro_modal__container .modal .modal__body {
   padding: 20px 25px 25px !important;
@@ -1019,7 +1020,7 @@ input:checked + .slider:before {
 }
 .ant-carousel .slick-next {
   right: 0 !important;
-  top: 270px !important;
+  top: 90% !important;
   background: #00b594 !important;
   color: #fff !important;
   width: 93px !important;
@@ -1029,8 +1030,9 @@ input:checked + .slider:before {
   z-index: 990000;
 }
 .ant-carousel .slick-prev {
-  left: 520px !important;
-  top: 270px !important;
+  left: unset !important;
+  right: 15% !important;
+  top: 90% !important;
   border: 1px solid #00b594 !important;
   background-color: transparent;
   color: #00b594 !important;
@@ -1134,9 +1136,8 @@ input:checked + .slider:before {
 }
 .intro-modal-skip_btn {
   position: absolute;
-  top: 354px;
-  left: 456px;
-  right: 0 !important;
+  top: 84.5%;
+  right: 29%;
   background: transparent !important;
   color: #00b594 !important;
   width: 93px !important;

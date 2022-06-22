@@ -31,6 +31,7 @@ import {
 } from "src/assets";
 import { storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
+import { Console, Decode, Hook } from "console-feed";
 
 function Analysis({
   data,
@@ -123,6 +124,15 @@ function Analysis({
       sessionStorage.setItem("analysis_intro", "seen");
     }
   }, []);
+
+  const [logs, setLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    Hook(window.console, (log) => {
+      const decode = Decode(log);
+      setLogs((logs) => [...logs, decode]);
+    });
+  });
 
   const { id } = useParams();
 
@@ -447,12 +457,12 @@ function Analysis({
             <Tabs.TabPane
               tab={
                 <>
-                  Logs <span className="count">100</span>
+                  Logs <span className="count">{logs.length}</span>
                 </>
               }
               key="2"
             >
-              Logs
+              <Console logs={logs} variant="light" />
             </Tabs.TabPane>
           </Tabs>
         </div>

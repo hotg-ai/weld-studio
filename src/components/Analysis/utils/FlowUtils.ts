@@ -355,12 +355,10 @@ export const diagramToRuneCanvas = (
       if (e.data.type === "proc-block") {
         const name = e.data.componentID.split("proc-block/")[1];
         e.data.componentIdentifier = components[e.data.componentID].identifier;
-        console.log(e.data);
       }
       if (e.data.type === "model") {
         const name = e.data.componentID.split("model/")[1];
         e.data.componentIdentifier = `https://assets.hotg.ai/models/tflite/${name}.tflite`;
-        console.log(e.data);
       }
     }
   });

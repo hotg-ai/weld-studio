@@ -180,9 +180,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       })
       .catch((e) => {
         //Note: e is an object and we can't put the entire object in jsx as queryError,So we need to set queryError to the message property of the e object.
-        this.setState({ queryError: e }, () => {
-          console.log(this.state);
-        });
+        this.setState({ queryError: e }, () => {});
       })
       .finally(() => this.setState({ isQueryLoading: false }));
   }
@@ -315,9 +313,10 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                     numberSelectedDatasets={
                       Object.keys(selectedDatasets).length
                     }
-                    setQueryError={(error: string) =>
-                      this.setState({ queryError: error })
-                    }
+                    setQueryError={(error: string) => {
+                      this.setState({ queryError: error });
+                      console.log(error);
+                    }}
                     selectDataset={(name, toggle) => {
                       this.setState({
                         datasetRegistry: {
@@ -354,9 +353,10 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                         console.log("SETTING IS LOADING TABLE", isLoadingTable)
                       )
                     }
-                    setQueryError={(error: string) =>
-                      this.setState({ queryError: error })
-                    }
+                    setQueryError={(error: string) => {
+                      this.setState({ queryError: error });
+                      console.log(error);
+                    }}
                   />
                 }
               />

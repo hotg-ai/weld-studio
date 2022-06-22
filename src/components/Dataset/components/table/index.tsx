@@ -6,8 +6,7 @@ const Table = ({ data }: { data: any[] }) => {
   let header = [];
   if (data !== undefined && data.length > 0) {
     if (data[0]) header = Object.keys(data[0]);
-    console.log(header);
-    console.log(data);
+
     return (
       <table>
         <thead>
