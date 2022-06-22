@@ -58,12 +58,12 @@ function Analysis({
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
-  const [tableData, setTableData] = useState(data);
+  const [tableData, setTableData] = useState([]);
   const [activeKey, setActiveKey] = React.useState('1');
   const onKeyChange = (key) => setActiveKey(key);
-  
+  const [resultData, setResultData] = useState([]);
   useEffect(() => {
-    let newTable = data;
+    let newTable = [];
 
     const capabilities = diagram.nodes.filter(
       (node) => node.data.type === "capability"
@@ -71,7 +71,7 @@ function Analysis({
 
     let labels: string[] = capabilities.map((cap) => cap.data.name);
 
-    newTable = newTable.map((o, index) => {
+    newTable = data.map((o, index) => {
       if (labels && labels.length > 0) {
         let row = labels.reduce((acc, curr) => {
           if (curr.startsWith("Dataset_")) {
@@ -80,14 +80,10 @@ function Analysis({
               Object.entries(datasetRegistry[name].data[index]).forEach(
                 ([k, v]) => {
                   if (!acc[name]) acc[name] = "";
-                  if (
-                    tableData &&
-                    tableData[index] &&
-                    tableData[index]["Result"]
-                  ) {
-                    acc["Result"] = tableData[index]["Result"];
-                  }
                   acc[name] = acc[name] + `"${k}": ${v}, `;
+                  if (resultData && resultData[index] !== null) {
+                    acc["Result"] = resultData[index];
+                  }
                 }
               );
             } catch (e) {}
@@ -99,9 +95,22 @@ function Analysis({
         if (!_.isEmpty(row)) return row;
       }
     });
-
-    setTableData(newTable || []);
+    setTableData(newTable);
   }, [diagram]);
+
+  useEffect(() => {
+    let d = tableData;
+    if (resultData.length > 0) {
+      d.forEach((v, i) => {
+        d[i]["Result"] = resultData[i];
+      });
+    } else {
+      d.forEach((v, i) => {
+        if (d[i]["Result"]) delete d[i]["Result"];
+      });
+    }
+    setTableData(d);
+  }, [resultData]);
 
   useEffect(() => {
     if (sessionStorage.getItem("analysis_intro") !== "seen") {
@@ -281,7 +290,8 @@ function Analysis({
       }
     });
     let result;
-    console.log("RUNEFILE, INPUT", rune, input_tensors);
+    let resultTable = [];
+    setResultData([]);
     try {
       const zune = await invoke("compile", { runefile: rune });
       console.log("ZUNE BUILT", zune);
@@ -291,14 +301,11 @@ function Analysis({
           inputTensors: input_tensors,
         });
         const tensorResult = convertTensorResult(result);
-        const newTable = tableData.map((row, index) => {
-          return {
-            ...row,
-            Result:
-              tensorResult[index] !== undefined ? tensorResult[index] : "",
-          };
+        tableData.forEach((row, index) => {
+          resultTable[index] =
+            tensorResult[index] !== undefined ? tensorResult[index] : "";
         });
-        setTableData(newTable);
+        setResultData(resultTable);
       } catch (error) {
         console.log("RUN ERROR", error);
         setLogs((logs) => [...logs, {method: "info", data:[error]}]);

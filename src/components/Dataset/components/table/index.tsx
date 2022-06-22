@@ -1,5 +1,3 @@
-import React from "react";
-import { downloadIcon } from "src/assets";
 import "./table.css";
 
 const Table = ({ data }: { data: any[] }) => {
