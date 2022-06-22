@@ -55,6 +55,7 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
             crate::legacy::run_sql,
             crate::legacy::get_tables,
             crate::legacy::save_data,
+            crate::legacy::log_message,
             crate::compiler::compile,
             crate::runtime::reune,
             crate::wapm::known_proc_blocks,
