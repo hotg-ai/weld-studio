@@ -321,11 +321,11 @@ function Analysis({
         setResultData(resultTable);
       } catch (error) {
         console.log("RUN ERROR", error);
-        setLogs(error);
+        setLogs(error.backtrace);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);
-      setLogs(error);
+      setLogs(error.backtrace);
     }
     return result;
   };
