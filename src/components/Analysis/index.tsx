@@ -62,31 +62,10 @@ function Analysis({
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
-<<<<<<< HEAD
   const [tableData, setTableData] = useState([]);
   const [activeKey, setActiveKey] = React.useState("1");
   const onKeyChange = (key) => setActiveKey(key);
   const [resultData, setResultData] = useState([]);
-=======
-  const dispatch = useAppDispatch();
-  // const { state } = useLocation();
-  // let dataColumns: string[] = [];
-  // //let data: any = {};
-  // let dataTypes: DatasetTypes = {};
-
-  // Object.entries(state).map(([key, value]) => {
-  //   if (key == "dataColumns") dataColumns = value;
-  //   //if (key == "data") data = value;
-  //   if (key == "dataTypes") dataTypes = value;
-  // });
-
-  // console.log(data, dataColumns, dataTypes);
-
-  const [tableData, setTableData] = useState(data);
-  const [activeKey, setActiveKey] = React.useState("1");
-  const onKeyChange = (key) => setActiveKey(key);
-
->>>>>>> logs are in global state now!
   useEffect(() => {
     let newTable = [];
 
@@ -342,19 +321,11 @@ function Analysis({
         setResultData(resultTable);
       } catch (error) {
         console.log("RUN ERROR", error);
-<<<<<<< HEAD
-        setLogs((logs) => [...logs, { method: "info", data: [error] }]);
-      }
-    } catch (error) {
-      console.log("COMPILE ERROR", error);
-      setLogs((logs) => [...logs, { method: "info", data: [error] }]);
-=======
         setLogs(error);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);
       setLogs(error);
->>>>>>> logs are in global state now!
     }
     return result;
   };
