@@ -32,6 +32,7 @@ import {
 import { storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
 import { Console, Decode, Hook } from "console-feed";
+import React from "react";
 
 function Analysis({
   data,
@@ -74,7 +75,9 @@ function Analysis({
   // console.log(data, dataColumns, dataTypes);
 
   const [tableData, setTableData] = useState(data);
-
+  const [activeKey, setActiveKey] = React.useState('1');
+  const onKeyChange = (key) => setActiveKey(key);
+  
   useEffect(() => {
     let newTable = data;
 
@@ -413,6 +416,7 @@ function Analysis({
                 //   });
                 setQueryError(undefined);
                 setIsLoadingTable(true);
+                setActiveKey("2");
 
                 buildAndRun(diagram, tableData)
                   .then((result) => {
@@ -452,7 +456,7 @@ function Analysis({
           </div>
         </div>
         <div className="studio-table__container">
-          <Tabs defaultActiveKey="1">
+          <Tabs defaultActiveKey="1" activeKey={activeKey} onChange={onKeyChange}>
             <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
               <Table data={tableData} />
             </Tabs.TabPane>
