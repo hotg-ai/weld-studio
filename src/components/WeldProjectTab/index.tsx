@@ -34,6 +34,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
     datasetRegistry: {},
     selectedDatasets: [],
     searchValue: "",
+    logs: [],
   };
 
   unsubscribers: UnlistenFn[] = [];
@@ -223,6 +224,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       isQueryLoading,
       datasetRegistry,
       searchValue,
+      logs,
     } = this.state;
 
     const filteredData: Record<string, QueryData> = Object.keys(datasetRegistry)
@@ -332,6 +334,15 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                 path="/analysis/:id"
                 element={
                   <Anaysis
+                    logs={logs}
+                    setLogs={(error) => {
+                      this.setState({
+                        logs: [
+                          ...this.state.logs,
+                          { method: "info", data: [error] },
+                        ],
+                      });
+                    }}
                     datasetRegistry={selectedDatasets}
                     querySchema={querySchema}
                     data={data}

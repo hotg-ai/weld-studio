@@ -2,22 +2,22 @@ import React from "react";
 
 import "./App.css";
 import { AppState, WeldProject } from "./types";
-import WeldProjectTab from './components/WeldProjectTab'
+import WeldProjectTab from "./components/WeldProjectTab";
 import Header from "./components/Header";
 
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from "uuid";
 
 class App extends React.Component<{}, AppState> {
-  state : AppState = {
+  state: AppState = {
     selectedTab: undefined,
-    tabs: []
-  } 
+    tabs: [],
+  };
 
   addTab() {
-    const tabs: WeldProject[] = this.state.tabs; 
+    const tabs: WeldProject[] = this.state.tabs;
     const id = uuidv4();
     tabs.push({
-      id ,
+      id,
       name: `Weld ${this.state.tabs.length}`,
       data: [],
       querySchema: { fields: [] },
@@ -28,41 +28,44 @@ class App extends React.Component<{}, AppState> {
       isQueryLoading: false,
       datasetRegistry: {},
       selectedDatasets: [],
-      searchValue: '',  
+      searchValue: "",
+      logs: [],
     });
-    this.setState({tabs, selectedTab: this.state.selectedTab ? this.state.selectedTab: id})
+    this.setState({
+      tabs,
+      selectedTab: this.state.selectedTab ? this.state.selectedTab : id,
+    });
   }
-  
+
   render(): React.ReactNode {
     //const tabs = this.state.tabs.map((t) => t.name);
-    const tabState = this.state.tabs[0]
-    return (<div className="App" >
-      
-      <Header selectedTabId={this.state.selectedTab} weldProjects={this.state.tabs} 
-      
-      onSelect={(selectedTab) => this.setState({selectedTab})}
-      
-      onClose={(tabId) => {
-        const newTabs = this.state.tabs.filter((t) => t.id !== tabId);
+    const tabState = this.state.tabs[0];
+    return (
+      <div className="App">
+        <Header
+          selectedTabId={this.state.selectedTab}
+          weldProjects={this.state.tabs}
+          onSelect={(selectedTab) => this.setState({ selectedTab })}
+          onClose={(tabId) => {
+            const newTabs = this.state.tabs.filter((t) => t.id !== tabId);
 
-        this.setState({tabs: newTabs});
-      }} 
-      
-      onTabNameEdit={(tabId, name) => {
-        
-        const tabs = this.state.tabs.map((t) => {
-          if (t.id === tabId ) {
-            t.name = name
-          } 
-          return t
-        })
+            this.setState({ tabs: newTabs });
+          }}
+          onTabNameEdit={(tabId, name) => {
+            const tabs = this.state.tabs.map((t) => {
+              if (t.id === tabId) {
+                t.name = name;
+              }
+              return t;
+            });
 
-        this.setState({tabs})
-
-      }} onAddTab={() => this.addTab()}/>
-      <WeldProjectTab {...tabState} />
-      
-    </div>);
+            this.setState({ tabs });
+          }}
+          onAddTab={() => this.addTab()}
+        />
+        <WeldProjectTab {...tabState} />
+      </div>
+    );
   }
 }
 
