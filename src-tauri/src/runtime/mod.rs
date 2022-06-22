@@ -14,7 +14,7 @@ pub async fn reune(
     tracing::info!(input_nodes = ?zune_engine.input_nodes(), output_nodes=?zune_engine.output_nodes());
     for (name, tensor) in input_tensors {
         tracing::info!("Input Name: {name}");
-        window.emit("reune_progress", &format!("Input Name: {name}")).map_err(|e| anyhow!(e.to_string()))?;
+        window.emit("reune_progress", &format!("run: Setting Input Name: {name}")).map_err(|e| anyhow!(e.to_string()))?;
         let input_tensor_node_names = zune_engine
             .get_input_tensor_names(&name)
             .with_context(|| format!("Unable to find column: {name}"))?;
@@ -34,8 +34,10 @@ pub async fn reune(
         zune_engine.set_input_tensor(&name, default_tensor_name, &tensor);
     }
 
+    window.emit("reune_progress", "run: Starting Run").map_err(|e| anyhow!(e.to_string()))?;
     if let Err(e) = zune_engine.predict() {
         tracing::error!(error = &*e as &dyn std::error::Error, "Unable to predict");
+        window.emit("reune_progress", "run: Run failed").map_err(|e| anyhow!(e.to_string()))?;
         return Err(e.into());
     }
 
@@ -55,7 +57,7 @@ pub async fn reune(
         "Received the result",
     );
 
-    window.emit("reune_progress",&format!("reune: Successfully Received the result")).map_err(|e| anyhow!(e.to_string()))?;
+    window.emit("reune_progress",&format!("run: Successfully Received the result")).map_err(|e| anyhow!(e.to_string()))?;
 
     Ok(tensor.into())
 }
