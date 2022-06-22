@@ -127,12 +127,12 @@ function Analysis({
 
   const [logs, setLogs] = useState<any[]>([]);
 
-  useEffect(() => {
-    Hook(window.console, (log) => {
-      const decode = Decode(log);
-      setLogs((logs) => [...logs, decode]);
-    });
-  });
+  // useEffect(() => {
+  //   Hook(window.console, (log) => {
+  //     const decode = Decode(log);
+  //     setLogs((logs) => [...logs, decode]);
+  //   });
+  // });
 
   const { id } = useParams();
 
@@ -352,9 +352,11 @@ function Analysis({
         setTableData(newTable);
       } catch (error) {
         console.log("RUN ERROR", error);
+        setLogs((logs) => [...logs, {method: "info", data:[error]}]);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);
+      setLogs((logs) => [...logs, {method: "info", data:[error]}]);
     }
     return result;
   };
