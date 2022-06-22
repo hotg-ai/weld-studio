@@ -45,7 +45,7 @@ impl<E: std::error::Error + 'static> SerializableError<E> {
     /// # Example
     ///
     /// ```rust
-    /// use weld::errors::SerializableError;
+    /// use weld::shared::SerializableError;
     ///
     /// #[derive(Debug, serde::Serialize)]
     /// struct SomeError {

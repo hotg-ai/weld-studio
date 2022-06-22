@@ -2,7 +2,7 @@ use std::fmt::{self, Display, Formatter};
 
 use arrow::{ipc::writer::StreamWriter, record_batch::RecordBatch};
 
-use crate::{errors::SerializableError, AppState};
+use crate::{shared::SerializableError, AppState};
 
 #[tauri::command]
 #[tracing::instrument(skip_all)]
