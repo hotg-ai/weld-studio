@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fmt::Display};
 
-use anyhow::{Context, Error};
+use anyhow::{anyhow, Context, Error};
 use hotg_rune_runtime::zune::{ElementType, TensorResult, ZuneEngine};
 
 #[tauri::command]
@@ -8,11 +8,13 @@ use hotg_rune_runtime::zune::{ElementType, TensorResult, ZuneEngine};
 pub async fn reune(
     zune: Vec<u8>,
     input_tensors: HashMap<String, MyTensor>,
+    window: tauri::Window,
 ) -> Result<MyTensor, SeriazableError> {
     let mut zune_engine = ZuneEngine::load(&zune).context("Unable to initialize Zune Engine!")?;
     tracing::info!(input_nodes = ?zune_engine.input_nodes(), output_nodes=?zune_engine.output_nodes());
     for (name, tensor) in input_tensors {
         tracing::info!("Input Name: {name}");
+        window.emit("reune_progress", &format!("Input Name: {name}")).map_err(|e| anyhow!(e.to_string()))?;
         let input_tensor_node_names = zune_engine
             .get_input_tensor_names(&name)
             .with_context(|| format!("Unable to find column: {name}"))?;
@@ -28,6 +30,7 @@ pub async fn reune(
           buffer_length = tensor.buffer.len(),
           "Setting an input tensor",
         );
+
         zune_engine.set_input_tensor(&name, default_tensor_name, &tensor);
     }
 
@@ -51,6 +54,8 @@ pub async fn reune(
         tensor.buffer_length = tensor.buffer.len(),
         "Received the result",
     );
+
+    window.emit("reune_progress",&format!("reune: Successfully Received the result")).map_err(|e| anyhow!(e.to_string()))?;
 
     Ok(tensor.into())
 }

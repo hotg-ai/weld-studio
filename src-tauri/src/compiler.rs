@@ -15,10 +15,12 @@ pub async fn compile(
     runefile: String,
     assets: tauri::State<'_, Arc<dyn AssetLoader + Send + Sync>>,
     cfg: tauri::State<'_, BuildConfig>,
+    window: tauri::Window
 ) -> Result<Vector<u8>, String> {
     let assets = Arc::clone(&assets);
     let cfg = BuildConfig::clone(&cfg);
 
+    window.emit("compilation_progress","Compilation Started").map_err(|e| e.to_string())?;
     let result = tokio::task::spawn_blocking(move || {
         let mut db = Database::new(assets);
         db.set_src(runefile.into());
@@ -26,6 +28,7 @@ pub async fn compile(
         db.rune_archive()
     })
     .await;
+    window.emit("compilation_progress", "Compilation Finished").map_err(|e| e.to_string())?;
 
     match result {
         Ok(Ok(rune)) => Ok(rune),
