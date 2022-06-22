@@ -2,8 +2,6 @@ import _ from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
 import { arrowDataTypeToElementType } from "./utils/ArrowConvert";
 import {
-  // Upload,
-  // Button,
   message,
   Popover,
   Empty,
@@ -13,7 +11,6 @@ import {
   Table,
   Checkbox,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 
 import { QuestionMark, WebWhite } from "../../assets/index";
@@ -24,7 +21,6 @@ import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
 import Modal from "../Dataset/components/modal";
 import TextArea from "antd/lib/input/TextArea";
-import { DatasetTypes } from "../Dataset";
 import { UpdateComponents } from "src/redux/builderSlice";
 import { FieldSchema, QueryData } from "../../types";
 import outputs from "./model/outputs";
@@ -339,68 +335,6 @@ const generateDatasetCapabilities = (
       },
     };
   }
-
-  return result;
-};
-
-const generateCapabilities = (
-  querySchema: { fields: FieldSchema[] },
-  length: number
-): Record<string, Capability> => {
-  let result: Record<string, Capability> = {};
-
-  querySchema.fields.forEach((column) => {
-    // Object.entries(v).forEach(([column, value]) => {
-    //   console.log(dataColumns, column)
-    //   if (true || dataColumns.filter((col) => col === column).length > 0) {
-
-    let columnName = column.name.replaceAll('"', "");
-    result[columnName] = {
-      type: "capability",
-      displayName: columnName,
-      identifier: "RAW",
-      source: "custom",
-      properties: {
-        length: {
-          type: "integer",
-          defaultValue: length,
-          required: true,
-          description: "Length of raw data in bytes",
-        },
-        // source: {
-        //   type: "integer",
-        //   required: true,
-        //   defaultValue: 0,
-        //   description:
-        //     "Specify which input to use when multiple inputs are provided",
-        // },
-      },
-      description: "",
-      // @ts-ignore
-      acceptedOutputElementTypes: [
-        { elementTypes: [arrowDataTypeToElementType(column.data_type)] },
-      ],
-      // @ts-ignore
-      outputs: (p) => {
-        const { length } = p;
-        if (typeof length !== "number") {
-          throw new Error();
-        }
-
-        return [
-          {
-            elementType: arrowDataTypeToElementType(column.data_type),
-            dimensions: [1, length],
-            displayName: "data",
-            description: `Raw output from ${column} Column`,
-            dimensionType: "fixed",
-          },
-        ];
-      },
-    };
-  });
-  // });
-  // });
 
   return result;
 };

@@ -1,8 +1,7 @@
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import { AppDispatch, AppStoreState } from "../../../redux/store";
 import { RuneCanvas } from "../../../components/Analysis/utils/FlowUtils";
-import { BuildInfo, BuildStatus } from "../build";
-import { Metadata, ProcBlock } from "@hotg-ai/rune";
+import { ProcBlock } from "@hotg-ai/rune";
 
 type NotLoaded = {
   state: "not-loaded";
@@ -33,19 +32,10 @@ export type LoadedProject = {
   info: ProjectInfo;
   procBlocks: Record<string, ProcBlock>;
   diagram?: RuneCanvas;
-  buildLogs?: Record<string, BuildInfo>;
-  latestBuild?: BuildStatus;
 };
 
 export type Project = NotLoaded | LoadedProject | Loading | LoadingFailed;
 
-export function projectDoesntExist(error: unknown) {
-  return (
-    error instanceof Error &&
-    error.name === "HTTPError" &&
-    error.message.includes("404")
-  );
-}
 
 export function loadingFailed(
   error: unknown,

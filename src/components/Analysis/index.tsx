@@ -1,10 +1,9 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
-import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
+import { useAppSelector } from "src/hooks/hooks";
 import { FlowElements } from "src/redux/reactFlowSlice";
-import { DatasetTypes } from "../Dataset";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
 import "./analysis.css";
@@ -31,7 +30,7 @@ import {
 } from "src/assets";
 import { storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
-import { Console, Decode, Hook } from "console-feed";
+import { Console } from "console-feed";
 import React from "react";
 
 function Analysis({
@@ -51,7 +50,6 @@ function Analysis({
   setIsLoadingTable: (isLoading: boolean) => void;
   isLoadingTable: boolean;
 }) {
-  //console.log("REGISTRY", datasetRegistry);
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
   const [customModalVisible, setCustomModalVisible] = useState(false);
@@ -60,35 +58,20 @@ function Analysis({
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
-  const dispatch = useAppDispatch();
-  // const { state } = useLocation();
-  // let dataColumns: string[] = [];
-  // //let data: any = {};
-  // let dataTypes: DatasetTypes = {};
-
-  // Object.entries(state).map(([key, value]) => {
-  //   if (key == "dataColumns") dataColumns = value;
-  //   //if (key == "data") data = value;
-  //   if (key == "dataTypes") dataTypes = value;
-  // });
-
-  // console.log(data, dataColumns, dataTypes);
-
-  const [tableData, setTableData] = useState(data);
-  const [activeKey, setActiveKey] = React.useState('1');
+  const [tableData, setTableData] = useState([]);
+  const [activeKey, setActiveKey] = React.useState("1");
   const onKeyChange = (key) => setActiveKey(key);
-  
+  const [resultData, setResultData] = useState([]);
   useEffect(() => {
-    let newTable = data;
+    let newTable = [];
 
     const capabilities = diagram.nodes.filter(
       (node) => node.data.type === "capability"
     );
 
     let labels: string[] = capabilities.map((cap) => cap.data.name);
-    // console.log("labels", labels);
 
-    newTable = newTable.map((o, index) => {
+    newTable = data.map((o, index) => {
       if (labels && labels.length > 0) {
         let row = labels.reduce((acc, curr) => {
           if (curr.startsWith("Dataset_")) {
@@ -97,18 +80,13 @@ function Analysis({
               Object.entries(datasetRegistry[name].data[index]).forEach(
                 ([k, v]) => {
                   if (!acc[name]) acc[name] = "";
-                  if (
-                    tableData &&
-                    tableData[index] &&
-                    tableData[index]["Result"]
-                  ) {
-                    acc["Result"] = tableData[index]["Result"];
-                  }
                   acc[name] = acc[name] + `"${k}": ${v}, `;
+                  if (resultData && resultData[index] !== null) {
+                    acc["Result"] = resultData[index];
+                  }
                 }
               );
             } catch (e) {}
-            // acc[name] = datasetRegistry[name].data.
           } else {
             acc[curr] = o[curr];
           }
@@ -117,9 +95,22 @@ function Analysis({
         if (!_.isEmpty(row)) return row;
       }
     });
-
-    setTableData(newTable || []);
+    setTableData(newTable);
   }, [diagram]);
+
+  useEffect(() => {
+    let d = tableData;
+    if (resultData.length > 0) {
+      d.forEach((v, i) => {
+        d[i]["Result"] = resultData[i];
+      });
+    } else {
+      d.forEach((v, i) => {
+        if (d[i]["Result"]) delete d[i]["Result"];
+      });
+    }
+    setTableData(d);
+  }, [resultData]);
 
   useEffect(() => {
     if (sessionStorage.getItem("analysis_intro") !== "seen") {
@@ -171,82 +162,77 @@ function Analysis({
       switch (type) {
         case "utf8":
           return data;
-          break;
         case "u8":
           return Uint8Array.from(data);
-          break;
         case "u16":
           return Uint32Array.from(data);
-          break;
         case "u32":
           return Uint32Array.from(data);
-          break;
         case "u64":
           return BigUint64Array.from(data);
-          break;
         case "i8":
           return Int8Array.from(data);
-          break;
         case "i16":
           return Int16Array.from(data);
-          break;
         case "i32":
           return Int32Array.from(data);
-          break;
         case "i64":
           return BigInt64Array.from(data);
-          break;
         case "f32":
           return Float32Array.from(data);
-          break;
         case "f64":
           return Float64Array.from(data);
-          break;
       }
     };
 
-    const convertTensorResult = (result: {
+    const convertTensorResult = (output: {
       element_type: string;
       dimensions: number[];
       buffer: any;
     }) => {
-      const { element_type, dimensions, buffer } = result;
+      const { element_type, dimensions, buffer } = output;
       const data = new Uint8Array(buffer);
       switch (element_type.toLowerCase()) {
         case "utf8":
           return data;
-          break;
         case "u8":
           return new Uint8Array(data.buffer);
-          break;
         case "u16":
           return new Uint16Array(data.buffer);
-          break;
         case "u32":
           return new Uint32Array(data.buffer);
-          break;
         case "u64":
           return new BigUint64Array(data.buffer);
-          break;
         case "i8":
           return new Int8Array(data.buffer);
-          break;
         case "i16":
           return new Int16Array(data.buffer);
-          break;
         case "i32":
           return new Int32Array(data.buffer);
-          break;
         case "i64":
           return new BigInt64Array(data.buffer);
-          break;
         case "f32":
           return new Float32Array(data.buffer);
-          break;
         case "f64":
           return new Float64Array(data.buffer);
-          break;
       }
+    };
+
+    //todo: Need to change this for 3D data
+    const transformByDimensions = (dimensions, data) => {
+      const cols = dimensions[1] || 1;
+      const rows = dimensions[0] || 0;
+
+      let start = 0;
+      let result = [];
+
+      for (let i = 0; i < rows; i++) {
+        result.push(data.slice(start, start + cols).join(", "));
+
+        start += cols;
+      }
+
+      return result;
     };
 
     const getConnectedInputTensor = (
@@ -295,18 +281,12 @@ function Analysis({
         const name = node.data.name.replace("Dataset_", "");
         const dataSetData = datasetRegistry[name];
         tensor = dataSetData.tensor;
-        // console.log(
-        //   "SETTING TENSOR",
-        //   tensor,
-        //   convertElementType(tensor.elementType).toUpperCase()
-        // );
         input_tensors[node.data.label] = {
           element_type: convertElementType(tensor.elementType).toUpperCase(),
           dimensions: Object.values(tensor.dimensions),
           buffer: Object.values(tensor.buffer),
         };
       } else {
-        const name = node.data.name;
         const descriptor = getConnectedInputTensor(node, diagram);
         const data = getDataArrayFromType(
           dataMap[node.data.label],
@@ -327,8 +307,10 @@ function Analysis({
       }
     });
     let result;
-    console.log("RUNEFILE, INPUT", rune, input_tensors);
+    let resultTable = [];
+    setResultData([]);
     try {
+      console.log("Runefile", rune);
       const zune = await invoke("compile", { runefile: rune });
       console.log("ZUNE BUILT", zune);
       try {
@@ -337,29 +319,18 @@ function Analysis({
           inputTensors: input_tensors,
         });
         const tensorResult = convertTensorResult(result);
-        //console.log("FO REAL RESULT", result, tensorResult);
-        const newTable = tableData.map((row, index) => {
-          // if (labels && labels.length > 0) {
-          //   let row = labels.reduce((acc, curr) => {
-          //     acc[curr] = o[curr];
-          //     return acc;
-          //   }, {});
-          //   if (!_.isEmpty(row)) return row;
-          // }
-          return {
-            ...row,
-            Result:
-              tensorResult[index] !== undefined ? tensorResult[index] : "",
-          };
+        const Result = transformByDimensions(result.dimensions, tensorResult);
+        tableData.forEach((row, index) => {
+          resultTable[index] = Result[index] !== undefined ? Result[index] : "";
         });
-        setTableData(newTable);
+        setResultData(resultTable);
       } catch (error) {
         console.log("RUN ERROR", error);
-        setLogs((logs) => [...logs, {method: "info", data:[error]}]);
+        setLogs((logs) => [...logs, { method: "info", data: [error] }]);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);
-      setLogs((logs) => [...logs, {method: "info", data:[error]}]);
+      setLogs((logs) => [...logs, { method: "info", data: [error] }]);
     }
     return result;
   };
@@ -389,9 +360,6 @@ function Analysis({
             <span>Back</span>
           </Link>
         </div>
-        {/* <button onClick={() => setSaveModalVisible(true)}>
-          + Add custom Model
-        </button> */}
         <Link to={`/dataset/${id}`}>Add Dataset</Link>
         <ComponentsSelector
           datasetRegistry={datasetRegistry}
@@ -406,23 +374,13 @@ function Analysis({
           </div>
           <div className="sidebar_right">
             <button
-              //  disabled={!isLoadingTable}
               onClick={async () => {
-                // console.log("DATA TYPES", dataTypes);
-                // invoke("reune")
-                //   .then(console.log)
-                //   .catch((error) => {
-                //     console.log("RUN ERROR", error);
-                //   });
                 setQueryError(undefined);
                 setIsLoadingTable(true);
                 setActiveKey("2");
 
                 buildAndRun(diagram, tableData)
                   .then((result) => {
-                    if (result) {
-                      console.log("RESULT", result);
-                    }
                     setIsLoadingTable(false);
                   })
                   .catch((e) => {
@@ -456,7 +414,11 @@ function Analysis({
           </div>
         </div>
         <div className="studio-table__container">
-          <Tabs defaultActiveKey="1" activeKey={activeKey} onChange={onKeyChange}>
+          <Tabs
+            defaultActiveKey="1"
+            activeKey={activeKey}
+            onChange={onKeyChange}
+          >
             <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
               <Table data={tableData} />
             </Tabs.TabPane>

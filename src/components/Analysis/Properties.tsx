@@ -15,7 +15,6 @@ import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
 import {
   ResourceComponent,
-  uploadWordlist,
 } from "../../redux/actions/studio/uploadWordlist";
 import { outputPorts } from "./OutputDimensions";
 import { FlowNodeData } from "./model/FlowNodeComponent";

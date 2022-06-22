@@ -1,21 +1,15 @@
-import React from "react";
 import {
   getBezierPath,
   getEdgeCenter,
   useReactFlow,
 } from "react-flow-renderer";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch } from "../../hooks/hooks";
 import { ClearSelectedNode } from "../../redux/builderSlice";
 
 // import "./styles.scss";
 import deleteSvg from "./icons/delete.svg";
 
 const foreignObjectSize = 40;
-
-const onEdgeClick = (evt, id) => {
-  evt.stopPropagation();
-  alert(`remove ${id}`);
-};
 
 type CustomEdgeProps = {
   id: any;

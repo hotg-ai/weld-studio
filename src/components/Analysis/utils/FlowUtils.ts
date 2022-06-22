@@ -177,15 +177,15 @@ export const getDimensions = (
 
   let component = { ...components[componentID] };
 
-  if (component.type == "capability") {
+  if (component.type === "capability") {
     return { ...result, dimensionType: "fixed" };
   }
 
-  if (component.type == "output") {
+  if (component.type === "output") {
     return { ...result, dimensionType: "dynamic" };
   }
 
-  if (component.type == "proc-block") {
+  if (component.type === "proc-block") {
     component = component as ProcBlockComponent;
     if (port.in) {
       return {
@@ -200,7 +200,7 @@ export const getDimensions = (
     }
   }
 
-  if (component.type == "model") {
+  if (component.type === "model") {
     component = component as Model;
     if (port.in) {
       return {

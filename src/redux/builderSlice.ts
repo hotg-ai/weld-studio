@@ -3,9 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer/dist/types/types-external";
 import { Message } from "console-feed/lib/definitions/Component";
 import { Project } from "./actions/project";
-import { BuildInfo } from "./actions/build";
 import { uploadModel } from "./actions/studio/uploadModel";
-import _ from "lodash";
 import { ResourceDeclaration } from "../components/Analysis/model/Legacy";
 import { ProjectInfo } from "./reducers/builder";
 
@@ -42,23 +40,11 @@ export interface builderState {
   selected?: SelectedNode;
   credentials?: GitlabCredentials;
   project: Project;
-  currentBuildSHA?: string;
-  lastLogSHA?: string;
-  lastSuccesfullyBuiltBuild?: string;
-  buildInProgress: boolean;
-  saveInProgress: boolean;
   components: Record<string, Component>;
   resources: Record<string, ResourceDeclaration>;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  finishedJobId?: number;
-  finishedJobLogs: string;
-  s3DownloadURL?: string;
   forgeLogs: Message[];
-  depIds?: any;
   projectDetails?: ProjectInfo;
-  buildLogs: Record<string, BuildInfo>;
-  onboardingState: OnboardingState;
-  startProgressBarAt: number;
   refreshDimensions: boolean;
 }
 
@@ -70,16 +56,8 @@ export const initialState: builderState = {
     info: { id: "", name: "", ownerId: 0, path: "", templateName: "", url: "" },
     procBlocks: {},
   },
-  currentBuildSHA: undefined,
-  lastLogSHA: undefined,
-  lastSuccesfullyBuiltBuild: undefined,
-  buildInProgress: false,
-  saveInProgress: false,
   components: builtinComponents(),
   resources: {},
-  s3DownloadURL: undefined,
-  finishedJobId: undefined,
-  finishedJobLogs: "",
   forgeLogs: [
     {
       id: "0",
@@ -87,14 +65,7 @@ export const initialState: builderState = {
       data: ["🔥🔥🔥 Firing up the Furnace!! 🔥🔥🔥"],
     },
   ],
-  depIds: undefined,
   projectDetails: undefined,
-  buildLogs: {},
-  onboardingState: {
-    active: false,
-    authenticated: false,
-  },
-  startProgressBarAt: 0,
   refreshDimensions: false,
 };
 

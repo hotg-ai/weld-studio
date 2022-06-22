@@ -179,15 +179,14 @@ function inputNodesOfPort(port: Port, graph: Graph): string[] {
 
   if (isFlowDiagram(graph.diagram)) {
     Object.entries(graph.diagram.links).forEach(([, link]: [string, Edge]) => {
-      console.log("LINK", link, port);
-      if (port.id == link.targetHandle) {
+      if (port.id === link.targetHandle) {
         const source = graph.getNodeById(link.source);
         if (!source.ports) {
           throw new Error();
         }
         const index = source.ports
           ?.filter((p) => !p.in)
-          .findIndex((p) => p.id == link.sourceHandle);
+          .findIndex((p) => p.id === link.sourceHandle);
         if (index < 0) {
           throw new Error();
         }
@@ -205,7 +204,7 @@ function inputNodesOfPort(port: Port, graph: Graph): string[] {
 
       const index = source.ports
         ?.filter((p) => !p.in)
-        .findIndex((p) => p.id == link.sourcePort);
+        .findIndex((p) => p.id === link.sourcePort);
 
       if (index < 0) {
         throw new Error();
@@ -271,7 +270,7 @@ class Graph {
         );
       }
 
-    if (Object.keys(models).length == 0) {
+    if (Object.keys(models).length === 0) {
       throw new Error();
     }
 

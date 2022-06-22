@@ -33,5 +33,5 @@ export async function loadProcBlock(filename: string): Promise<ProcBlock> {
 }
 
 export function isStringArray(item?: any): item is string[] {
-  return Array.isArray(item) && item.every((elem) => typeof elem == "string");
+  return Array.isArray(item) && item.every((elem) => typeof elem === "string");
 }

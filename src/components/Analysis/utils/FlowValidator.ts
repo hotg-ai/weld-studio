@@ -1,5 +1,3 @@
-import { TrademarkOutlined } from "@ant-design/icons";
-import { Console } from "console";
 import _ from "lodash";
 import {
   Connection,
@@ -11,7 +9,6 @@ import {
 import { FlowElements } from "../../../redux/reactFlowSlice";
 import { detectInvalidNodes, detectInvalidNodesPort } from "../../../utils";
 import { Component } from "../model";
-import capabilities from "../model/capabilities";
 import { FlowNodeData } from "../model/FlowNodeComponent";
 
 export type ValidatorErrorHintTarget = {
@@ -267,14 +264,14 @@ export const isTensorIncompatible4 = (
     const sourceDimension: Dimension = sourceDimensions[i];
     const targetDimension: Dimension = targetDimensions[i];
 
-    if (targetDimension == 0) {
+    if (targetDimension === 0) {
       // the next node's input port can accept any number of elements in this
       // dimension. For example, if it says the accepted shape is "f32[1, 0, 2]",
       // I could pass in a "f32[1, 5, 2]" or a "f32[1, 9000, 2]", but not a "f32[2, 2, 2]".
       //
       // Think of the "0" as a wildcard.
       continue;
-    } else if (targetDimension != sourceDimension) {
+    } else if (targetDimension !== sourceDimension) {
       return `${message} ${label} accepts ${targetElementType} types with [${targetDimensions.join(
         ","
       )}]. You provided ${sourceElementType} type with [${sourceDimensions.join(
@@ -382,35 +379,6 @@ export const isTensorIncompatible = (
         if (!result.payload) result.payload = {};
         result.payload["dims"] = targetPortTensor.dimensions.join(", ");
       }
-      // else {
-      //     for (let i = 0; i < sourcePortTensor.dimensions.length; i++) {
-      //       const sourceDimension: Dimension = sourcePortTensor.dimensions[i];
-      //       const targetDimension: Dimension = targetPortTensor.dimensions[i];
-
-      //       if (targetDimension == 0) {
-      //         // the next node's input port can accept any number of elements in this
-      //         // dimension. For example, if it says the accepted shape is "f32[1, 0, 2]",
-      //         // I could pass in a "f32[1, 5, 2]" or a "f32[1, 9000, 2]", but not a "f32[2, 2, 2]".
-      //         //
-      //         // Think of the "0" as a wildcard.
-      //         continue;
-      //       } else if (targetDimension != sourceDimension) {
-      //         const message = isTensorIncompatible4(
-      //           result.message,
-      //           targetNode.data.label,
-      //           sourcePortTensor.elementType,
-      //           targetPortTensor.elementType,
-      //           sourcePortTensor.dimensions,
-      //           targetPortTensor.dimensions,
-      //           targetPortTensor.dimensionType
-      //         );
-      //         result.message = message;
-      //         result.result = true;
-      //         if (!result.payload) result.payload = {};
-      //         result.payload["dims"] = targetPortTensor.dimensions.join(", ");
-      //       }
-      //     }
-      //   }
     }
   }
 
@@ -673,24 +641,6 @@ export const isConnectionValid = (
     };
   }
 
-  //TODO: No Cycles allowed (possible with long cycles also) >  (should detect on clicking build button - make the port and line noticeable)
-  // if (isCreatingCycle(connection, targetNode, diagram)) {
-  //   valid = false;
-  //   messages.push({
-  //     code: 3,
-  //     message: "Cannot Connect: Creating a Cycle",
-  //     target: {
-  //       type: "edge",
-  //       id: connection.targetHandle || ""
-  //     }
-  //   });
-  //   return {
-  //     ...result,
-  //     error: !valid && messages ? messages : undefined,
-  //     valid
-  //   };
-  // }
-
   const IsTensorIncompatible = isTensorIncompatible(
     connection,
     diagram,
@@ -781,26 +731,6 @@ export const isDiagramValid = (
       });
     });
   }
-  //Except Inputs >> All nodes Input ports have to have an edge (should detect on clicking build button - make the node noticeable)
-  //Except for serial all node outputs need to have and edge (should detect on clicking build button - make the node noticeable)
-  // if (!everyOutputPortHasEdge(outputPortsNodeMap, diagram).valid) {
-  //   valid = false;
-  //   const hints = everyOutputPortHasEdge(
-  //     outputPortsNodeMap,
-  //     diagram
-  //   ).hintTargets;
-  //   hints?.forEach(target => {
-  //     validPorts[target] = false;
-  //     messages?.push({
-  //       code: 4,
-  //       message: "Output Port is not connected",
-  //       target: {
-  //         type: "port",
-  //         id: target
-  //       }
-  //     });
-  //   });
-  // }
 
   //data formats of input and outputs must be friendly > (should detect on clicking build button - make the ports, nodes and lines noticeable)
   diagram.edges.forEach((edge) => {
@@ -870,7 +800,7 @@ export const isPropertyValueValid = (
   const node = diagram.nodes.find((node) => node.id === id);
   if (node) {
     const connectedEdges = diagram.edges.filter(
-      (edge) => edge.source == node?.id
+      (edge) => edge.source === node?.id
     );
     if (connectedEdges.length > 0) {
       const payload = isPropertyIncompatible(
