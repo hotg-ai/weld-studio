@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use crate::shared::{Schema, SerializableError};
+use crate::shared::{PaginationConfig, Schema, SerializableError};
 use arrow::array::{Array, BooleanArray, Int32Array, StringArray, StructArray};
 use ts_rs::TS;
 use uuid::Uuid;
 
-#[tracing::instrument]
-#[tauri::command(skip(sql))]
+#[tracing::instrument(skip(_sql), err)]
+#[tauri::command]
 pub async fn create_dataset(name: &str, _sql: &str) -> Result<DatasetInfo, SerializableError> {
     let age: Int32Array = vec![10, 52, 42, 17].into();
     let first_name: StringArray = vec!["Alice", "Bob", "Charlie", "Eve"].into();
@@ -23,7 +23,35 @@ pub async fn create_dataset(name: &str, _sql: &str) -> Result<DatasetInfo, Seria
     Ok(DatasetInfo::new(id, name, &table))
 }
 
-#[derive(Debug, Clone, PartialEq, TS)]
+#[tracing::instrument(err)]
+#[tauri::command]
+pub fn list_datasets() -> Result<Vec<DatasetInfo>, SerializableError> {
+    todo!();
+}
+
+#[tracing::instrument(err)]
+#[tauri::command]
+pub fn get_dataset_info(id: &str) -> Result<DatasetInfo, SerializableError> {
+    todo!();
+}
+
+#[tracing::instrument(err)]
+#[tauri::command]
+pub fn read_dataset_page(
+    id: &str,
+    options: PaginationConfig,
+) -> Result<DatasetPage, SerializableError> {
+    todo!();
+}
+
+#[derive(Debug, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
+#[ts(export, export_to = "../src/backend/types/")]
+pub struct DatasetPage {
+    pub total_records: usize,
+    pub table: Vec<u8>,
+}
+
+#[derive(Debug, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
 #[ts(export, export_to = "../src/backend/types/")]
 pub struct DatasetInfo {
     pub id: String,

@@ -7,8 +7,20 @@ mod arrow;
 mod errors;
 mod package;
 
+use ts_rs::TS;
+
 pub use self::{
     arrow::{DataType, Field, Schema},
     errors::SerializableError,
     package::Package,
 };
+
+#[derive(Debug, Default, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
+#[ts(export, export_to = "../src/backend/types/")]
+#[serde(default)]
+pub struct PaginationConfig {
+    /// The index of the first record to show.
+    pub offset: Option<usize>,
+    /// The maximum number of records in this page.
+    pub max_records: Option<usize>,
+}

@@ -51,15 +51,21 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         .on_menu_event(handle_menu_event)
         .on_window_event(handle_window_event)
         .invoke_handler(tauri::generate_handler![
+            crate::datasets::create_dataset,
+            crate::datasets::get_dataset_info,
+            crate::datasets::list_datasets,
+            crate::datasets::read_dataset_page,
+            crate::sql::save_sql,
+            crate::sql::validate_sql,
+            crate::wapm::known_proc_blocks,
+            // Legacy functions
+            crate::compiler::compile,
+            crate::legacy::get_tables,
             crate::legacy::load_csv,
             crate::legacy::run_sql,
-            crate::legacy::get_tables,
             crate::legacy::save_data,
-            crate::legacy::log_message,
-            crate::compiler::compile,
+            crate::logging::log_message,
             crate::runtime::reune,
-            crate::wapm::known_proc_blocks,
-            crate::sql::validate_sql,
         ]);
 
     Ok(builder)

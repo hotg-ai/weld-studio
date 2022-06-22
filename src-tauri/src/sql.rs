@@ -42,6 +42,16 @@ pub async fn validate_sql(
     })
 }
 
+#[tauri::command]
+#[tracing::instrument(skip(app, sql))]
+pub async fn save_sql(
+    app: tauri::State<'_, AppState>,
+    sql: &str,
+    path: &str,
+) -> Result<(), SerializableError> {
+    todo!();
+}
+
 fn serialize_preview(record: &RecordBatch) -> Result<Vec<u8>, arrow::error::ArrowError> {
     let mut writer = StreamWriter::try_new(Vec::new(), &record.schema())?;
     writer.write(record)?;

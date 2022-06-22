@@ -106,13 +106,6 @@ pub async fn cancel(cancel: bool, cancelled: tauri::State<'_, Cancelled>) -> Res
 }
 
 #[tauri::command]
-#[tracing::instrument(skip(), err)]
-pub async fn log_message(message: String) -> Result<(), String> {
-    tracing::info!("{}", message);
-    Ok(())
-}
-
-#[tauri::command]
 #[tracing::instrument(skip(state, window), err)]
 pub async fn save_data(
     sql: String,

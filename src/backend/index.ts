@@ -4,8 +4,10 @@ import { tableFromIPC, Table } from "apache-arrow";
 import { SerializableError } from "./types/SerializableError";
 import { ValidationFailed } from "./types/ValidationFailed";
 import { DatasetInfo } from "./types/DatasetInfo";
+import { PaginationConfig } from "./types/PaginationConfig";
 import { ValidationResponse as RawValidationResponse  } from "./types/ValidationResponse";
 import { Package } from "./types/Package";
+import { DatasetPage } from "./types/DatasetPage";
 
 export type ValidationResponse  = {
     numRows: number;
@@ -20,6 +22,13 @@ function ok<T>(value: T): Result<T, never> {
 
 function err<E>(error: E): Result<never, E> {
     return { type: "err", error };
+}
+
+/**
+ * Log a message on the backend.
+ */
+export async function log_message(message: string): Promise<void> {
+    await invoke("log_message", { message });
 }
 
 /**
@@ -42,6 +51,20 @@ export async function validate_sql(sql: string, maxRows?: number): Promise<Resul
 }
 
 /**
+ * Execute a SQL query and save the results to disk.
+ * @param sql The SQL query to execute.
+ * @param path The filename to save as.
+ */
+export async function save_sql(sql: string, path: string): Promise<Result<undefined>> {
+    try {
+        await invoke("save_sql", { sql, path });
+        return ok(undefined);
+    } catch(e) {
+        return err(is_serializable_error(e) ? e : to_serializable_error(e));
+    }
+}
+
+/**
  * Create a new dataset that can be used as an input for analysis.
  * @param name The human-friendly name to use.
  * @param sql The SQL query that defines this dataset.
@@ -51,6 +74,50 @@ export async function create_dataset(name: string, sql: string): Promise<Result<
     try {
         const response = await invoke("create_dataset", { name, sql });
         return ok(response as DatasetInfo);
+    } catch(e) {
+        return err(is_serializable_error(e) ? e : to_serializable_error(e));
+    }
+}
+
+/**
+ * List all the datasets that have been created (e.g. by uploading a CSV or
+ * saving a SQL query).
+ */
+export async function list_datasets(): Promise<Result<DatasetInfo[]>> {
+    try {
+        const response = await invoke("list_datasets");
+        return ok(response as DatasetInfo[]);
+    } catch(e) {
+        return err(is_serializable_error(e) ? e : to_serializable_error(e));
+    }
+}
+
+/**
+ * Lookup the metadata for a dataset by ID.
+ * @param id The dataset's ID.
+ */
+export async function get_dataset_info(id: string): Promise<Result<DatasetInfo>> {
+    try {
+        const response = await invoke("get_dataset_info", { id });
+        return ok(response as DatasetInfo);
+    } catch(e) {
+        return err(is_serializable_error(e) ? e : to_serializable_error(e));
+    }
+}
+
+/**
+ * Read a page of data from the dataset.
+ *
+ * @param id The dataset's ID.
+ * @param options Configure how much data to return.
+ */
+export async function read_dataset_page(
+    id: string,
+    options: Partial<PaginationConfig>,
+): Promise<Result<DatasetPage>> {
+    try {
+        const response = await invoke("read_dataset_page", { id, options });
+        return ok(response as DatasetPage);
     } catch(e) {
         return err(is_serializable_error(e) ? e : to_serializable_error(e));
     }
@@ -71,6 +138,10 @@ export function is_serializable_error(value: any): value is SerializableError<an
         && typeof value.verbose == "string";
 }
 
+/**
+ * Try to convert a random JavaScript object (typically, an exception that was
+ * caught) into a SerializableError.
+ */
 function to_serializable_error(error: any): SerializableError<never> {
     if (error instanceof Error) {
         return {

@@ -4,6 +4,7 @@ mod compiler;
 mod datasets;
 mod legacy;
 pub mod runtime;
+mod logging;
 pub mod shared;
 mod sql;
 mod wapm;
