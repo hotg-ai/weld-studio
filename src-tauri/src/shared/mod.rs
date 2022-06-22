@@ -5,8 +5,10 @@
 
 mod arrow;
 mod errors;
+mod package;
 
 pub use self::{
     arrow::{DataType, Field, Schema},
     errors::SerializableError,
+    package::Package,
 };

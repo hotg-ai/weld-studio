@@ -5,6 +5,7 @@ import { SerializableError } from "./types/SerializableError";
 import { ValidationFailed } from "./types/ValidationFailed";
 import { DatasetInfo } from "./types/DatasetInfo";
 import { ValidationResponse as RawValidationResponse  } from "./types/ValidationResponse";
+import { Package } from "./types/Package";
 
 export type ValidationResponse  = {
     numRows: number;
@@ -53,6 +54,13 @@ export async function create_dataset(name: string, sql: string): Promise<Result<
     } catch(e) {
         return err(is_serializable_error(e) ? e : to_serializable_error(e));
     }
+}
+
+/**
+ * Get a list of all available proc-blocks.
+ */
+export async function known_proc_blocks(): Promise<Package[]> {
+    return await invoke("known_proc_blocks");
 }
 
 export function is_serializable_error(value: any): value is SerializableError<any> {
