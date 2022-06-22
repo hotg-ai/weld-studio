@@ -22,7 +22,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { QueryData } from "../../types";
 import { Tensor } from "@hotg-ai/rune";
 import { convertElementType, modelToTensorElementType } from "./model/metadata";
-import { Carousel } from "antd";
+import { Carousel, Tabs } from "antd";
 import {
   image6,
   introModalStepOne,
@@ -31,6 +31,7 @@ import {
 } from "src/assets";
 import { storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
+import { Console, Decode, Hook } from "console-feed";
 
 function Analysis({
   data,
@@ -123,6 +124,15 @@ function Analysis({
       sessionStorage.setItem("analysis_intro", "seen");
     }
   }, []);
+
+  const [logs, setLogs] = useState<any[]>([]);
+
+  // useEffect(() => {
+  //   Hook(window.console, (log) => {
+  //     const decode = Decode(log);
+  //     setLogs((logs) => [...logs, decode]);
+  //   });
+  // });
 
   const { id } = useParams();
 
@@ -342,9 +352,11 @@ function Analysis({
         setTableData(newTable);
       } catch (error) {
         console.log("RUN ERROR", error);
+        setLogs((logs) => [...logs, {method: "info", data:[error]}]);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);
+      setLogs((logs) => [...logs, {method: "info", data:[error]}]);
     }
     return result;
   };
@@ -440,7 +452,21 @@ function Analysis({
           </div>
         </div>
         <div className="studio-table__container">
-          <Table data={tableData} />
+          <Tabs defaultActiveKey="1">
+            <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
+              <Table data={tableData} />
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              tab={
+                <>
+                  Logs <span className="count">{logs.length}</span>
+                </>
+              }
+              key="2"
+            >
+              <Console logs={logs} variant="light" />
+            </Tabs.TabPane>
+          </Tabs>
         </div>
       </div>
 
