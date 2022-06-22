@@ -19,6 +19,7 @@ import { sqlTableIcon } from "../../assets";
 import { open } from "@tauri-apps/api/dialog";
 import { downloadDir, join } from "@tauri-apps/api/path";
 import { loadProcBlocks } from "./procBlocks";
+import ArrowTable from "./components/arrowtable";
 
 type IntegerColumnType = {
   type: "INTEGER";
@@ -356,7 +357,8 @@ const Dataset = ({
             {data && data.length > 0 && (
               <>
                 <h5>
-                  {data.length} Rows, {Object.keys(data[0]).length} Columns
+                  {data.length} Rows, {Object.keys(data[0].toJSON()).length}{" "}
+                  Columns
                 </h5>
                 <div
                   className="saveBtn"
@@ -427,7 +429,7 @@ const Dataset = ({
         {queryError ? (
           <pre>{queryError}</pre>
         ) : data.length > 0 ? (
-          <Table data={data} />
+          <ArrowTable data={data} />
         ) : (
           <span className="message">No data</span>
         )}

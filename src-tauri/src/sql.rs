@@ -13,7 +13,6 @@ pub async fn validate_sql(
 ) -> Result<ValidationResponse, SerializableError<ValidationFailed>> {
     let db = app.db().await;
     let mut stmt = db.prepare(sql).map_err(ValidationFailed::from)?;
-    let row_count = stmt.row_count();
 
     let frames = stmt
         .query_arrow(duckdb::params![])
@@ -33,7 +32,7 @@ pub async fn validate_sql(
             }
         }
     }
-
+    let row_count = stmt.row_count();
     let record_batch = RecordBatch::concat(&schema, &records)?;
 
     Ok(ValidationResponse {
