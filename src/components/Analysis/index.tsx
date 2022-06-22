@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
-import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
+import { useAppSelector } from "src/hooks/hooks";
 import { FlowElements } from "src/redux/reactFlowSlice";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
@@ -30,7 +30,7 @@ import {
 } from "src/assets";
 import { storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
-import { Console, Decode, Hook } from "console-feed";
+import { Console } from "console-feed";
 import React from "react";
 
 function Analysis({
@@ -59,7 +59,7 @@ function Analysis({
     "Data Columns",
   ]);
   const [tableData, setTableData] = useState([]);
-  const [activeKey, setActiveKey] = React.useState('1');
+  const [activeKey, setActiveKey] = React.useState("1");
   const onKeyChange = (key) => setActiveKey(key);
   const [resultData, setResultData] = useState([]);
   useEffect(() => {
@@ -214,8 +214,27 @@ function Analysis({
         case "f32":
           return new Float32Array(data.buffer);
         case "f64":
-          return new Float64Array(data.buffer);
+          let result = new Float64Array(data.buffer);
+          console.log("data", transformByDimensions(dimensions, result));
+          return transformByDimensions(dimensions, result);
       }
+    };
+
+    //todo: Need to change this for 3D data
+    const transformByDimensions = (dimensions, data) => {
+      const cols = dimensions[1] || 1;
+      const rows = dimensions[0] || 0;
+
+      let start = 0;
+      let result = [];
+
+      for (let i = 0; i < rows; i++) {
+        result.push(data.slice(start, start + cols).join(", "));
+
+        start += cols;
+      }
+
+      return result;
     };
 
     const getConnectedInputTensor = (
@@ -293,6 +312,7 @@ function Analysis({
     let resultTable = [];
     setResultData([]);
     try {
+      console.log("Runefile", rune);
       const zune = await invoke("compile", { runefile: rune });
       console.log("ZUNE BUILT", zune);
       try {
@@ -308,11 +328,11 @@ function Analysis({
         setResultData(resultTable);
       } catch (error) {
         console.log("RUN ERROR", error);
-        setLogs((logs) => [...logs, {method: "info", data:[error]}]);
+        setLogs((logs) => [...logs, { method: "info", data: [error] }]);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);
-      setLogs((logs) => [...logs, {method: "info", data:[error]}]);
+      setLogs((logs) => [...logs, { method: "info", data: [error] }]);
     }
     return result;
   };
@@ -396,7 +416,11 @@ function Analysis({
           </div>
         </div>
         <div className="studio-table__container">
-          <Tabs defaultActiveKey="1" activeKey={activeKey} onChange={onKeyChange}>
+          <Tabs
+            defaultActiveKey="1"
+            activeKey={activeKey}
+            onChange={onKeyChange}
+          >
             <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
               <Table data={tableData} />
             </Tabs.TabPane>
