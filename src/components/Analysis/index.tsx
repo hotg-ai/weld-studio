@@ -185,12 +185,12 @@ function Analysis({
       }
     };
 
-    const convertTensorResult = (result: {
+    const convertTensorResult = (output: {
       element_type: string;
       dimensions: number[];
       buffer: any;
     }) => {
-      const { element_type, dimensions, buffer } = result;
+      const { element_type, dimensions, buffer } = output;
       const data = new Uint8Array(buffer);
       switch (element_type.toLowerCase()) {
         case "utf8":
@@ -214,9 +214,7 @@ function Analysis({
         case "f32":
           return new Float32Array(data.buffer);
         case "f64":
-          let result = new Float64Array(data.buffer);
-          console.log("data", transformByDimensions(dimensions, result));
-          return transformByDimensions(dimensions, result);
+          return new Float64Array(data.buffer);
       }
     };
 
@@ -321,9 +319,9 @@ function Analysis({
           inputTensors: input_tensors,
         });
         const tensorResult = convertTensorResult(result);
+        const Result = transformByDimensions(result.dimensions, tensorResult);
         tableData.forEach((row, index) => {
-          resultTable[index] =
-            tensorResult[index] !== undefined ? tensorResult[index] : "";
+          resultTable[index] = Result[index] !== undefined ? Result[index] : "";
         });
         setResultData(resultTable);
       } catch (error) {
