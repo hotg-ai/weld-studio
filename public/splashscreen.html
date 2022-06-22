@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet"  href="./assets/style/splashscreen.css" />
+        <script>
+
+              const listen = window.__TAURI__.event.listen;       
+           
+              listen('splashscreen_progress', function (e) {
+                
+              }) 
+        </script>
+    </head>
+    <body>
+        <div class="splashscreen_page">
+            <div class="splashscreen_page--container">
+                <div class="splashscreen_page--logo">
+                    <img src="./assets/DeSilo.svg" />
+                <span><h1>Weld Studio </h1>  <h6 id="appVersion">v1.0.0</h6></span>
+            </div>
+              
+                <div class="splashscreen_page--progressbar--container">
+                    <div id="splashscreen_page--progressbar" style="height:24px;width:0%" ></div>
+                    <div id="splashscreen__page--message"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // With the Tauri API npm package:
+        // import { invoke, listen} from '../node_modules/@tauri-apps/api/tauri'
+        // import { getVersion } from '../node_modules/@tauri-apps/api/app';
+
+        // With the Tauri global script:
+        // const invoke = window.__TAURI__.invoke;      
+       const getVersion = window.__TAURI__.app.getVersion;
+
+
+        
+        
+
+        getVersion().then((v) => {  
+            console.log(document.getElementById('appVersion'))
+            document.getElementById('appVersion').innerText = v;
+        })
+
+        document.addEventListener('DOMContentLoaded', () => {
+        // This will wait for the window to load, but you could
+        // run this function on whatever trigger you want
+            //invoke('close_splashscreen')
+        })
+        </script>
+    </body>
+</html>

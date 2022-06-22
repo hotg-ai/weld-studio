@@ -1,6 +1,9 @@
 use std::fmt::Display;
 
-use graphql_client::GraphQLQuery;
+use anyhow::{Context, Error};
+use graphql_client::{GraphQLQuery, Response};
+
+use crate::AppState;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -10,43 +13,59 @@ use graphql_client::GraphQLQuery;
 )]
 pub struct GetNamespace;
 
-const WELD_REGISTRY: &str = include_str!("../local_manifest.json");
+const WAPM_REGISTRY: &str = "https://registry.wapm.io/graphql";
+const PB_WHITE_LIST: &str = "../whitelist.json";
+
 #[tauri::command]
 #[tracing::instrument(skip_all, err)]
-pub async fn known_proc_blocks() -> Result<Vec<Package>, String> {
-    let packages: Vec<Package> = serde_json::from_str(WELD_REGISTRY).map_err(|e| e.to_string())?;
+pub async fn known_proc_blocks(client: tauri::State<'_, reqwest::Client>, app_state: tauri::State<'_, AppState>) -> Result<Vec<Package>, SerializableError> {
+    //let packages: Vec<Package> = serde_json::from_str(WELD_REGISTRY).map_err(|e| e.to_string())?;
 
-    // let query = GetNamespace::build_query(get_namespace::Variables {
-    //     name: "hotg-ai".to_string(),
-    // });
+    let query = GetNamespace::build_query(get_namespace::Variables {
+        name: "hotg-ai".to_string(),
+    });
 
-    // tracing::info!("Fetching known proc-bloacks");
+//
+    tracing::info!("Fetching known proc-blocks");
 
-    // let Response { data, errors }: Response<get_namespace::ResponseData> = client
-    //     .post(WAPM_REGISTRY)
-    //     .json(&query)
-    //     .send()
-    //     .await
-    //     // .and_then(|response| response.error_for_status())
-    //     .context("Unable to query the WAPM registry")?
-    //     .json()
-    //     .await
-    //     .context("Unable to deserialize the response")?;
+    let Response { data, errors }: Response<get_namespace::ResponseData> = client
+        .post(WAPM_REGISTRY)
+        .json(&query)
+        .send()
+        .await
+        // .and_then(|response| response.error_for_status())
+        .context("Unable to query the WAPM registry")?
+        .json()
+        .await
+        .context("Unable to deserialize the response")?;
 
-    // if let Some(errors) = errors {
-    //     let error_messages: Vec<_> = errors.iter().map(|e| e.to_string()).collect();
-    //     tracing::error!(
-    //         ?errors,
-    //         ?error_messages,
-    //         "One or more errors occurred while querying WAPM's GraphQL API",
-    //     );
-    //     return Err(Error::msg("Querying the WAPM registry failed").into());
-    // }
+    
 
-    // let packages = flatten_packages(data);
+    if let Some(errors) = errors {
+        let error_messages: Vec<_> = errors.iter().map(|e| e.to_string()).collect();
+        tracing::error!(
+            ?errors,
+            ?error_messages,
+            "One or more errors occurred while querying WAPM's GraphQL API",
+        );
+        return Err(Error::msg("Querying the WAPM registry failed").into());
+    }
+
+    let packages = flatten_packages(data);
+
+    for package in packages.iter() {
+        tracing::info!("Caching to {}", format!("/tmp/{}.wasm", package.name));
+        fetch_url(&package.public_url, format!("/tmp/{}.wasm", package.name))
+            .await
+            .map_err(|e| 
+                SerializableError::from(
+                    anyhow::anyhow!("Cannot cache {}", e.to_string())
+                )
+            )?;
+    }
 
     tracing::debug!(
-        packages = ?packages,
+        packages = ?packages,   
         "Received list of hotg-ai packages",
     );
 
@@ -89,32 +108,47 @@ pub struct Package {
     pub public_url: String,
 }
 
-// fn flatten_packages(data: Option<get_namespace::ResponseData>) -> Vec<Package> {
-//     let edges = data
-//         .and_then(|d| d.get_namespace)
-//         .and_then(|ns| ns.packages)
-//         .map(|pkgs| pkgs.edges)
-//         .unwrap_or_default();
-//     let nodes = edges.into_iter().flatten().filter_map(|edge| edge.node);
+fn flatten_packages(data: Option<get_namespace::ResponseData>) -> Vec<Package> {
+    let edges = data
+        .and_then(|d| d.get_namespace)
+        .and_then(|ns| ns.packages)
+        .map(|pkgs| pkgs.edges)
+        .unwrap_or_default();
+    let nodes = edges.into_iter().flatten().filter_map(|edge| edge.node);
 
-//     let mut packages = Vec::new();
+    let mut packages = Vec::new();
 
-//     for node in nodes {
-//         if let Some(mut last_version) = node.last_version {
-//             if last_version.modules.is_empty() {
-//                 continue;
-//             }
+    for node in nodes {
+        if let Some(mut last_version) = node.last_version {
+            if last_version.modules.is_empty() {
+                continue;
+            }
 
-//             let main_module = last_version.modules.remove(0);
-//             let pkg = Package {
-//                 name: node.name,
-//                 description: last_version.description,
-//                 last_version: last_version.version,
-//                 public_url: main_module.public_url,
-//             };
-//             packages.push(pkg);
-//         }
-//     }
+            let main_module = last_version.modules.remove(0);
+            let pkg = Package {
+                name: node.name,
+                description: last_version.description,
+                last_version: last_version.version,
+                public_url: main_module.public_url,
+            };
+            packages.push(pkg);
+        }
+    }
 
-//     packages
-// }
+    packages
+}
+
+
+
+use std::io::Cursor;
+async fn fetch_url(url: &String, file_name: String) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let response = reqwest::get(url).await?;
+    tracing::info!(p=?url);
+    let mut file = std::fs::File::create(file_name)?;
+    let mut content =  Cursor::new(response.bytes().await?);
+    std::io::copy(&mut content, &mut file)?;
+    Ok(())
+
+
+}
+

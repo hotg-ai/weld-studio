@@ -47,6 +47,32 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         .manage(assets)
         .manage(client)
         .manage(build_config)
+
+        .setup(|app| {
+            let splashscreen_window = app.get_window("splashscreen").unwrap();
+            let main_window = app.get_window("main").unwrap();
+            // we perform the initialization code on a new task so the app doesn't freeze
+            tracing::info!("Initializing...");
+            tauri::async_runtime::spawn(async move {
+
+    
+                std::thread::sleep(std::time::Duration::from_millis(50));
+
+                let x = main_window
+              .emit("splashscreen_progress", 
+                serde_json::json!({"event": "Init", "progress": 20, "message": "Initializing..." }))
+                .map_err(|e| e.to_string()).unwrap();
+              //std::thread::sleep(std::time::Duration::from_secs(700));
+              tracing::info!("Done initializing.");
+      
+              // After it's done, close the splashscreen and display the main window
+             
+                main_window.show().unwrap();
+                //splashscreen_window.close().unwrap();
+                //splashscreen_window.close().unwrap();
+            });
+            Ok(())
+          })
         .menu(menu)
         .on_menu_event(handle_menu_event)
         .on_window_event(handle_window_event)

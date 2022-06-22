@@ -1,4 +1,4 @@
-use std::{ops::DerefMut, path::PathBuf};
+use std::{ops::DerefMut, path::{Path, PathBuf}};
 
 use anyhow::{Context, Error};
 use duckdb::Connection;
@@ -6,7 +6,7 @@ use futures::lock::Mutex;
 
 #[derive(Debug)]
 pub struct AppState {
-    _home_dir: PathBuf,
+    home_dir: PathBuf,
     conn: Mutex<Connection>,
 }
 
@@ -26,9 +26,13 @@ impl AppState {
         let conn = Mutex::new(conn);
 
         Ok(AppState {
-            _home_dir: home_dir,
+            home_dir,
             conn,
         })
+    }
+
+    pub fn home_dir(&self) -> &Path {
+        &self.home_dir
     }
 
     pub async fn db(&self) -> impl DerefMut<Target = Connection> + '_ {

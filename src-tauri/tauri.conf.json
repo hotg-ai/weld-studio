@@ -4,6 +4,7 @@
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn start",
     "devPath": "http://localhost:3000",
+    "withGlobalTauri": true,
     "distDir": "../build"
   },
   "package": {
@@ -65,7 +66,16 @@
         "resizable": true,
         "title": "Weld Studio",
         "width": 1024,
-        "fileDropEnabled": false
+        "fileDropEnabled": false,
+        "label": "main",
+        "visible": false
+      },
+      {
+        "width": 400,
+        "height": 200,
+        "decorations": false,
+        "url": "splashscreen.html",
+        "label": "splashscreen"
       }
     ]
   }
