@@ -102,6 +102,17 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
         if (u) this.unsubscribers.push(u);
       }
     );
+
+    listen("query_ended", () => this.setState({ isQueryLoading: false })).then(
+      (u) => {
+        if (u) this.unsubscribers.push(u);
+      }
+    );
+
+    listen("compilation_progress", (event) => this.setState({ logs: [... this.state.logs, { method: "info", data: [event.payload] } ] }));
+
+    listen("reune_progress", (event) => this.setState({ logs: [... this.state.logs, { method: "info", data: [event.payload] } ] }));
+
     this.preloadDatafiles()
       .then(() => {
         this.getTables(true);
