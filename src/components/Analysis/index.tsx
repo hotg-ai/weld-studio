@@ -319,13 +319,14 @@ function Analysis({
           resultTable[index] = Result[index] !== undefined ? Result[index] : "";
         });
         setResultData(resultTable);
+        setLogs("Run Succeeded. Got result with row count: " + resultTable.length);
       } catch (error) {
         console.log("RUN ERROR", error);
-        setLogs(error);
+        setLogs(error.backtrace);
       }
     } catch (error) {
       console.log("COMPILE ERROR", error);
-      setLogs(error);
+      setLogs(error.backtrace);
     }
     return result;
   };
