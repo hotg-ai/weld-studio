@@ -18,7 +18,15 @@ pub struct Node {
     #[serde(rename = "type")]
     pub ty: NodeKind,
     pub identifier: String,
+    pub inputs: HashMap<String, NodeInput>,
     pub args: HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
+#[ts(export, export_to = "../src/backend/types/")]
+pub struct NodeInput {
+    pub node: String,
+    pub output_tensor_name: String,
 }
 
 #[derive(Debug, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
