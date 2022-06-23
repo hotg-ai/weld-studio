@@ -183,7 +183,16 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
           );
           this.setState({ isQueryLoading: false });
         } else {
-          this.setState({ data: result.value.preview.toArray() });
+          const querySchema = {fields: result.value.preview.schema.fields.map((field) => {
+            const fs : FieldSchema = {
+              name: field.name,
+              data_type: field.type.toString(),
+              nullable: field.nullable
+            }
+            return fs
+          })};
+          console.log(querySchema.fields)
+          this.setState({ data: result.value.preview.toArray(), querySchema});
           this.setState({ isQueryLoading: false });
         }
       })

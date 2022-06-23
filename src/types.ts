@@ -16,8 +16,8 @@ export type FieldSchema = {
   name: string;
   data_type: string | Record<string, null>;
   nullable: boolean;
-  dict_id: number;
-  dict_is_ordered: boolean;
+  dict_id?: number;
+  dict_is_ordered?: boolean;
 };
 
 // This dataset is `capability` block in the drag and drop editor

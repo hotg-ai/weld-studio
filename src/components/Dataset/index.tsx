@@ -303,7 +303,7 @@ const Dataset = ({
                 <div
                   className={datasetName === name ? "activeDataset" : undefined}
                   key={`DropdownOption-${name}-${iddx}`}
-                  //  onClick={() => selectDataset(name, !dataset.selected)}
+                //  onClick={() => selectDataset(name, !dataset.selected)}
                 >
                   <div key={name} className="dropdownOption__Content">
                     <div className="title-content">
@@ -455,33 +455,30 @@ function createQueryDataset(
   querySchema: QuerySchema,
   query: string
 ): QueryData {
-  const dataType = commonDataType(querySchema);
-  if (!dataType) {
-    // We weren't able to determine the common data type (e.g. because one
-    // column is a u32 while the rest are f64).
-    throw new Error(
-      "Analysis features must be common datatype.\n i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using cast `::double` or `(column as DOUBLE)`"
-    );
-  }
+  
 
-  const tensor = mergeColumnsIntoTensor(
-    data,
-    querySchema.fields.map((f) => f.name),
-    dataType
-  );
-  if (!tensor) {
-    // The data couldn't be merged (because it was a string, etc.).
-    throw new Error("Could not merge data");
-  }
+      const dataType = commonDataType(querySchema);
 
-  return {
-    fields: querySchema.fields,
-    query,
-    tensor,
-    selected: true,
-    data,
-    createdAt: new Date(),
-  };
+
+      const tensor = mergeColumnsIntoTensor(
+        data,
+        querySchema.fields.map((f) => f.name),
+        dataType
+      );
+      if (!tensor) {
+        // The data couldn't be merged (because it was a string, etc.).
+        throw new Error("Could not merge data");
+      }
+
+      return {
+        fields: querySchema.fields,
+        query,
+        tensor,
+        selected: true,
+        data,
+        createdAt: new Date(),
+      };
+
 }
 
 /**
@@ -489,14 +486,18 @@ function createQueryDataset(
  * @param schema
  * @returns
  */
-function commonDataType(schema: QuerySchema): ElementType | undefined {
+function commonDataType(schema: QuerySchema): ElementType {
   const [first, ...rest] = schema.fields;
 
-  if (rest.some((field) => field.data_type !== first.data_type)) {
-    // We've got a data frame where the columns have different types, so it's
-    // not possible to construct a tensor using all the column data.
-    return undefined;
-  }
+  rest.some((field) => {
+    let fail = `${field.data_type}` !== `${first.data_type}`;
+    if (fail) {
+      throw new Error(`Field: '${field.name}'(${field.data_type}) and isn't the same data type as '${first.name}'(${first.data_type})\n
+Analysis features must be common datatype.
+i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using cast \`::double\` or \`(column as DOUBLE)\``)
+    }
+    return fail
+  });
 
   return arrowDataTypeToRunicElementType(first.data_type);
 }
@@ -506,7 +507,7 @@ interface TypedArray extends ArrayBuffer {
 }
 
 interface TypedArrayConstructor {
-  new (length: number): TypedArray;
+  new(length: number): TypedArray;
 }
 
 function mergeColumnsIntoTensor(
@@ -665,8 +666,7 @@ const GroupedTableInner = ({
             selectBtnIcon={sqlTableIcon}
             onSelect={() => {
               setSql(
-                `${sql ? sql + "\n" : ""} select * from ${
-                  table.table_name
+                `${sql ? sql + "\n" : ""} select * from ${table.table_name
                 } limit 10`
               );
             }}
