@@ -47,7 +47,8 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         .manage(assets)
         .manage(client)
         .manage(build_config)
-        .setup(|app| {
+        .setup(|app: &mut tauri::App| {
+        
             let splashscreen_window = app.get_window("splashscreen").unwrap();
             let main_window = app.get_window("main").unwrap();
             // we perform the initialization code on a new task so the app doesn't freeze
@@ -56,6 +57,8 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
                 std::thread::sleep(std::time::Duration::from_millis(1000));
 
                 emit_splashscreen_progress(&main_window, 20, format!("Loading data"));
+               
+             //  state.db().await?;
 
                 std::thread::sleep(std::time::Duration::from_millis(2000));
 
@@ -63,11 +66,13 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
 
                 tracing::info!("Done initializing.");
                 
-                std::thread::sleep(std::time::Duration::from_millis(5000));
+                std::thread::sleep(std::time::Duration::from_millis(500));
 
                 emit_splashscreen_progress(&main_window, 90, format!("Initialized"));
 
-                std::thread::sleep(std::time::Duration::from_secs(1000));
+                std::thread::sleep(std::time::Duration::from_secs(1));
+
+                emit_splashscreen_progress(&main_window, 100, format!("Done"));
 
                 main_window.show().unwrap();
 
