@@ -16,7 +16,7 @@ pub async fn validate_sql(
 
     let frames = stmt
         .query_arrow(duckdb::params![])
-        .map_err(ValidationFailed::from)?;
+        .map_err(|e| ValidationFailed::from(e))?;
 
     let schema = frames.get_schema();
     let mut records = Vec::new();
@@ -53,13 +53,14 @@ fn serialize_preview(record: &RecordBatch) -> Result<Vec<u8>, arrow::error::Arro
 #[serde(tag = "type", content = "value")]
 pub enum ValidationFailed {
     /// Something else.
-    Other,
+    ///Message(String),
+    Other(String),
 }
 
 impl From<duckdb::Error> for ValidationFailed {
     fn from(e: duckdb::Error) -> Self {
         match e {
-            _ => ValidationFailed::Other,
+            _ => ValidationFailed::Other(e.to_string()),
         }
     }
 }
@@ -69,7 +70,7 @@ impl std::error::Error for ValidationFailed {}
 impl Display for ValidationFailed {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            ValidationFailed::Other => write!(f, "Validation failed"),
+            ValidationFailed::Other(_str) => write!(f, "{}", _str),
         }
     }
 }
