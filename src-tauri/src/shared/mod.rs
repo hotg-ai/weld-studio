@@ -6,6 +6,8 @@
 mod arrow;
 mod errors;
 mod package;
+mod runtime;
+mod tensors;
 
 use ts_rs::TS;
 
@@ -13,6 +15,8 @@ pub use self::{
     arrow::{DataType, Field, Schema},
     errors::SerializableError,
     package::Package,
+    runtime::{Analysis, ColumnMapping, Node, NodeKind, Pipeline},
+    tensors::{Dimensions, ElementType},
 };
 
 #[derive(Debug, Default, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]

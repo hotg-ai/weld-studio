@@ -8,6 +8,9 @@ import { PaginationConfig } from "./types/PaginationConfig";
 import { ValidationResponse as RawValidationResponse  } from "./types/ValidationResponse";
 import { Package } from "./types/Package";
 import { DatasetPage } from "./types/DatasetPage";
+import { Pipeline } from "./types/Pipeline";
+import { ColumnMapping } from "./types/ColumnMapping";
+import { Analysis } from "./types/Analysis";
 
 export type ValidationResponse  = {
     numRows: number;
@@ -32,12 +35,13 @@ export async function log_message(message: string): Promise<void> {
 }
 
 /**
- * Check whether a SQL query is valid.
+ * Rapidly check whether a SQL query is valid.
+ *
  * @param sql The SQL query.
- * @param maxRows Limit the number of records in the
+ * @param maxRows Limit the number of records in the preview.
  * @returns
  */
-export async function validate_sql(sql: string, maxRows?: number): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
+export async function validate_sql(sql: string, maxRows: number = 10): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
     try {
         const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql, max_rows: maxRows });
 
@@ -118,6 +122,15 @@ export async function read_dataset_page(
     try {
         const response = await invoke("read_dataset_page", { id, options });
         return ok(response as DatasetPage);
+    } catch(e) {
+        return err(is_serializable_error(e) ? e : to_serializable_error(e));
+    }
+}
+
+export async function execute_analysis(pipeline: Pipeline, column_mapping: ColumnMapping): Promise<Result<Analysis>> {
+    try {
+        const response = await invoke("execute_analysis", { pipeline, column_mapping });
+        return ok(response as Analysis);
     } catch(e) {
         return err(is_serializable_error(e) ? e : to_serializable_error(e));
     }

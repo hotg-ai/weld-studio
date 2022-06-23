@@ -1,15 +1,23 @@
-use std::fmt::{self, Display, Formatter};
+use std::{
+    fmt::{self, Display, Formatter},
+    path::Path,
+};
 
 use arrow::{ipc::writer::StreamWriter, record_batch::RecordBatch};
 
 use crate::{shared::SerializableError, AppState};
 
+/// Check whether a particular SQL statement is valid and get back the first
+/// couple records.
+///
+/// In theory, you should be able to execute this command on every key press
+/// as the user is writing their SQL query.
 #[tauri::command]
 #[tracing::instrument(skip_all)]
 pub async fn validate_sql(
     app: tauri::State<'_, AppState>,
     sql: &str,
-    max_rows: Option<usize>,
+    max_rows: usize,
 ) -> Result<ValidationResponse, SerializableError<ValidationFailed>> {
     let db = app.db().await;
     let mut stmt = db.prepare(sql).map_err(ValidationFailed::from)?;
@@ -27,10 +35,8 @@ pub async fn validate_sql(
         num_records += frame.num_rows();
         records.push(frame);
 
-        if let Some(max_rows) = max_rows {
-            if num_records >= max_rows {
-                break;
-            }
+        if num_records >= max_rows {
+            break;
         }
     }
 
@@ -42,12 +48,13 @@ pub async fn validate_sql(
     })
 }
 
+/// Execute a SQL statement and save it to the provided path.
 #[tauri::command]
-#[tracing::instrument(skip(app, sql))]
+#[tracing::instrument(skip(_app, _sql))]
 pub async fn save_sql(
-    app: tauri::State<'_, AppState>,
-    sql: &str,
-    path: &str,
+    _app: tauri::State<'_, AppState>,
+    _sql: &str,
+    path: &Path,
 ) -> Result<(), SerializableError> {
     todo!();
 }
