@@ -38,4 +38,11 @@ impl AppState {
     pub async fn db(&self) -> impl DerefMut<Target = Connection> + '_ {
         self.conn.lock().await
     }
+
+    /**
+     * try_get_db(): Blocking db connection 
+     */
+    pub fn try_get_db(&self) -> Option<impl DerefMut<Target = Connection> + '_ > {
+        self.conn.try_lock()
+    } 
 }

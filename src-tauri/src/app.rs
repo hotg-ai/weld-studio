@@ -48,36 +48,22 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         .manage(client)
         .manage(build_config)
         .setup(|app: &mut tauri::App| {
+
+            let handle = app.app_handle();
         
             let splashscreen_window = app.get_window("splashscreen").unwrap();
             let main_window = app.get_window("main").unwrap();
             // we perform the initialization code on a new task so the app doesn't freeze
             tracing::info!("Initializing...");
+
             tauri::async_runtime::spawn(async move {
-                std::thread::sleep(std::time::Duration::from_millis(1000));
+             
+                setup_weld(handle, main_window);
 
-                emit_splashscreen_progress(&main_window, 20, format!("Loading data"));
-               
-             //  state.db().await?;
-
-                std::thread::sleep(std::time::Duration::from_millis(2000));
-
-                emit_splashscreen_progress(&main_window, 30, format!("Loading analytics"));
-
-                tracing::info!("Done initializing.");
                 
-                std::thread::sleep(std::time::Duration::from_millis(500));
-
-                emit_splashscreen_progress(&main_window, 90, format!("Initialized"));
-
-                std::thread::sleep(std::time::Duration::from_secs(1));
-
-                emit_splashscreen_progress(&main_window, 100, format!("Done"));
-
-                main_window.show().unwrap();
-
                 // After it's done, close the splashscreen and display the main window
-                //splashscreen_window.close().unwrap(); // This is closing the main window fo some reason
+                 // This is closing the main window fo some reason
+
             });
             Ok(())
         })
@@ -97,6 +83,35 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         ]);
 
     Ok(builder)
+}
+
+#[tracing::instrument(skip_all)]
+fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
+    let state: tauri::State<AppState> = handle.state();
+    let home_dir: &std::path::Path = state.home_dir();
+
+    // Setup meta db for weld or load
+
+    // Create if not exists table will | name | version | publicUrl | fileLoc | createdAt |  [dependency db]
+
+    // Fetch WAPM Packages
+
+    // Check against version
+
+    // Check if any proc_blocks in the table 
+
+    std::thread::sleep(std::time::Duration::from_millis(1000));
+    emit_splashscreen_progress(&main_window, 20, format!("Loading data"));
+    //  state.db().await?;
+    std::thread::sleep(std::time::Duration::from_millis(2000));
+    emit_splashscreen_progress(&main_window, 30, format!("Loading analytics"));
+    tracing::info!("Done initializing.");
+    std::thread::sleep(std::time::Duration::from_millis(500));
+    emit_splashscreen_progress(&main_window, 90, format!("Initialized"));
+    std::thread::sleep(std::time::Duration::from_secs(1));
+    emit_splashscreen_progress(&main_window, 100, format!("Done"));
+    //splashscreen_window.close().unwrap();
+    main_window.show().unwrap();
 }
 
 fn emit_splashscreen_progress(main_window: &tauri::Window, progress: i32, message: String) {
