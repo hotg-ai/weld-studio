@@ -55,11 +55,11 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
             crate::datasets::get_dataset_info,
             crate::datasets::list_datasets,
             crate::datasets::read_dataset_page,
+            crate::logging::log_message,
+            crate::runtime::execute_analysis,
             crate::sql::save_sql,
             crate::sql::validate_sql,
             crate::wapm::known_proc_blocks,
-            crate::logging::log_message,
-            crate::runtime::execute_analysis,
             // Legacy functions
             crate::compiler::compile,
             crate::legacy::get_tables,
