@@ -18,13 +18,15 @@ const PB_WHITE_LIST: &str = "../whitelist.json";
 
 #[tauri::command]
 #[tracing::instrument(skip_all, err)]
-pub async fn known_proc_blocks(client: tauri::State<'_, reqwest::Client>, app_state: tauri::State<'_, AppState>) -> Result<Vec<Package>, SerializableError> {
+pub async fn known_proc_blocks(
+    client: tauri::State<'_, reqwest::Client>,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<Vec<Package>, SerializableError> {
     //let packages: Vec<Package> = serde_json::from_str(WELD_REGISTRY).map_err(|e| e.to_string())?;
 
-    // connect to the meta db 
+    // connect to the meta db
 
-    // fetch from table 
-
+    // fetch from table
 
     // create Vec<Package>
 
@@ -32,7 +34,7 @@ pub async fn known_proc_blocks(client: tauri::State<'_, reqwest::Client>, app_st
         name: "hotg-ai".to_string(),
     });
 
-//
+    //
     tracing::info!("Fetching known proc-blocks");
 
     let Response { data, errors }: Response<get_namespace::ResponseData> = client
@@ -46,7 +48,59 @@ pub async fn known_proc_blocks(client: tauri::State<'_, reqwest::Client>, app_st
         .await
         .context("Unable to deserialize the response")?;
 
-    
+    if let Some(errors) = errors {
+        let error_messages: Vec<_> = errors.iter().map(|e| e.to_string()).collect();
+        tracing::error!(
+            ?errors,
+            ?error_messages,
+            "One or more errors occurred while querying WAPM's GraphQL API",
+        );
+        return Err(Error::msg("Querying the WAPM registry failed").into());
+    }
+
+    let packages = flatten_packages(data);
+
+    // for package in packages.iter() {
+    //     tracing::info!("Caching to {}", format!("/tmp/{}.wasm", package.name));
+    //     fetch_url(&package.public_url, format!("/tmp/{}.wasm", package.name))
+    //         .await
+    //         .map_err(|e|
+    //             SerializableError::from(
+    //                 anyhow::anyhow!("Cannot cache {}", e.to_string())
+    //             )
+    //         )?;
+    // }
+
+    tracing::debug!(
+        packages = ?packages,
+        "Received list of hotg-ai packages",
+    );
+
+    Ok(packages)
+}
+
+
+#[tracing::instrument(skip_all, err)]
+pub async fn fetch_packages(
+    client: tauri::State<'_, reqwest::Client>
+) ->  Result<Vec<Package>, SerializableError>  {
+    let query = GetNamespace::build_query(get_namespace::Variables {
+        name: "hotg-ai".to_string(),
+    });
+
+    //
+    tracing::info!("Fetching known proc-blocks");
+
+    let Response { data, errors }: Response<get_namespace::ResponseData> = client
+        .post(WAPM_REGISTRY)
+        .json(&query)
+        .send()
+        .await
+        // .and_then(|response| response.error_for_status())
+        .context("Unable to query the WAPM registry")?
+        .json()
+        .await
+        .context("Unable to deserialize the response")?;
 
     if let Some(errors) = errors {
         let error_messages: Vec<_> = errors.iter().map(|e| e.to_string()).collect();
@@ -60,19 +114,19 @@ pub async fn known_proc_blocks(client: tauri::State<'_, reqwest::Client>, app_st
 
     let packages = flatten_packages(data);
 
-    for package in packages.iter() {
-        tracing::info!("Caching to {}", format!("/tmp/{}.wasm", package.name));
-        fetch_url(&package.public_url, format!("/tmp/{}.wasm", package.name))
-            .await
-            .map_err(|e| 
-                SerializableError::from(
-                    anyhow::anyhow!("Cannot cache {}", e.to_string())
-                )
-            )?;
-    }
+    // for package in packages.iter() {
+    //     tracing::info!("Caching to {}", format!("/tmp/{}.wasm", package.name));
+    //     fetch_url(&package.public_url, format!("/tmp/{}.wasm", package.name))
+    //         .await
+    //         .map_err(|e|
+    //             SerializableError::from(
+    //                 anyhow::anyhow!("Cannot cache {}", e.to_string())
+    //             )
+    //         )?;
+    // }
 
     tracing::debug!(
-        packages = ?packages,   
+        packages = ?packages,
         "Received list of hotg-ai packages",
     );
 
@@ -106,7 +160,7 @@ impl Display for SerializableError {
 
 impl std::error::Error for SerializableError {}
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Package {
     pub name: String,
@@ -145,17 +199,15 @@ fn flatten_packages(data: Option<get_namespace::ResponseData>) -> Vec<Package> {
     packages
 }
 
-
-
 use std::io::Cursor;
-async fn fetch_url(url: &String, file_name: String) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+async fn fetch_url(
+    url: &String,
+    file_name: String,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let response = reqwest::get(url).await?;
     tracing::info!(p=?url);
     let mut file = std::fs::File::create(file_name)?;
-    let mut content =  Cursor::new(response.bytes().await?);
+    let mut content = Cursor::new(response.bytes().await?);
     std::io::copy(&mut content, &mut file)?;
     Ok(())
-
-
 }
-

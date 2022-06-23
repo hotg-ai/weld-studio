@@ -1,11 +1,11 @@
 mod app;
 mod app_state;
 pub mod compiler;
+pub mod datasets;
+pub mod errors;
 mod legacy;
 pub mod runtime;
-pub mod wapm;
 mod sql;
-pub mod errors;
-pub mod datasets;
+pub mod wapm;
 
 pub use crate::{app::configure, app_state::AppState};

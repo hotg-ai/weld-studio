@@ -5452,6 +5452,7 @@ version = "0.1.1"
 dependencies = [
  "anyhow",
  "arrow",
+ "bytes",
  "change-case",
  "directories",
  "duckdb",
