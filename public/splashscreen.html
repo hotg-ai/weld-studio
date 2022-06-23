@@ -7,6 +7,26 @@
               const listen = window.__TAURI__.event.listen;       
            
               listen('splashscreen_progress', function (e) {
+                const $progress_bar = document.getElementById('splashscreen_page--progressbar');
+                const $progress_message = document.getElementById('splashscreen__page--message');
+        
+                console.log(e)
+                const progress = e.payload.progress;
+
+                const message = e.payload.message;
+                if (message) {
+                    $progress_message.innerText = message;
+                }
+                if (progress) {
+                    $progress_bar.style = 'width:' + progress + '%'
+
+                    if (progress === 100) {
+                    $progress_bar.style = 'width:' + progress + '%'
+                    window.__TAURI__.window.appWindow.close()
+                }
+
+
+                }
                 
               }) 
         </script>
@@ -20,9 +40,10 @@
             </div>
               
                 <div class="splashscreen_page--progressbar--container">
-                    <div id="splashscreen_page--progressbar" style="height:24px;width:0%" ></div>
-                    <div id="splashscreen__page--message"></div>
+                    <div id="splashscreen_page--progressbar" style="width:1%" ></div>
+     
                 </div>
+                <div id="splashscreen__page--message">Loading Weld Studio ...</div>
             </div>
         </div>
 
@@ -36,8 +57,7 @@
        const getVersion = window.__TAURI__.app.getVersion;
 
 
-        
-        
+       
 
         getVersion().then((v) => {  
             console.log(document.getElementById('appVersion'))
