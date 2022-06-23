@@ -4,7 +4,7 @@
 }
 .tr {
   width: 100%;
-  border-left: 1px solid black;
+  /* border-left: 1px solid black; */
 }
 .tr .th,
 .tr .td {
@@ -14,8 +14,8 @@
   font-family: "Montserrat";
   margin: 0;
   padding: 0.5rem;
-  border-bottom: 1px solid black;
-  border-right: 1px solid black;
+  /* border-bottom: 1px solid black;
+  border-right: 1px solid black; */
   background: #eaedee;
   color: #000;
   font-weight: bold;
@@ -30,12 +30,12 @@
 .tr .td {
   font-weight: 400;
   background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
 }
 .tr .td.null {
   color: #888888;
 }
 
 .tr .td:not(.tr .td:first-child) {
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  /* border-left: 1px solid rgba(0, 0, 0, 0.1); */
 }

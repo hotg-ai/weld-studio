@@ -21,7 +21,6 @@ const PB_WHITE_LIST: &str = "../whitelist.json";
 pub async fn known_proc_blocks(client: tauri::State<'_, reqwest::Client>, app_state: tauri::State<'_, AppState>) -> Result<Vec<Package>, SerializableError> {
     //let packages: Vec<Package> = serde_json::from_str(WELD_REGISTRY).map_err(|e| e.to_string())?;
 
-
     // connect to the meta db 
 
     // fetch from table 

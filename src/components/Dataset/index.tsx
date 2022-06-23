@@ -666,8 +666,8 @@ const GroupedTableInner = ({
             selectBtnIcon={sqlTableIcon}
             onSelect={() => {
               setSql(
-                `${sql ? sql + "\n" : ""} select * from ${table.table_name
-                } limit 10`
+                `${sql ? sql + "\n" : ""} select * from "${table.table_name
+                }" limit 10`
               );
             }}
           >
