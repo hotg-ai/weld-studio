@@ -64,7 +64,7 @@
     ]
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.0.0-rc.13",
+    "@tauri-apps/cli": "^1.0.0",
     "@types/lodash": "^4.14.182",
     "@types/react-router-dom": "^5.3.3",
     "cross-env": "^7.0.3"
