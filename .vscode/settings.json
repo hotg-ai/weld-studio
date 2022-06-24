@@ -1,7 +1,0 @@
-{
-    "rust-analyzer.checkOnSave.target": null,
-    "rust-analyzer.checkOnSave.overrideCommand": null,
-    "rust-analyzer.linkedProjects": [
-        "src-tauri/Cargo.toml"
-    ]
-}

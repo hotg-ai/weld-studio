@@ -2,6 +2,8 @@ use std::fmt::Display;
 
 use graphql_client::GraphQLQuery;
 
+use crate::shared::Package;
+
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/wapm/schema.graphql",
@@ -79,15 +81,6 @@ impl Display for SerializableError {
 }
 
 impl std::error::Error for SerializableError {}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Package {
-    pub name: String,
-    pub description: String,
-    pub last_version: String,
-    pub public_url: String,
-}
 
 // fn flatten_packages(data: Option<get_namespace::ResponseData>) -> Vec<Package> {
 //     let edges = data

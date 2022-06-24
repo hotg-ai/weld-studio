@@ -1,11 +1,18 @@
 mod app;
 mod app_state;
-pub mod compiler;
+mod compiler;
+mod datasets;
 mod legacy;
 pub mod runtime;
-pub mod wapm;
+mod logging;
+pub mod shared;
 mod sql;
-pub mod errors;
-pub mod datasets;
+mod wapm;
 
-pub use crate::{app::configure, app_state::AppState};
+pub use crate::{
+    app::configure,
+    app_state::AppState,
+    compiler::{compile, Database},
+    datasets::{create_dataset, DatasetInfo},
+    wapm::known_proc_blocks,
+};
