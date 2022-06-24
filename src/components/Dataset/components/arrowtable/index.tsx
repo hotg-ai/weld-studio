@@ -1,42 +1,42 @@
 import "./table.css";
-import React, {useRef, useState, useEffect} from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useTable, useBlockLayout } from "react-table";
 import { FixedSizeList } from "react-window";
 import scrollbarWidth from "./scrollbarwidth";
-
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
   return {
     width,
-    height
+    height,
   };
 }
 
 function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+  const [windowDimensions, setWindowDimensions] = useState(
+    getWindowDimensions()
+  );
 
   useEffect(() => {
     function handleResize() {
       setWindowDimensions(getWindowDimensions());
     }
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return windowDimensions;
 }
 
-
-function VTable({ columns, data }: { columns: any[]; data: any[] }) {
+export function VTable({ columns, data }: { columns: any[]; data: any[] }) {
   // Use the state and functions returned from useTable to build your UI
   const targetRef = useRef();
-  const {width, height} = getWindowDimensions();
+  const { width, height } = getWindowDimensions();
 
   const defaultColumn = React.useMemo(
     () => ({
-      width: width/columns.length,
+      width: width / columns.length,
     }),
     []
   );
