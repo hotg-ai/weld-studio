@@ -15,9 +15,14 @@
   display: flex;
   justify-content: center;
 }
+.table__container table { border-collapse:collapse }
 .table__container thead {
   position: sticky;
   top: 0;
+}
+
+.table__container td, th {
+  border:none;
 }
 .table__container > .error,
 .table__container > .message {

@@ -20,6 +20,7 @@ import {
 } from "../../types";
 
 import { v4 as uuidv4 } from "uuid";
+import { validate_sql } from "src/backend";
 
 class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
   state = {
@@ -77,9 +78,9 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       if (u) this.unsubscribers.push(u);
     });
 
-    listen("load_arrow_row_batch", ({ payload }: { payload: any[] }) =>
-      this.eventHandlerLoadArrowRowBatch(payload)
-    ).then((u) => {
+    listen("load_arrow_row_batch", ({ payload }: { payload: any[] }) => {
+      this.eventHandlerLoadArrowRowBatch(payload);
+    }).then((u) => {
       if (u) this.unsubscribers.push(u);
     });
 
@@ -171,17 +172,29 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
   executeQuery(sql: string) {
     this.setState({ data: [], querySchema: { fields: [] } });
     if (this.state.isQueryLoading) return;
-
     this.setState({ isQueryLoading: true });
     this.setState({ sql, queryError: undefined });
-    invoke("run_sql", { sql })
+    validate_sql(sql, 100)
       .then((result) => {
-        //let result_typed = result as { records: boolean[] };
-        //setData(result_typed.records)
-      })
-      .catch((e) => {
-        //Note: e is an object and we can't put the entire object in jsx as queryError,So we need to set queryError to the message property of the e object.
-        this.setState({ queryError: e }, () => {});
+        if (result.type === "err") {
+          this.setState(
+            { queryError: result.error.verbose || result.error.message },
+            () => {}
+          );
+          this.setState({ isQueryLoading: false });
+        } else {
+          const querySchema = {fields: result.value.preview.schema.fields.map((field) => {
+            const fs : FieldSchema = {
+              name: field.name,
+              data_type: field.type.toString(),
+              nullable: field.nullable
+            }
+            return fs
+          })};
+          console.log(querySchema.fields)
+          this.setState({ data: result.value.preview.toArray(), querySchema});
+          this.setState({ isQueryLoading: false });
+        }
       })
       .finally(() => this.setState({ isQueryLoading: false }));
   }
@@ -462,10 +475,6 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                       this.setState({ isLoadingTable })
                     }
                   />
-
-                  // <div style={{ height:"calc(100vh - 35px)", width: "calc(100vw - 5px)"}}>
-                  //     <Flow />
-                  // </div>
                 }
               />
             </Routes>
@@ -475,33 +484,5 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
     );
   }
 }
-
-/*
-
-
-  const [searchValue, setSearchValue] = useState("");
-  const [datasets, setDatasets] = useState<Record<string, QueryData>>(datasetRegistry);
-  //filter by search
-  const serachOnChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-    const searchedValue = e.target.value.toLowerCase();
-    if (searchedValue === "") {
-      setDatasets(datasetRegistry);
-    } else {
-      const filteredData: Record<string, QueryData> = Object.keys(datasetRegistry).filter((dataset_name: string) => {
-        const dataset: QueryData = datasetRegistry[dataset_name];
-        return (dataset_name.toLowerCase().includes(searchedValue) || dataset.query.toLowerCase().includes(searchedValue));
-      }
-      ).reduce<Record<string, QueryData>>((acc, key) => {
-        acc[key] = datasetRegistry[key];
-        return acc;
-      }, {} as Record<string, QueryData>);
-
-      setDatasets(filteredData);
-    }
-  };
-
-
-*/
 
 export default WeldProjectTab;

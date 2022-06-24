@@ -1,0 +1,84 @@
+
+.splashscreen_page {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    padding: 0px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: transparent;
+
+}
+
+.splashscreen_page--container {
+    display:flex;
+    flex-direction: column;
+    margin: 10px;
+    align-items: flex-start;
+    justify-items: center;
+    border-radius: 25px;
+    width: 100%;
+}
+.splashscreen_page--container > .splashscreen_page--logo {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;;
+    margin-bottom: 10px;
+}
+
+.splashscreen_page--container > .splashscreen_page--logo img {
+    width: 75px;
+    height: 75px;
+    margin-right: 25px;
+}
+
+.splashscreen_page--container > .splashscreen_page--logo span {
+
+    display: flex;
+    flex-direction: row;
+}
+
+.splashscreen_page--container > .splashscreen_page--logo h1 {
+
+    font-family: "Lato";
+    color: #c130b0;
+}
+
+.splashscreen_page--container > .splashscreen_page--logo h6 {
+
+    margin-right: 30px;
+    font-family: "Lato";
+    color: #c130b0;
+}
+
+.splashscreen_page--container > .splashscreen_page--progressbar--container {
+    width: 100%;
+    border-radius: 4px;
+    flex: 5;
+    background-color: rgb(221, 160, 221, 0.2);
+    font-family: "Lato";
+    color: #c130b0;
+
+}
+
+#splashscreen__page--message {
+    font-family: "Lato";
+    color: #c130b0;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+#splashscreen_page--progressbar {
+    height:20px;
+    border-radius: 4px;
+    background-color: #c130b0;
+    
+}
+
+

@@ -193,7 +193,7 @@ function Home({
                     }}
                     onClick={() => {
                       selectTable(table.table_name, true);
-                      setSql(`select * from ${table.table_name} limit 10`);
+                      setSql(`select * from "${table.table_name}" limit 10`);
                       history(`/dataset/${idx + 1}`, { replace: true });
                     }}
                     selectDataset={(toggle) =>

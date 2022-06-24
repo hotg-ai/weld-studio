@@ -1,4 +1,4 @@
-#[derive(Debug, serde::Serialize, serde::Deserialize, ts_rs::TS)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, ts_rs::TS, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "../src/backend/types/")]
 pub struct Package {

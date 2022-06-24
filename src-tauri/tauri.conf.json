@@ -4,11 +4,12 @@
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn start",
     "devPath": "http://localhost:3000",
+    "withGlobalTauri": true,
     "distDir": "../build"
   },
   "package": {
-    "productName": "weld-studio",
-    "version": "0.1.0-RC7"
+    "productName": "weld",
+    "version": "0.1.0-RC8"
   },
   "tauri": {
     
@@ -65,7 +66,16 @@
         "resizable": true,
         "title": "Weld Studio",
         "width": 1024,
-        "fileDropEnabled": false
+        "fileDropEnabled": false,
+        "label": "main",
+        "visible": false
+      },
+      {
+        "width": 400,
+        "height": 200,
+        "decorations": false,
+        "url": "splashscreen.html",
+        "label": "splashscreen"
       }
     ]
   }

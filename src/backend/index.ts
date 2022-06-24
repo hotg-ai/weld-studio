@@ -12,19 +12,21 @@ import { Pipeline } from "./types/Pipeline";
 import { ColumnMapping } from "./types/ColumnMapping";
 import { Analysis } from "./types/Analysis";
 
-export type ValidationResponse  = {
-    numRows: number;
-    preview: Table;
+export type ValidationResponse = {
+  numRows: number;
+  preview: Table;
 };
 
-export type Result<T, E = SerializableError<unknown>> = { type: "ok", value: T } | { type: "err", error: E };
+export type Result<T, E = SerializableError<unknown>> =
+  | { type: "ok"; value: T }
+  | { type: "err"; error: E };
 
 function ok<T>(value: T): Result<T, never> {
-    return { type: "ok", value };
+  return { type: "ok", value };
 }
 
 function err<E>(error: E): Result<never, E> {
-    return { type: "err", error };
+  return { type: "err", error };
 }
 
 /**
@@ -42,6 +44,7 @@ export async function log_message(message: string): Promise<void> {
  * @returns
  */
 export async function validate_sql(sql: string, maxRows: number = 10): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
+
     try {
         const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql, max_rows: maxRows });
 
@@ -50,6 +53,7 @@ export async function validate_sql(sql: string, maxRows: number = 10): Promise<R
             preview: tableFromIPC(preview),
         });
     } catch(e) {
+      console.log("SQLLLL", e);  
         return err(is_serializable_error(e) ? e : to_serializable_error(e));
     }
 }
@@ -74,13 +78,16 @@ export async function save_sql(sql: string, path: string): Promise<Result<undefi
  * @param sql The SQL query that defines this dataset.
  * @returns
  */
-export async function create_dataset(name: string, sql: string): Promise<Result<DatasetInfo>> {
-    try {
-        const response = await invoke("create_dataset", { name, sql });
-        return ok(response as DatasetInfo);
-    } catch(e) {
-        return err(is_serializable_error(e) ? e : to_serializable_error(e));
-    }
+export async function create_dataset(
+  name: string,
+  sql: string
+): Promise<Result<DatasetInfo>> {
+  try {
+    const response = await invoke("create_dataset", { name, sql });
+    return ok(response as DatasetInfo);
+  } catch (e) {
+    return err(is_serializable_error(e) ? e : to_serializable_error(e));
+  }
 }
 
 /**
@@ -156,17 +163,17 @@ export function is_serializable_error(value: any): value is SerializableError<an
  * caught) into a SerializableError.
  */
 function to_serializable_error(error: any): SerializableError<never> {
-    if (error instanceof Error) {
-        return {
-            message: error.message,
-            verbose: error.stack || error.message,
-            causes: [],
-        };
-    } else {
-        return {
-            message: error.toString(),
-            verbose: error.toString(),
-            causes: [],
-        }
-    }
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      verbose: error.stack || error.message,
+      causes: [],
+    };
+  } else {
+    return {
+      message: error.toString(),
+      verbose: error.toString(),
+      causes: [],
+    };
+  }
 }
