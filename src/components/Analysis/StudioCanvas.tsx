@@ -62,7 +62,6 @@ export function defaultPropertyValues(
   for (const [name, property] of Object.entries(properties)) {
     values[name] = property.defaultValue;
   }
-  console.log("DROPPED NODE WITH PROPERTIES", values);
   return values;
 }
 
@@ -347,6 +346,9 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
         nodes={canvasNodes}
         edges={canvasEdges}
         onConnect={onConnect}
+        onPaneClick={(e) => {
+          dispatch(ClearSelectedNode());
+        }}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}
         selectionKeyCode={"Control"}

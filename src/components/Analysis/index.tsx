@@ -32,6 +32,10 @@ import { storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
 import { Console } from "console-feed";
 import React from "react";
+import ArrowTable, {
+  computeColumns,
+  VTable,
+} from "../Dataset/components/arrowtable";
 
 function Analysis({
   data,
@@ -65,55 +69,79 @@ function Analysis({
   const [tableData, setTableData] = useState([]);
   const [activeKey, setActiveKey] = React.useState("1");
   const onKeyChange = (key) => setActiveKey(key);
-  const [resultData, setResultData] = useState([]);
+
+  const selectedNodeId = useAppSelector((s) => s.builder.selected);
+
+  const [resultData, setResultData] = useState<undefined | any[]>(undefined);
+  const [nodeHasContextualData, setNodeHasData] = useState<boolean>(false);
+  const [contextualDatasetName, setDatasetName] = useState<string | undefined>(
+    undefined
+  );
+
   useEffect(() => {
-    let newTable = [];
-
-    const capabilities = diagram.nodes.filter(
-      (node) => node.data.type === "capability"
-    );
-
-    let labels: string[] = capabilities.map((cap) => cap.data.name);
-
-    newTable = data.map((o, index) => {
-      if (labels && labels.length > 0) {
-        let row = labels.reduce((acc, curr) => {
-          if (curr.startsWith("Dataset_")) {
-            const name = curr.replace("Dataset_", "");
-            try {
-              Object.entries(datasetRegistry[name].data[index]).forEach(
-                ([k, v]) => {
-                  if (!acc[name]) acc[name] = "";
-                  acc[name] = acc[name] + `"${k}": ${v}, `;
-                  if (resultData && resultData[index] !== null) {
-                    acc["Result"] = resultData[index];
-                  }
-                }
-              );
-            } catch (e) {}
-          } else {
-            acc[curr] = o[curr];
+    setDatasetName(undefined);
+    setNodeHasData(false);
+    if (selectedNodeId && selectedNodeId !== undefined) {
+      try {
+        const selectedNode = diagram.nodes.filter(
+          (node) => node.id === selectedNodeId.id
+        )[0];
+        if (
+          selectedNode &&
+          selectedNode.type === "capability" &&
+          datasetRegistry
+        ) {
+          const datasetName = selectedNode.data.name.replace("Dataset_", "");
+          if (datasetRegistry[datasetName]) {
+            setDatasetName(datasetName);
+            setNodeHasData(true);
           }
-          return acc;
-        }, {});
-        if (!_.isEmpty(row)) return row;
+        }
+      } catch (e) {
+        console.error("SELECTED NODE DOES NOT EXIST");
       }
-    });
-    setTableData(newTable);
+    }
+  }, [selectedNodeId]);
+
+  useEffect(() => {
+    // setResultData(undefined);
+    // let newTable = [];
+    // console.log("DATA", data, datasetRegistry);
+    // const capabilities = diagram.nodes.filter(
+    //   (node) => node.data.type === "capability"
+    // );
+    // let labels: string[] = capabilities.map((cap) => cap.data.name);
+    // newTable = data.map((o, index) => {
+    //   console.log("ROW", o.toJSON());
+    //   if (labels && labels.length > 0) {
+    //     let row = labels.reduce((acc, curr) => {
+    //       if (curr.startsWith("Dataset_")) {
+    //         const name = curr.replace("Dataset_", "");
+    //         try {
+    //           Object.entries(datasetRegistry[name].data[index]).forEach(
+    //             ([k, v]) => {
+    //               if (!acc[name]) acc[name] = "";
+    //               acc[name] = acc[name] + `"${k}": ${v}, `;
+    //               if (resultData && resultData[index] !== null) {
+    //                 acc["Result"] = resultData[index];
+    //               }
+    //             }
+    //           );
+    //         } catch (e) {}
+    //       } else {
+    //         acc[curr] = o.toJSON()[curr];
+    //       }
+    //       return acc;
+    //     }, {});
+    //     if (!_.isEmpty(row)) return row;
+    //   }
+    // });
+    // setTableData(newTable);
   }, [diagram]);
 
   useEffect(() => {
-    let d = tableData;
-    if (resultData.length > 0) {
-      d.forEach((v, i) => {
-        d[i]["Result"] = resultData[i];
-      });
-    } else {
-      d.forEach((v, i) => {
-        if (d[i]["Result"]) delete d[i]["Result"];
-      });
-    }
-    setTableData(d);
+    if (resultData && resultData !== undefined && resultData[0] !== undefined)
+      setActiveKey("3");
   }, [resultData]);
 
   useEffect(() => {
@@ -274,31 +302,31 @@ function Analysis({
       let tensor: Tensor;
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
-        const dataSetData = datasetRegistry[name];
-        tensor = dataSetData.tensor;
         input_tensors[node.data.label] = {
-          element_type: convertElementType(tensor.elementType).toUpperCase(),
-          dimensions: Object.values(tensor.dimensions),
-          buffer: Object.values(tensor.buffer),
+          element_type: convertElementType(
+            datasetRegistry[name].tensor.elementType
+          ).toUpperCase(),
+          dimensions: Object.values(datasetRegistry[name].tensor.dimensions),
+          buffer: Object.values(datasetRegistry[name].tensor.buffer),
         };
       } else {
-        const descriptor = getConnectedInputTensor(node, diagram);
-        const data = getDataArrayFromType(
-          dataMap[node.data.label],
-          descriptor.elementType
-        );
-        const { buffer, byteLength } = data;
-        const bufferAsU8 = new Uint8Array(buffer, 0, byteLength);
-        tensor = {
-          buffer,
-          elementType: modelToTensorElementType(descriptor.elementType),
-          dimensions: Uint32Array.from(descriptor.dimensions),
-        };
-        input_tensors[node.data.label] = {
-          element_type: descriptor.elementType.toUpperCase(),
-          dimensions: [data.length],
-          buffer: Object.values(bufferAsU8),
-        };
+        // const descriptor = getConnectedInputTensor(node, diagram);
+        // const data = getDataArrayFromType(
+        //   dataMap[node.data.label],
+        //   descriptor.elementType
+        // );
+        // const { buffer, byteLength } = data;
+        // const bufferAsU8 = new Uint8Array(buffer, 0, byteLength);
+        // tensor = {
+        //   buffer,
+        //   elementType: modelToTensorElementType(descriptor.elementType),
+        //   dimensions: Uint32Array.from(descriptor.dimensions),
+        // };
+        // input_tensors[node.data.label] = {
+        //   element_type: descriptor.elementType.toUpperCase(),
+        //   dimensions: [data.length],
+        //   buffer: Object.values(bufferAsU8),
+        // };
       }
     });
     let result;
@@ -307,19 +335,24 @@ function Analysis({
     try {
       console.log("Runefile", rune);
       const zune = await invoke("compile", { runefile: rune });
-      console.log("ZUNE BUILT", zune);
+      console.log("ZUNE BUILT");
       try {
         result = await invoke("reune", {
           zune: zune,
           inputTensors: input_tensors,
         });
         const tensorResult = convertTensorResult(result);
+
         const Result = transformByDimensions(result.dimensions, tensorResult);
-        tableData.forEach((row, index) => {
-          resultTable[index] = Result[index] !== undefined ? Result[index] : "";
+        Result.forEach((row, index) => {
+          resultTable.push({
+            Result: Result[index] !== undefined ? Result[index] : "",
+          });
         });
         setResultData(resultTable);
-        setLogs("Run Succeeded. Got result with row count: " + resultTable.length);
+        setLogs(
+          "Run Succeeded. Got result with row count: " + resultTable.length
+        );
       } catch (error) {
         console.log("RUN ERROR", error);
         setLogs(error.backtrace);
@@ -415,9 +448,15 @@ function Analysis({
             activeKey={activeKey}
             onChange={onKeyChange}
           >
-            <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
-              <Table data={tableData} />
-            </Tabs.TabPane>
+            {nodeHasContextualData && nodeHasContextualData !== undefined && (
+              <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
+                {contextualDatasetName && (
+                  <ArrowTable
+                    data={datasetRegistry[contextualDatasetName].data}
+                  />
+                )}
+              </Tabs.TabPane>
+            )}
             <Tabs.TabPane
               tab={
                 <>
@@ -428,6 +467,24 @@ function Analysis({
             >
               <Console logs={logs} variant="light" />
             </Tabs.TabPane>
+            {resultData &&
+              resultData !== undefined &&
+              resultData[0] !== undefined && (
+                <Tabs.TabPane
+                  tab={
+                    <>
+                      Output <span className="count">{resultData.length}</span>
+                    </>
+                  }
+                  key="3"
+                  className="data-table-tab"
+                >
+                  <VTable
+                    columns={computeColumns(Object.keys(resultData[0]))}
+                    data={resultData}
+                  />
+                </Tabs.TabPane>
+              )}
           </Tabs>
         </div>
       </div>
