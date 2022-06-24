@@ -79,7 +79,9 @@ function VTable({ columns, data }: { columns: any[]; data: any[] }) {
           {row.cells.map((cell) => {
             return (
               <div style={style} {...cell.getCellProps()} className="td">
-                {cell.render("Cell")}
+                {cell.render("Cell", {
+                  style: { height: "auto", width: "auto" },
+                })}
               </div>
             );
           })}
