@@ -92,11 +92,6 @@ function Analysis({
           datasetRegistry
         ) {
           const datasetName = selectedNode.data.name.replace("Dataset_", "");
-          console.log(
-            "SELECTED NODE IS:: ",
-            selectedNodeId,
-            datasetRegistry[datasetName]
-          );
           if (datasetRegistry[datasetName]) {
             setDatasetName(datasetName);
             setNodeHasData(true);
@@ -145,7 +140,6 @@ function Analysis({
   }, [diagram]);
 
   useEffect(() => {
-    console.log("RESULT DATA", resultData);
     if (resultData && resultData !== undefined && resultData[0] !== undefined)
       setActiveKey("3");
   }, [resultData]);
@@ -315,7 +309,6 @@ function Analysis({
           dimensions: Object.values(datasetRegistry[name].tensor.dimensions),
           buffer: Object.values(datasetRegistry[name].tensor.buffer),
         };
-        console.log("INPUT", name, input_tensors[node.data.label]);
       } else {
         // const descriptor = getConnectedInputTensor(node, diagram);
         // const data = getDataArrayFromType(
@@ -356,7 +349,6 @@ function Analysis({
             Result: Result[index] !== undefined ? Result[index] : "",
           });
         });
-        console.log("RESULT", resultTable);
         setResultData(resultTable);
         setLogs(
           "Run Succeeded. Got result with row count: " + resultTable.length
