@@ -347,6 +347,9 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
         nodes={canvasNodes}
         edges={canvasEdges}
         onConnect={onConnect}
+        onPaneClick={(e) => {
+          dispatch(ClearSelectedNode());
+        }}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}
         selectionKeyCode={"Control"}

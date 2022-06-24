@@ -120,7 +120,7 @@ function VTable({ columns, data }: { columns: any[]; data: any[] }) {
 
 declare type Column = { Header: string; accessor: string };
 
-const computeColumns = (header: string[]): Column[] => {
+export const computeColumns = (header: string[]): Column[] => {
   let columns: Column[] = [];
   header.forEach((head) => {
     columns.push({
