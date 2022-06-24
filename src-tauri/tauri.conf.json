@@ -8,8 +8,8 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "weld-studio",
-    "version": "0.1.0-RC7"
+    "productName": "weld",
+    "version": "0.1.0-RC8"
   },
   "tauri": {
     
