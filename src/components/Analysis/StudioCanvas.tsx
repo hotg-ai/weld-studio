@@ -62,7 +62,6 @@ export function defaultPropertyValues(
   for (const [name, property] of Object.entries(properties)) {
     values[name] = property.defaultValue;
   }
-  console.log("DROPPED NODE WITH PROPERTIES", values);
   return values;
 }
 
