@@ -176,6 +176,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
     this.setState({ sql, queryError: undefined });
     validate_sql(sql, 100)
       .then((result) => {
+        console.debug(result);
         if (result.type === "err") {
           this.setState(
             { queryError: result.error.verbose || result.error.message },

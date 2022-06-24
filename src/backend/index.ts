@@ -46,14 +46,12 @@ export async function log_message(message: string): Promise<void> {
 export async function validate_sql(sql: string, maxRows: number = 10): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
 
     try {
-        const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql, max_rows: maxRows });
-
+        const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql, maxRows});
         return ok({
             numRows: row_count,
             preview: tableFromIPC(preview),
         });
     } catch(e) {
-      console.log("SQLLLL", e);  
         return err(is_serializable_error(e) ? e : to_serializable_error(e));
     }
 }

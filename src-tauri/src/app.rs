@@ -6,7 +6,7 @@ use hotg_rune_compiler::{
     asset_loader::{AssetLoader, DefaultAssetLoader},
     BuildConfig, FeatureFlags,
 };
-use tauri::{api::path::home_dir, Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
+use tauri::{Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 
 use crate::{
     legacy::{Cancelled, Running},
@@ -64,7 +64,7 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         .setup(|app: &mut tauri::App| {
             let handle = app.app_handle();
 
-            let splashscreen_window = app.get_window("splashscreen").unwrap();
+            //let _splashscreen_window = app.get_window("splashscreen").unwrap();
             let main_window = app.get_window("main").unwrap();
             // we perform the initialization code on a new task so the app doesn't freeze
             tracing::info!("Initializing...");
@@ -110,7 +110,7 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
 
     let packages = fetch_packages(client).await.unwrap();
 
-    let mut packages_to_download: Vec<Package> = packages
+    let packages_to_download: Vec<Package> = packages
         .into_iter()
         .filter(|package| {
             let package = package.to_owned();
@@ -193,7 +193,7 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
         // Note: The body is a Result<Bytes, Error> here
         tracing::info!("Writing {:?}", package);
 
-        let found_pb = conn
+        let _found_pb = conn
             .execute(
                 
                 "INSERT INTO proc_blocks (name, version, publicUrl, description, fileLoc, createdAt) VALUES (?, ?, ?, ?, ?, now())",

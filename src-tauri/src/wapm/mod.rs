@@ -17,12 +17,10 @@ use crate::shared::Package;
 pub struct GetNamespace;
 
 const WAPM_REGISTRY: &str = "https://registry.wapm.io/graphql";
-const PB_WHITE_LIST: &str = "../whitelist.json";
 
 #[tauri::command]
 #[tracing::instrument(skip_all, err)]
 pub async fn known_proc_blocks(
-    client: tauri::State<'_, reqwest::Client>,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<Vec<Package>, SerializableError> {
     let conn = app_state.meta_db().await;
@@ -36,7 +34,7 @@ pub async fn known_proc_blocks(
         .map_err(|e| anyhow::Error::msg(e.to_string()))?
         .collect();
 
-    let mut packages: Vec<serde_json::Map<std::string::String, serde_json::Value>> =
+    let packages: Vec<serde_json::Map<std::string::String, serde_json::Value>> =
         json::writer::record_batches_to_json_rows(&batches[..])
             .map_err(|e| anyhow::Error::msg(e.to_string()))?;
 
@@ -63,7 +61,7 @@ pub async fn known_proc_blocks(
         .collect();
 
     tracing::debug!(
-        packages = ?packages,
+        packages = ?packages.len(),
         "Received list of hotg-ai packages",
     );
 
@@ -180,15 +178,15 @@ fn flatten_packages(data: Option<get_namespace::ResponseData>) -> Vec<Package> {
     packages
 }
 
-use std::io::Cursor;
-async fn fetch_url(
-    url: &String,
-    file_name: String,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let response = reqwest::get(url).await?;
-    tracing::info!(p=?url);
-    let mut file = std::fs::File::create(file_name)?;
-    let mut content = Cursor::new(response.bytes().await?);
-    std::io::copy(&mut content, &mut file)?;
-    Ok(())
-}
+// use std::io::Cursor;
+// async fn fetch_url(
+//     url: &String,
+//     file_name: String,
+// ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+//     let response = reqwest::get(url).await?;
+//     tracing::info!(p=?url);
+//     let mut file = std::fs::File::create(file_name)?;
+//     let mut content = Cursor::new(response.bytes().await?);
+//     std::io::copy(&mut content, &mut file)?;
+//     Ok(())
+// }
