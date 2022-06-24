@@ -59,6 +59,7 @@ pub async fn save_sql(
 }
 
 fn serialize_preview(record: &RecordBatch) -> Result<Vec<u8>, arrow::error::ArrowError> {
+    tracing::info!("RECORD SERIALZE SCHEMA {:?}", record.schema());
     let mut writer = StreamWriter::try_new(Vec::new(), &record.schema())?;
     writer.write(record)?;
     writer.into_inner()

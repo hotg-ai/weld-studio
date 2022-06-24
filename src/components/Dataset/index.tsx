@@ -89,30 +89,30 @@ const Dataset = ({
   const [datasetName, setDatasetName] = useState("untitled_dataset");
   const history = useNavigate();
 
-  useEffect(() => {
-    const procBlocks = async () => {
-      const pb = await loadProcBlocks();
-      const $RESOURCE = await resourceDir();
-      const allProckBlocks: any[] = await invoke("known_proc_blocks");
-      const pbs = Object.entries(pb).map(([name, procBlock]) => {
-        const match = allProckBlocks.filter((p) => p["name"] === name);
-        const matchUrl = match[0]["publicUrl"].replace(
-          "$RESOURCE",
-          `${$RESOURCE}/preload_proc_blocks`
-        );
-        return [
-          `proc-block/${name}`,
-          metadataToComponent(name, procBlock, matchUrl),
-        ] as const;
-      });
-      await dispatch(
-        RefreshComponents({
-          ...Object.fromEntries(pbs),
-        })
-      );
-    };
-    procBlocks().catch(console.error);
-  }, []);
+  // useEffect(() => {
+  //   const procBlocks = async () => {
+  //     const pb = await loadProcBlocks();
+  //     const $RESOURCE = await resourceDir();
+  //     const allProckBlocks: any[] = await invoke("known_proc_blocks");
+  //     const pbs = Object.entries(pb).map(([name, procBlock]) => {
+  //       const match = allProckBlocks.filter((p) => p["name"] === name);
+  //       const matchUrl = match[0]["publicUrl"].replace(
+  //         "$RESOURCE",
+  //         `${$RESOURCE}/preload_proc_blocks`
+  //       );
+  //       return [
+  //         `proc-block/${name}`,
+  //         metadataToComponent(name, procBlock, matchUrl),
+  //       ] as const;
+  //     });
+  //     await dispatch(
+  //       RefreshComponents({
+  //         ...Object.fromEntries(pbs),
+  //       })
+  //     );
+  //   };
+  //   procBlocks().catch(console.error);
+  // }, []);
 
   const copyLinkToClipboard = (text: string) => {
     navigator.clipboard

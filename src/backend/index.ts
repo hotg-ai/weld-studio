@@ -47,9 +47,11 @@ export async function validate_sql(sql: string, maxRows: number = 10): Promise<R
 
     try {
         const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql, maxRows});
+        let previewX = tableFromIPC(preview); 
+        console.log(previewX)
         return ok({
             numRows: row_count,
-            preview: tableFromIPC(preview),
+            preview: previewX,
         });
     } catch(e) {
         return err(is_serializable_error(e) ? e : to_serializable_error(e));

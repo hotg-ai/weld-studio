@@ -184,6 +184,9 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
           );
           this.setState({ isQueryLoading: false });
         } else {
+          if (result.value.preview.schema.fields.length === 0) {
+            throw new Error("Failed to fetch data. No schema")
+          }
           const querySchema = {fields: result.value.preview.schema.fields.map((field) => {
             const fs : FieldSchema = {
               name: field.name,
@@ -192,7 +195,6 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
             }
             return fs
           })};
-          console.log(querySchema.fields)
           this.setState({ data: result.value.preview.toArray(), querySchema});
           this.setState({ isQueryLoading: false });
         }
