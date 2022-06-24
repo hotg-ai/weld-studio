@@ -9,7 +9,7 @@ import CodeEditor from "./components/editor";
 import Table from "./components/table";
 import "./dataset.css";
 import { QueryData, TableData } from "../../types";
-import { useAppDispatch } from "src/hooks/hooks";
+import { useAppDispatch,  useAppSelector } from "src/hooks/hooks";
 import { RefreshComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
 import { FieldSchema } from "../../types";
@@ -88,18 +88,16 @@ const Dataset = ({
   const dispatch = useAppDispatch();
   const [datasetName, setDatasetName] = useState("untitled_dataset");
   const history = useNavigate();
+  const [loadedPB, setLoadedPB] = useState(true);
+  const components = useAppSelector((s) => s.builder.components);
 
   useEffect(() => {
     const procBlocks = async () => {
       const pb = await loadProcBlocks();
-      const $RESOURCE = await resourceDir();
       const allProckBlocks: any[] = await invoke("known_proc_blocks");
       const pbs = Object.entries(pb).map(([name, procBlock]) => {
         const match = allProckBlocks.filter((p) => p["name"] === name);
-        const matchUrl = match[0]["publicUrl"].replace(
-          "$RESOURCE",
-          `${$RESOURCE}/preload_proc_blocks`
-        );
+        const matchUrl = match[0]["publicUrl"];
         return [
           `proc-block/${name}`,
           metadataToComponent(name, procBlock, matchUrl),

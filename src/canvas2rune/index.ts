@@ -50,7 +50,7 @@ export const storm2rune = async (
     pipeline,
   };
 
-  return dump(runefile);
+  return dump(runefile, {forceQuotes:true});
 };
 
 const loadResourceValue = async (

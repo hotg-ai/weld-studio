@@ -50,7 +50,7 @@ pub async fn known_proc_blocks(
                 .unwrap()
                 .to_string();
             let version = record.get("version").unwrap().as_str().unwrap().to_string();
-            let public_url = record.get("fileLoc").unwrap().as_str().unwrap().to_string();
+            let public_url = format!("file://{}", record.get("fileLoc").unwrap().as_str().unwrap().to_string());
             return Package {
                 name: name,
                 description: description,
