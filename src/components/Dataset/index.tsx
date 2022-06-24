@@ -97,7 +97,7 @@ const Dataset = ({
       const allProckBlocks: any[] = await invoke("known_proc_blocks");
       const pbs = Object.entries(pb).map(([name, procBlock]) => {
         const match = allProckBlocks.filter((p) => p["name"] === name);
-        const matchUrl = match[0]["publicUrl"];
+        const matchUrl = `file:/${match[0]["publicUrl"]}`;
         return [
           `proc-block/${name}`,
           metadataToComponent(name, procBlock, matchUrl),
