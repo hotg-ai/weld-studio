@@ -64,7 +64,7 @@ pub fn prepare_meta_db(home_dir: &Path) -> Result<Connection, Error> {
     let conn = Connection::open(&db_file).unwrap();
 
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS proc_blocks(name VARCHAR, version VARCHAR, publicUrl VARCHAR, fileLoc VARCHAR, createdAt timestamp default now()) ", []
+        "CREATE TABLE IF NOT EXISTS proc_blocks(name VARCHAR, version VARCHAR, publicUrl VARCHAR, fileLoc VARCHAR, description VARCHAR, createdAt timestamp default now()) ", []
     ).map_err(|e| Error::msg(e.to_string()))?;
     Ok(conn)
 }

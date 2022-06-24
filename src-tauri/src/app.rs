@@ -1,4 +1,4 @@
-use std::{sync::Arc, io::Cursor};
+use std::{io::Cursor, sync::Arc};
 
 use anyhow::Error;
 use duckdb::params;
@@ -6,7 +6,7 @@ use hotg_rune_compiler::{
     asset_loader::{AssetLoader, DefaultAssetLoader},
     BuildConfig, FeatureFlags,
 };
-use tauri::{Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu, api::path::home_dir};
+use tauri::{api::path::home_dir, Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 
 use crate::{
     legacy::{Cancelled, Running},
@@ -93,7 +93,7 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
     let client: tauri::State<reqwest::Client> = handle.state();
     let home_dir = state.home_dir();
 
-    emit_splashscreen_progress(&main_window, 20, format!("Fetching manifest..."));
+    emit_splashscreen_progress(&main_window, 10, format!("Fetching manifest..."));
 
     let conn = state.meta_db().await;
 
@@ -133,68 +133,75 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
 
     tracing::info!(packages_to_download=?packages_to_download);
 
-    let  mut futures = FuturesUnordered::new();
-    
-
-   
+    let mut futures = FuturesUnordered::new();
 
     for package in packages_to_download {
-      
-     
-
         let fut = async move {
-        
             let p = package.clone();
             let response = reqwest::get(&package.public_url)
-                    .await.unwrap()
-                    .bytes()
-                    .await.unwrap();
+                .await
+                .unwrap()
+                .bytes()
+                .await
+                .unwrap();
 
-            let proc_blocks_dir =  home_dir.join("proc_blocks").join(package.name).join(package.last_version);
+            let proc_blocks_dir = home_dir
+                .join("proc_blocks")
+                .join(package.name)
+                .join(package.last_version);
             match std::fs::create_dir_all(&proc_blocks_dir) {
                 Ok(_) => tracing::info!("Dir made"),
-                Err(e) => tracing::warn!("Dir err {:?}", e)
+                Err(e) => tracing::warn!("Dir err {:?}", e),
             }
             let file_name = proc_blocks_dir.join("pb.wasm");
 
             tracing::info!("Writing to {:?}", &file_name.as_os_str());
             match std::fs::File::create(file_name) {
-                Ok(mut file) => { 
-                    let mut content =  Cursor::new(response);
-            
+                Ok(mut file) => {
+                    let mut content = Cursor::new(response);
+
                     std::io::copy(&mut content, &mut file).ok();
-                },
-                Err(e) => tracing::warn!("File can't be written {:?}", e)
+                }
+                Err(e) => tracing::warn!("File can't be written {:?}", e),
             }
-           
+
             p
         };
 
-        futures.push(fut); 
+        futures.push(fut);
     }
 
     let mut progress = 20;
     while let Some(package) = futures.next().await {
-
-        let proc_blocks_dir =  home_dir.join("proc_blocks").join(&package.name).join(&package.last_version);
+        let proc_blocks_dir = home_dir
+            .join("proc_blocks")
+            .join(&package.name)
+            .join(&package.last_version);
         let file_loc = proc_blocks_dir.join("pb.wasm");
         progress += 1;
         // Note: The body is a Result<Bytes, Error> here
         tracing::info!("Writing {:?}", package);
-        
+
         let found_pb = conn
-        .execute(
-            "INSERT INTO proc_blocks VALUES (?, ?, ?, ?, now())",
-            params![&package.name, &package.last_version, &package.public_url, file_loc.as_path().to_str()],
-        )
-        .unwrap();
+            .execute(
+                
+                "INSERT INTO proc_blocks (name, version, publicUrl, description, fileLoc, createdAt) VALUES (?, ?, ?, ?, ?, now())",
+                params![
+                    &package.name,
+                    &package.last_version,
+                    &package.public_url,
+                    &package.description,
+                    file_loc.as_path().to_str()
+                ],
+            )
+            .unwrap();
 
         emit_splashscreen_progress(
             &main_window,
             progress,
             format!("Fetched package {}", package.name),
         );
-      }
+    }
 
     // let stmt = conn.prepare("SELECT * from proc_blocks;").unwrap();
 

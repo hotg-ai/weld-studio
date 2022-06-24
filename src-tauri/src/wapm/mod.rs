@@ -1,7 +1,8 @@
-use std::fmt::Display;
-
 use anyhow::{Context, Error};
+use arrow::{json, record_batch::RecordBatch};
+use duckdb::params;
 use graphql_client::{GraphQLQuery, Response};
+use std::fmt::Display;
 
 use crate::AppState;
 
@@ -22,43 +23,80 @@ pub async fn known_proc_blocks(
     client: tauri::State<'_, reqwest::Client>,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<Vec<Package>, SerializableError> {
-    //let packages: Vec<Package> = serde_json::from_str(WELD_REGISTRY).map_err(|e| e.to_string())?;
+    let conn = app_state.meta_db().await;
 
-    // connect to the meta db
+    let mut table = conn
+        .prepare("select * from proc_blocks")
+        .map_err(|e| anyhow::Error::msg(e.to_string()))?;
 
-    // fetch from table
+    let batches: Vec<RecordBatch> = table
+        .query_arrow(params![])
+        .map_err(|e| anyhow::Error::msg(e.to_string()))?
+        .collect();
 
-    // create Vec<Package>
+    let mut packages: Vec<serde_json::Map<std::string::String, serde_json::Value>> =
+        json::writer::record_batches_to_json_rows(&batches[..])
+            .map_err(|e| anyhow::Error::msg(e.to_string()))?;
 
-    let query = GetNamespace::build_query(get_namespace::Variables {
-        name: "hotg-ai".to_string(),
-    });
+    let packages: Vec<Package> = packages
+        .iter()
+        .map(|record: &serde_json::Map<String, serde_json::Value>| {
+            let name = record.get("name").unwrap().as_str().unwrap().to_string();
 
-    //
-    tracing::info!("Fetching known proc-blocks");
+            let description = record
+                .get("description")
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .to_string();
+            let version = record.get("version").unwrap().as_str().unwrap().to_string();
+            let public_url = record.get("fileLoc").unwrap().as_str().unwrap().to_string();
+            return Package {
+                name: name,
+                description: description,
+                last_version: version,
+                public_url: public_url,
+            };
+        })
+        .collect();
 
-    let Response { data, errors }: Response<get_namespace::ResponseData> = client
-        .post(WAPM_REGISTRY)
-        .json(&query)
-        .send()
-        .await
-        // .and_then(|response| response.error_for_status())
-        .context("Unable to query the WAPM registry")?
-        .json()
-        .await
-        .context("Unable to deserialize the response")?;
+    // //let packages: Vec<Package> = serde_json::from_str(WELD_REGISTRY).map_err(|e| e.to_string())?;
 
-    if let Some(errors) = errors {
-        let error_messages: Vec<_> = errors.iter().map(|e| e.to_string()).collect();
-        tracing::error!(
-            ?errors,
-            ?error_messages,
-            "One or more errors occurred while querying WAPM's GraphQL API",
-        );
-        return Err(Error::msg("Querying the WAPM registry failed").into());
-    }
+    // // connect to the meta db
 
-    let packages = flatten_packages(data);
+    // // fetch from table
+
+    // // create Vec<Package>
+
+    // let query = GetNamespace::build_query(get_namespace::Variables {
+    //     name: "hotg-ai".to_string(),
+    // });
+
+    // //
+    // tracing::info!("Fetching known proc-blocks");
+
+    // let Response { data, errors }: Response<get_namespace::ResponseData> = client
+    //     .post(WAPM_REGISTRY)
+    //     .json(&query)
+    //     .send()
+    //     .await
+    //     // .and_then(|response| response.error_for_status())
+    //     .context("Unable to query the WAPM registry")?
+    //     .json()
+    //     .await
+    //     .context("Unable to deserialize the response")?;
+
+    // if let Some(errors) = errors {
+    //     let error_messages: Vec<_> = errors.iter().map(|e| e.to_string()).collect();
+    //     tracing::error!(
+    //         ?errors,
+    //         ?error_messages,
+    //         "One or more errors occurred while querying WAPM's GraphQL API",
+    //     );
+    //     return Err(Error::msg("Querying the WAPM registry failed").into());
+    // }
+
+    // let packages = flatten_packages(data);
 
     // for package in packages.iter() {
     //     tracing::info!("Caching to {}", format!("/tmp/{}.wasm", package.name));
@@ -79,11 +117,10 @@ pub async fn known_proc_blocks(
     Ok(packages)
 }
 
-
 #[tracing::instrument(skip_all, err)]
 pub async fn fetch_packages(
-    client: tauri::State<'_, reqwest::Client>
-) ->  Result<Vec<Package>, SerializableError>  {
+    client: tauri::State<'_, reqwest::Client>,
+) -> Result<Vec<Package>, SerializableError> {
     let query = GetNamespace::build_query(get_namespace::Variables {
         name: "hotg-ai".to_string(),
     });

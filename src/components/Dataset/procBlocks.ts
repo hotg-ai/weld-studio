@@ -8,6 +8,7 @@ export async function loadProcBlocks(): Promise<Record<string, ProcBlock>> {
 
   const allProckBlocks: any[] = await invoke("known_proc_blocks");
   const promises = allProckBlocks.map(async (pb) => {
+    
     try {
       procBlocks[pb["name"]] = await loadProcBlock(pb["publicUrl"]);
     } catch (e) {
@@ -21,8 +22,8 @@ export async function loadProcBlocks(): Promise<Record<string, ProcBlock>> {
 export async function loadProcBlock(filename: string): Promise<ProcBlock> {
  // const url = `${filename.replace("$RESOURCE", "")}`;
 
-  //const response = await readBinaryFile(url, { dir: BaseDirectory.Resource });
-  const response = await fetch(filename);
+  const response = await readBinaryFile(filename, {  });
+  //const response = await fetch(filename);
   if (!response) {
     throw new Error(`Unable to retrieve ${filename}`);
   }
