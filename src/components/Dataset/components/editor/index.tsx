@@ -15,7 +15,7 @@ const CodeEditor = ({
       defaultValue="-- Type your SQL query here"
       options={{
         mouseWheelZoom: true,
-        fontSize: 12
+        fontSize: 15
       }}
       value={sql}
       onChange={(v) => setSql(v)}
