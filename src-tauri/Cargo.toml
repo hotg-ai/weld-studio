@@ -22,9 +22,8 @@ directories = "4.0.1"
 duckdb = { git = "https://github.com/wangfenjin/duckdb-rs.git", features = ["bundled"] }
 futures = "0.3.21"
 graphql_client = { version = "0.10.0", features = ["reqwest"] }
-hotg-rune-compiler = { path = "../../rune/crates/compiler" }
+hotg-rune-compiler = { git = "https://github.com/hotg-ai/rune", rev = "26c1d7c1a1285c3020af78224bf17b0632960186" }
 hotg-rune-runtime = { git = "https://github.com/hotg-ai/rune", rev = "26c1d7c1a1285c3020af78224bf17b0632960186", features = ["builtins", "wasmer", "zune"], default-features = false }
-
 queryst = "2.1.0"
 reqwest = { version = "0.11.10", features = ["blocking"] }
 salsa = "0.16.1"
