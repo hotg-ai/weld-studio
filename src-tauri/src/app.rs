@@ -111,8 +111,14 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
 
     let packages = match fetch_packages(client).await {
         Ok(p) => p,
-        Err(_) => { return }
+        Err(_) => { 
+            emit_splashscreen_progress(&main_window, 100, format!("Done"));
+            return;
+         }
     };
+
+    emit_splashscreen_progress(&main_window, 20, format!("Checking files"));
+    
 
     let packages_to_download: Vec<Package> = packages
         .into_iter()
@@ -143,6 +149,7 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
     let mut futures = FuturesUnordered::new();
 
     for package in packages_to_download {
+        
         let fut = async move {
             let p = package.clone();
             let response = reqwest::get(&package.public_url)
@@ -186,6 +193,8 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
             .join(&package.last_version);
         let file_loc = proc_blocks_dir.join("pb.wasm");
         progress += 1;
+
+      
         // Note: The body is a Result<Bytes, Error> here
         tracing::info!("Writing {:?}", package);
 

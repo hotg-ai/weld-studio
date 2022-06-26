@@ -38,8 +38,21 @@ pub async fn known_proc_blocks(
         json::writer::record_batches_to_json_rows(&batches[..])
             .map_err(|e| anyhow::Error::msg(e.to_string()))?;
 
+    let white_list: Vec<&str> = vec![
+        "hotg-ai/linear_regression",
+        "hotg-ai/elastic_net",
+        "hotg-ai/metric",
+        "hotg-ai/prediction_errors",
+        "hotg-ai/f1-score",
+        "hotg-ai/logistic_regression",
+        "hotg-ai/accuracy",
+        "hotg-ai/train_test_split",
+        "hotg-ai/support_vector_regression",
+        "hotg-ai/support_vector_classifier",
+    ];
     let packages: Vec<Package> = packages
         .iter()
+        .filter(|p| white_list.contains(&p.get("name").unwrap().as_str().unwrap()))
         .map(|record: &serde_json::Map<String, serde_json::Value>| {
             let name = record.get("name").unwrap().as_str().unwrap().to_string();
 

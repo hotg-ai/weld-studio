@@ -110,9 +110,9 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       }
     );
 
-    listen("compilation_progress", (event) => this.setState({ logs: [... this.state.logs, { method: "info", data: [event.payload] } ] }));
+    listen("compilation_progress", (event) => this.setState({ logs: [...this.state.logs, { method: "info", data: [event.payload] } ] }));
 
-    listen("reune_progress", (event) => this.setState({ logs: [... this.state.logs, { method: "info", data: [event.payload] } ] }));
+    listen("reune_progress", (event) => this.setState({ logs: [...this.state.logs, { method: "info", data: [event.payload] } ] }));
 
     this.preloadDatafiles()
       .then(() => {
