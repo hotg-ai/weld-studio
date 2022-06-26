@@ -1,6 +1,7 @@
 use std::{io::Cursor, sync::Arc};
 
 use anyhow::Error;
+use arrow::record_batch::RecordBatch;
 use duckdb::params;
 use hotg_rune_compiler::{
     asset_loader::{AssetLoader, DefaultAssetLoader},
@@ -108,7 +109,10 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
 
     let conn = state.meta_db().await;
 
-    let packages = fetch_packages(client).await.unwrap();
+    let packages = match fetch_packages(client).await {
+        Ok(p) => p,
+        Err(_) => { return }
+    };
 
     let packages_to_download: Vec<Package> = packages
         .into_iter()
@@ -117,28 +121,20 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
             let name: &str = package.name.as_str();
             let version: &str = package.last_version.as_str();
 
-            let found_pb = conn
-                .execute(
-                    "select version from proc_blocks where name = ? ",
-                    params![&name],
-                )
-                .unwrap();
+            let mut stmt = conn.prepare("select version from proc_blocks where name = ? and version = ?").unwrap();
+            let found_pb  = stmt.query_arrow(params![&name, &version]).unwrap();
 
-            if found_pb == 0 {
+            let found_pb:  Vec<RecordBatch> = found_pb.collect();
+
+            if found_pb.len() == 0 {
                 // it doesn't exit
                 tracing::info!("No record of {}", package.name);
                 return true;
             }
 
-            let found_pb = conn
-                .execute(
-                    "select version from proc_blocks where version = ? ",
-                    params![&version],
-                )
-                .unwrap();
             tracing::info!("Found new version of {}", package.name);
             // it exists but has newer
-            found_pb == 0
+            found_pb.len() == 0
         })
         .collect();
 
