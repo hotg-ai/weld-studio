@@ -48,3 +48,14 @@
   background-color: #dddd;
   border-radius: 5px;
 }
+
+.ant-popover-inner *,
+.ant-popover-title {
+  color: #000 !important;
+}
+.ant-popover {
+  z-index: 999999999 !important;
+}
+.ant-popover-inner a {
+  color: #1890ff !important;
+}

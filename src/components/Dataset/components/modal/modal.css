@@ -13,9 +13,18 @@
 .modal__container .modal {
   width: 40%;
   min-height: 50%;
+  height: 50%;
   background: #fff;
   border-radius: 14px;
   box-shadow: 1px 1px 10px #0000009f;
+  display: flex;
+  overflow: hidden;
+}
+.modal__container .modal .modal__sidebar {
+  height: 100%;
+  width: 25%;
+  padding: 10px;
+  background: #f7f3ff;
 }
 .modal__container .modal .modal__header {
   padding: 10px 15px;

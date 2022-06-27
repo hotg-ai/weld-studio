@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
-import { useAppSelector } from "src/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "src/hooks/hooks";
 import { FlowElements } from "src/redux/reactFlowSlice";
 import Modal from "../Dataset/components/modal";
 import Table from "../Dataset/components/table";
@@ -10,23 +10,29 @@ import "./analysis.css";
 import InputDimensions from "./InputDimensions";
 import OutputDimensions from "./OutputDimensions";
 import Properties from "./Properties";
-import StudioCanvas from "./StudioCanvas";
+import StudioCanvas, {
+  defaultPropertyValues,
+  inputs,
+  outputs,
+} from "./StudioCanvas";
 import { ComponentsSelector } from "./StudioComponentsSelector";
+import { v4 as uuid } from "uuid";
 
 import { FlowNodeData } from "./model/FlowNodeComponent";
-import { Node } from "react-flow-renderer";
-import { TensorDescriptionModel } from "./model";
+import { Node, Position } from "react-flow-renderer";
+import { Component, TensorDescriptionModel } from "./model";
 import _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import { QueryData } from "../../types";
 import { Tensor } from "@hotg-ai/rune";
 import { convertElementType, modelToTensorElementType } from "./model/metadata";
-import { Carousel, Tabs } from "antd";
+import { Carousel, Checkbox, Input, Menu, Popover, Tabs } from "antd";
 import {
   image6,
   introModalStepOne,
   studioCanvasScreenshot,
   testDatasetScreenshot,
+  WebWhite,
 } from "src/assets";
 import { storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
@@ -36,6 +42,12 @@ import ArrowTable, {
   computeColumns,
   VTable,
 } from "../Dataset/components/arrowtable";
+import libraryIcon from "./icons/LibraryIcon.svg";
+import {
+  InfoCircleFilled,
+  QuestionCircleFilled,
+  SearchOutlined,
+} from "@ant-design/icons";
 
 function Analysis({
   data,
@@ -60,9 +72,31 @@ function Analysis({
 }) {
   const diagram = useAppSelector((s) => s.flow);
   const components = useAppSelector((s) => s.builder.components);
+  const [canvasNodes, setCanvasNodes] = useState<Node<FlowNodeData>[]>([]);
+  const dispatch = useAppDispatch();
+
   const [customModalVisible, setCustomModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [introModalVisible, setIntroModalVisible] = useState(false);
+  const [reactFlowModal, setReactFlowModal] = useState(false);
+  const [reactFlowModalTab, setReactFlowModalTab] = useState<string>("");
+  const [reactFlowModalsearchedValue, setReactFlowModalsearchedValue] =
+    useState<string>("");
+
+  const reactFlowModalCurrentTab = Object.entries(components).filter(
+    (component) => {
+      return component[1].type === reactFlowModalTab;
+    }
+  );
+
+  const reactFlowModalSearchResult =
+    reactFlowModalsearchedValue &&
+    Object.entries(components).filter((component) => {
+      return component[1].displayName
+        .toLowerCase()
+        .includes(reactFlowModalsearchedValue.toLowerCase());
+    });
+
   const [activeCollapseKeys, setActiveCollapseKeys] = useState([
     "Data Columns",
   ]);
@@ -142,6 +176,17 @@ function Analysis({
   useEffect(() => {
     if (resultData && resultData !== undefined && resultData[0] !== undefined)
       setActiveKey("3");
+    let d = tableData;
+    if (resultData && resultData?.length > 0) {
+      d.forEach((v, i) => {
+        d[i]["Result"] = resultData[i];
+      });
+    } else {
+      d.forEach((v, i) => {
+        if (d[i] && d[i]["Result"]) delete d[i]["Result"];
+      });
+    }
+    setTableData(d);
   }, [resultData]);
 
   useEffect(() => {
@@ -367,22 +412,10 @@ function Analysis({
   const fileInput = document.querySelector(".input-file") as HTMLInputElement,
     the_return = document.querySelector(".file-return")!;
 
-  const toggleActiveCollapseKeys = (key: string) => {
-    const activeCollapseKeysVar = [...activeCollapseKeys];
-    const keyIndex = activeCollapseKeysVar.indexOf(key);
-
-    if (keyIndex === -1) {
-      activeCollapseKeysVar.push(key);
-    } else {
-      activeCollapseKeysVar.splice(keyIndex, 1);
-    }
-
-    setActiveCollapseKeys(activeCollapseKeysVar);
-  };
-
+  console.log(logs);
   return (
     <div className="analysis_page">
-      <div className="sidebar_left">
+      {/* <div className="sidebar_left">
         <div className="back-link__container">
           <Link to={`/`}>
             <img src="/assets/backArrow.svg" alt="<" />
@@ -394,11 +427,17 @@ function Analysis({
           datasetRegistry={datasetRegistry}
           querySchema={querySchema}
         />
-      </div>
+      </div> */}
 
       <div className="analysis_page_content">
         <div className="studio__container">
           <div className="studio__content">
+            <button
+              className="addBlocks-btn"
+              onClick={() => setReactFlowModal(true)}
+            >
+              + Add Blocks
+            </button>
             <StudioCanvas datasetRegistry={datasetRegistry} />
           </div>
           <div className="sidebar_right">
@@ -448,44 +487,19 @@ function Analysis({
             activeKey={activeKey}
             onChange={onKeyChange}
           >
-            {nodeHasContextualData && nodeHasContextualData !== undefined && (
-              <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
-                {contextualDatasetName && (
-                  <ArrowTable
-                    data={datasetRegistry[contextualDatasetName].data}
-                  />
-                )}
-              </Tabs.TabPane>
-            )}
-            <Tabs.TabPane
-              tab={
-                <>
-                  Logs <span className="count">{logs.length}</span>
-                </>
-              }
-              key="2"
-            >
-              <Console logs={logs} variant="light" />
+            <Tabs.TabPane tab="Data" key="1" className="data-table-tab">
+              <Table data={tableData} />
             </Tabs.TabPane>
-            {resultData &&
-              resultData !== undefined &&
-              resultData[0] !== undefined && (
-                <Tabs.TabPane
-                  tab={
-                    <>
-                      Output <span className="count">{resultData.length}</span>
-                    </>
-                  }
-                  key="3"
-                  className="data-table-tab"
-                >
-                  <VTable
-                    columns={computeColumns(Object.keys(resultData[0]))}
-                    data={resultData}
-                  />
-                </Tabs.TabPane>
-              )}
           </Tabs>
+          <div className="logs__container">
+            <div className="logs-title">
+              <span>Logs</span>
+              <sup>{logs.length}</sup>
+            </div>
+            <div className="logs-body">
+              <Console logs={logs} variant="light" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -669,8 +683,320 @@ function Analysis({
           </button>
         </Modal>
       )}
+      {reactFlowModal && (
+        <Modal
+          className="react-flow_modal__container"
+          title="Datasets"
+          setModalVisible={setReactFlowModal}
+          sidebar={
+            <ReactFlowModalSidebar
+              components={components}
+              setReactFlowModalTab={setReactFlowModalTab}
+              setReactFlowModalsearchedValue={setReactFlowModalsearchedValue}
+              datasetId={id}
+            />
+          }
+        >
+          <div className="node-cards__container">
+            {reactFlowModalSearchResult && reactFlowModalSearchResult.length > 0
+              ? reactFlowModalSearchResult.map(
+                  ([id, component]: [string, Component]) => (
+                    <NodeCard
+                      node={component}
+                      id={id}
+                      key={id}
+                      components={components}
+                      setCanvasNodes={setCanvasNodes}
+                      canvasNodes={canvasNodes}
+                    />
+                  )
+                )
+              : reactFlowModalCurrentTab &&
+                reactFlowModalCurrentTab.length > 0 &&
+                reactFlowModalCurrentTab.map(
+                  ([id, component]: [string, Component]) => (
+                    <NodeCard
+                      node={component}
+                      id={id}
+                      key={id}
+                      components={components}
+                      setCanvasNodes={setCanvasNodes}
+                      canvasNodes={canvasNodes}
+                    />
+                  )
+                )}
+          </div>
+          <div className="reactFlowModal-btns">
+            <button
+              onClick={() => {
+                setReactFlowModal(false);
+                setCanvasNodes([]);
+              }}
+              className="cancel-btn"
+            >
+              Cancel
+            </button>
+            <button
+              className="select-btn"
+              onClick={() => {
+                canvasNodes.map((data) => {
+                  dispatch({ type: "ADD_NODE", payload: data });
+                });
+                setReactFlowModal(false);
+              }}
+            >
+              Select
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
 
 export default Analysis;
+
+const ReactFlowModalSidebar = ({
+  components,
+  setReactFlowModalTab,
+  setReactFlowModalsearchedValue,
+  datasetId,
+}: any) => {
+  const getComponentTypes = (components: [string, Component][]): string[] => {
+    return components
+      .reduce((acc: string[], [_, component]) => {
+        if (acc.indexOf(component.type) === -1) acc.push(component.type);
+        return acc;
+      }, [])
+      .filter((type) => type !== "model")
+      .map((type) => (type === "capability" ? "input" : type)); // NOTICE: this replaces capability with input in the collapse headers list. OMG!
+  };
+
+  const [states, setStates] = useState<{
+    componentTypeKeys: string[];
+    activeCollapseKeys: string[];
+  }>({
+    componentTypeKeys: [] as string[],
+    activeCollapseKeys: [] as string[],
+  });
+
+  useEffect(() => {
+    const componentTypeKeys = getComponentTypes(Object.entries(components));
+
+    setStates({
+      componentTypeKeys,
+      activeCollapseKeys: componentTypeKeys,
+    });
+    setReactFlowModalTab(componentTypeKeys[0]);
+  }, [components]);
+
+  const menuItems =
+    states.componentTypeKeys.length &&
+    states.componentTypeKeys.map((type: string) => ({
+      label:
+        type === "input"
+          ? "Data Sets"
+          : type === "proc-block"
+          ? "Analysis Blocks"
+          : type === "output"
+          ? "Terminator"
+          : type,
+      key: type,
+    }));
+
+  return (
+    <>
+      <div className="sidebar-head">
+        <div className="title">
+          <img src={libraryIcon} alt="" />
+          <span>Block Library</span>
+        </div>
+        <Input
+          onChange={(e) => setReactFlowModalsearchedValue(e.target.value)}
+          type="search"
+          prefix={<SearchOutlined />}
+          placeholder="Search"
+        />
+      </div>
+      <div className="sidebar-menu">
+        <Menu
+          defaultSelectedKeys={[states.componentTypeKeys[0]]}
+          items={menuItems}
+          onClick={(item) => setReactFlowModalTab(item.key)}
+        />
+      </div>
+      <div className="sidebar-btns">
+        <div>
+          <Link to={`/dataset/${datasetId}`}>+ Connect Data</Link>
+          <button disabled>+ Add Custom Model</button>
+        </div>
+
+        <a href="www.google.com" target={"_blank"}>
+          <QuestionCircleFilled />
+          Get Help
+        </a>
+      </div>
+    </>
+  );
+};
+
+const NodeCard = ({
+  node,
+  id,
+  components,
+  setCanvasNodes,
+  canvasNodes,
+}: {
+  node: Component;
+  id: string;
+  components: Record<string, Component>;
+  setCanvasNodes: React.Dispatch<React.SetStateAction<Node<FlowNodeData>[]>>;
+  canvasNodes: Node<FlowNodeData>[];
+}) => {
+  const diagram = useAppSelector((e) => e.flow);
+
+  const onNodeClick = () => {
+    const component = components[id];
+    const position = {
+      x: -50,
+      y: 70,
+    };
+
+    if (component) {
+      const id: string = uuid();
+      const data: Node<FlowNodeData> = {
+        id: id,
+        position: position,
+        type: component.type,
+        data: {
+          componentID: id,
+          name: component.displayName,
+          type: component.type,
+          label: component.displayName,
+          inputs: [],
+          outputs: [],
+          inputPorts: [],
+          outputPorts: [],
+          componentIdentifier: component.identifier,
+          propertiesValueMap: defaultPropertyValues(component),
+        },
+      };
+      if (component.type === "capability") {
+        let count = 0;
+        diagram.nodes.forEach((node) => {
+          if (node.type === "capability") count++;
+        });
+        data.data.propertiesValueMap["source"] = count;
+      }
+      switch (component.type) {
+        case "capability":
+          data.sourcePosition = Position.Right;
+          break;
+        case "output":
+          data.targetPosition = Position.Left;
+          break;
+        default:
+          data.sourcePosition = Position.Right;
+          data.targetPosition = Position.Left;
+          break;
+      }
+      inputs(component).forEach((tensor, idx) => {
+        const name =
+          tensor.displayName || `${component.displayName} input ${idx + 1}`;
+        const id = uuid();
+        data.data?.inputs.push({
+          id,
+          idx,
+          name,
+          tensor: tensor,
+          type: "",
+          alignment: "left",
+          in: true,
+          label: name,
+        });
+        data.data?.inputPorts.push();
+      });
+      if (data.data?.propertiesValueMap)
+        outputs(component, data.data?.propertiesValueMap).forEach(
+          (tensor, idx) => {
+            const name =
+              tensor.displayName ||
+              `${component.displayName} output ${idx + 1}`;
+            const id = uuid();
+            data.data?.outputs.push({
+              id,
+              idx,
+              name,
+              tensor: tensor,
+              type: "",
+              alignment: "left",
+              in: true,
+              label: name,
+            });
+          }
+        );
+      setCanvasNodes((prev) => [...prev, data]);
+    }
+  };
+
+  return (
+    <div className="node-card">
+      <div className="node-card-head">
+        <Checkbox
+          defaultChecked={diagram.nodes.some(
+            (item) => item.data.name === node.displayName
+          )}
+          onClick={(e) => {
+            //@ts-ignore
+            if (e.target.checked) {
+              onNodeClick();
+            } else {
+              const updatedCanvasNodes = canvasNodes.filter(
+                (item) => item.data.name !== node.displayName
+              );
+              console.log(updatedCanvasNodes);
+              setCanvasNodes(updatedCanvasNodes);
+            }
+          }}
+        >
+          {node.displayName}
+        </Checkbox>
+        {node.description && (
+          <Popover
+            className="node-card-popover"
+            style={{
+              fontWeight: "600",
+            }}
+            placement="right"
+            title={`A ${node.type}`}
+            content={
+              <div>
+                <p style={{ width: "200px", wordWrap: "break-word" }}>
+                  {node.description}
+                </p>
+                <p
+                  hidden={node.helperUrl === undefined || node.helperUrl === ""}
+                >
+                  <br />
+                  <a href={node.helperUrl} target="_blank" rel="noreferrer">
+                    More info
+                  </a>
+                </p>
+              </div>
+            }
+            trigger="hover"
+          >
+            {node.description && <InfoCircleFilled />}
+          </Popover>
+        )}
+      </div>
+      <div className="node-card-body">
+        <p>{node.description}</p>
+        <div>
+          <span>15 May 2022</span>
+          <span>10.2Mb</span>
+        </div>
+      </div>
+    </div>
+  );
+};
