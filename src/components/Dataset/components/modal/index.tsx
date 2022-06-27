@@ -6,8 +6,15 @@ interface props {
   title: string;
   children: React.ReactNode;
   className: string;
+  sidebar?: React.ReactNode;
 }
-const Modal = ({ setModalVisible, title, children, className }: props) => {
+const Modal = ({
+  setModalVisible,
+  title,
+  children,
+  className,
+  sidebar,
+}: props) => {
   return (
     <div
       className={`modal__container ${className ? className : ""}`}
@@ -19,12 +26,18 @@ const Modal = ({ setModalVisible, title, children, className }: props) => {
         }
       }}
     >
-      <div className="modal">
-        <div className="modal__header">
-          <span>{title}</span>
-          <button onClick={() => setModalVisible(false)}>X</button>
+      <div
+        className="modal"
+        style={{ flexDirection: sidebar ? "row" : "column" }}
+      >
+        {sidebar && <div className="modal__sidebar">{sidebar}</div>}
+        <div style={{ width: "100%", height: "100%" }}>
+          <div className="modal__header">
+            <span>{title}</span>
+            <button onClick={() => setModalVisible(false)}>X</button>
+          </div>
+          <div className="modal__body">{children}</div>
         </div>
-        <div className="modal__body">{children}</div>
       </div>
     </div>
   );

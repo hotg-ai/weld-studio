@@ -328,7 +328,7 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
       ref={reactFlowWrapper}
       className="StudioBody--canvas_container"
       style={{
-        height: "100%",
+        height: "90%",
         left: "0",
         top: "0",
         width: "100%",
@@ -343,8 +343,8 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
         connectionLineStyle={connectionLineStyle}
         nodeTypes={nodeTypes}
         onInit={onInit}
-        nodes={canvasNodes}
-        edges={canvasEdges}
+        nodes={diagram.nodes}
+        edges={diagram.edges}
         onConnect={onConnect}
         onPaneClick={(e) => {
           dispatch(ClearSelectedNode());

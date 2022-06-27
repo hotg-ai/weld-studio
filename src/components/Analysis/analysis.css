@@ -350,7 +350,7 @@ input:checked + .slider:before {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  width: 80%;
+  width: 100%;
   height: calc(100vh - 75px);
 }
 .studio__container {
@@ -363,6 +363,20 @@ input:checked + .slider:before {
   width: 85%;
   height: 65vh;
   padding: 1rem;
+  position: relative;
+}
+.studio__container .studio__content .addBlocks-btn {
+  background: #0066ff;
+  border-radius: 25px;
+  color: #fff;
+  padding: 6px 10px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  transition: all 0.3s ease;
+}
+.studio__container .studio__content .addBlocks-btn:hover {
+  background: #1774ff;
 }
 .studio__container .sidebar_right {
   width: 25%;
@@ -437,9 +451,33 @@ input:checked + .slider:before {
 .studio-table__container {
   width: 100%;
   height: calc(35vh - 75px);
+  display: flex;
 }
+.studio-table__container .logs__container {
+  width: 23%;
+}
+.studio-table__container .logs__container .logs-title {
+  height: 20%;
+  padding: 0.5rem 1rem;
+  background: #ddefeb;
+}
+.studio-table__container .logs__container .logs-title > span {
+  color: #000;
+  font-weight: bolder;
+  margin-right: 0.2rem;
+}
+.studio-table__container .logs__container .logs-title > sup {
+  color: #c130b0;
+}
+.studio-table__container .logs__container .logs-body {
+  height: 80%;
+}
+.studio-table__container .logs__container .logs-body > div {
+  height: 100%;
+}
+
 .studio-table__container .ant-tabs {
-  width: 100%;
+  width: 78%;
   height: 100%;
   position: relative;
 }
@@ -1001,6 +1039,7 @@ input:checked + .slider:before {
 
 .intro_modal__container .modal {
   width: 850px;
+  height: 470px !important;
 }
 .intro_modal__container .modal .modal__body {
   padding: 20px 25px 25px !important;
@@ -1147,4 +1186,263 @@ input:checked + .slider:before {
   outline: none;
   border: none;
   cursor: pointer;
+}
+
+.react-flow_modal__container .modal {
+  width: 1000px;
+  height: 600px !important;
+}
+.react-flow_modal__container .modal .modal__sidebar {
+  width: 32%;
+}
+.react-flow_modal__container
+  .modal
+  .modal__sidebar
+  > div:not(.react-flow_modal__container
+    .modal
+    .modal__sidebar
+    > div:last-child) {
+  border-bottom: 1px solid #0000001a;
+  padding: 0 0 30px 0;
+  margin-bottom: 30px;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-head {
+  height: 20%;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-head .title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 30px;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-head .title span {
+  font-weight: bold;
+  margin-left: 0.3rem;
+  font-size: 20px;
+}
+.react-flow_modal__container
+  .modal
+  .modal__sidebar
+  .sidebar-head
+  .ant-input-affix-wrapper {
+  border-radius: 25px;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-menu {
+  height: 35%;
+  margin-bottom: 10px !important;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-menu .ant-menu {
+  background: transparent !important;
+  height: 100% !important;
+  overflow-y: scroll !important;
+}
+.react-flow_modal__container
+  .modal
+  .modal__sidebar
+  .sidebar-menu
+  .ant-menu
+  .ant-menu-item {
+  color: #000 !important;
+  font-weight: bold !important;
+  line-height: 25px !important;
+  height: 25px !important;
+}
+.react-flow_modal__container
+  .modal
+  .modal__sidebar
+  .sidebar-menu
+  .ant-menu
+  .ant-menu-item-selected {
+  background: transparent !important;
+  color: #9b00e4 !important;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-btns {
+  height: 35%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-btns > div button,
+.react-flow_modal__container .modal .modal__sidebar .sidebar-btns > div > a {
+  background: transparent;
+  outline: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  color: #0066ff;
+  display: block;
+  margin: 0.3rem 0;
+  padding: 0.2rem 0.5rem;
+}
+.react-flow_modal__container
+  .modal
+  .modal__sidebar
+  .sidebar-btns
+  > div
+  button:disabled {
+  cursor: not-allowed;
+  color: #20407a;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-btns > a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #000;
+}
+.react-flow_modal__container .modal .modal__sidebar .sidebar-btns > a span {
+  margin-right: 0.5rem;
+  color: #0066ff;
+}
+.react-flow_modal__container .modal .modal__body {
+  height: 100%;
+}
+.react-flow_modal__container .modal .modal__body .node-cards__container {
+  min-height: 80%;
+  height: 80%;
+  overflow-y: scroll;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  grid-gap: 15px;
+  padding: 0.3rem 0.5rem;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card {
+  border: 1px solid #0000001a;
+  border-radius: 5px;
+  width: 31%;
+  padding: 12px;
+  height: 140px;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card
+  .node-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+  height: 25%;
+  width: 100%;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card
+  .node-card-head
+  .ant-checkbox-wrapper {
+  cursor: pointer;
+  font-weight: bold;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card
+  .node-card-head
+  > .anticon {
+  color: #00b594;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card
+  .node-card-body {
+  height: 75%;
+  width: 100%;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card
+  .node-card-body
+  > p {
+  height: 55%;
+  width: 100%;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  white-space: pre-line;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  color: #777777;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card
+  .node-card-body
+  > div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .node-cards__container
+  .node-card
+  .node-card-body
+  > div
+  span {
+  color: #777777;
+}
+
+.react-flow_modal__container .modal .modal__body .reactFlowModal-btns {
+  width: 100%;
+  padding: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.react-flow_modal__container .modal .modal__body .reactFlowModal-btns button {
+  margin: 0 1rem;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .reactFlowModal-btns
+  .select-btn {
+  background: #00b594;
+  color: #fff;
+  border-radius: 25px;
+  padding: 10px 25px;
+  transition: all 0.3s ease;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .reactFlowModal-btns
+  .select-btn:hover {
+  background: #0ed7b3;
+}
+.react-flow_modal__container
+  .modal
+  .modal__body
+  .reactFlowModal-btns
+  .cancel-btn {
+  background: transparent;
+  color: #000;
 }
