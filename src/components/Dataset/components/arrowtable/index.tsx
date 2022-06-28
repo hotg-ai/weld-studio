@@ -132,17 +132,22 @@ export const computeColumns = (header: string[]): Column<any>[] => {
   header.forEach((head) => {
     columns.push({
       Header: head,
-      accessor: (hexad: StructRowProxy) => {
-        let res =  hexad.toJSON()[head];
-       
+      accessor: (hexad: StructRowProxy | any) => {
 
-        if (typeof res.getMonth === 'function') {
-          return moment(res).toISOString();
-        }
+        if (hexad.toJSON) {
+          let res =  hexad.toJSON()[head];
+        
 
-        return hexad.toJSON()[head].toString()
+          if (typeof res.getMonth === 'function') {
+            return moment(res).toISOString();
+          }
+
+          return hexad.toJSON()[head].toString()
+        
+      } else {
+        return hexad[head]
       }
-      
+      }
     });
   });
   return columns;
