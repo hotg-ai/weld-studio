@@ -47,3 +47,9 @@
 .tr .td:not(.tr .td:first-child) {
   /* border-left: 1px solid rgba(0, 0, 0, 0.1); */
 }
+
+div[role="columnheader"] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
