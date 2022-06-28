@@ -101,6 +101,7 @@ export function outputs(
 export default function StudioCanvas({ datasetRegistry }: OwnProps) {
   const [canvasNodes, setNodes] = useState<Node<FlowNodeData>[]>([]);
   const [canvasEdges, setEdges] = useState<Edge<undefined>[]>([]);
+  //console.log(canvasEdges);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const diagram = useAppSelector((e) => e.flow);
 
@@ -158,8 +159,10 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
 
   const onConnect = useCallback((connection: Connection) => {
     const id = uuid();
-    setEdges((edges) =>
-      addEdge({ ...connection, id, animated: true, type: "custom" }, edges)
+    setEdges((  edges) => {      
+      console.log("ADDING", edges)
+      return addEdge({ ...connection, id, animated: true, type: "custom" }, edges)}
+
     );
     dispatch({
       type: "ADD_EDGE",
