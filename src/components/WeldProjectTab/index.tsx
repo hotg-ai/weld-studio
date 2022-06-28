@@ -184,7 +184,6 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
           this.setState({ isQueryLoading: false });
         } else {
 
-        console.debug("RESULT", result.value.preview.toArray());
           if (result.value.preview.schema.fields.length === 0) {
             throw new Error("Failed to fetch data. No schema")
           }
