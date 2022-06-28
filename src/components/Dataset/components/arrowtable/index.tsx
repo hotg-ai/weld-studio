@@ -39,7 +39,7 @@ export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] 
 
   const defaultColumn = React.useMemo(
     () => ({
-      width: (width / columns.length) < 200 ? 200: (width / columns.length),
+      width: (width / columns.length) < 100 ? 100: (width / columns.length),
     }),
     []
   );
