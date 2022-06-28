@@ -354,8 +354,19 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                         },
                       })
                     }
+                    removeDataset={(name: string) => {
+                      let reg: Record<string, QueryData> =  this.state.datasetRegistry;
+                      delete reg[name]
+
+                      this.setState({datasetRegistry: {...reg}})
+
+                      
+                    }
+
+                    }
                   />
                 }
+                
               />
               <Route
                 path="/analysis/:id"

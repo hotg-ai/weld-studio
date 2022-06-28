@@ -67,6 +67,7 @@ const Dataset = ({
   setQueryError,
   selectDataset,
   setIsQueryLoading,
+  removeDataset
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -81,6 +82,7 @@ const Dataset = ({
   setQueryData: (name: string, query_data: QueryData) => void;
   setQueryError: (error: string) => void;
   selectDataset: (dataset: string, toggle: boolean) => void;
+  removeDataset: (dataset: string) => void;
 }) => {
 
   const { id } = useParams();
@@ -300,6 +302,7 @@ const Dataset = ({
                   key={`DropdownOption-${name}-${iddx}`}
                 //  onClick={() => selectDataset(name, !dataset.selected)}
                 >
+                  <span onClick={() => removeDataset(name)} style={{position:"absolute", borderRadius: "25px", right:"10px", textAlign:"center", justifyContent: "center", background:"white", color:"red", borderColor:"black", width:"25px", height:"25px"}}>x</span>
                   <div key={name} className="dropdownOption__Content">
                     <div className="title-content">
                       <h3
