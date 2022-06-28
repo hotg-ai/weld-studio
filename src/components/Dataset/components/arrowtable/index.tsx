@@ -39,7 +39,7 @@ export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] 
 
   const defaultColumn = React.useMemo(
     () => ({
-      width: (width / columns.length) < 100 ? 100: (width / columns.length),
+      width: (width / columns.length) < 100 ? 100 : (width / columns.length),
     }),
     []
   );
@@ -72,7 +72,7 @@ export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] 
       style: React.CSSProperties | undefined;
     }) => {
       const row = rows[index];
-  
+
       prepareRow(row);
       return (
         <div
@@ -134,19 +134,31 @@ export const computeColumns = (header: string[]): Column<any>[] => {
       Header: head,
       accessor: (hexad: StructRowProxy | any) => {
 
-        if (hexad.toJSON) {
-          let res =  hexad.toJSON()[head];
-        
+        try {
+          if (hexad !== null && hexad.toJSON) {
+            let res = hexad.toJSON()[head];
 
-          if (typeof res.getMonth === 'function') {
-            return moment(res).toISOString();
+
+            if (res && typeof res.getMonth === 'function') {
+              return moment(res).toISOString();
+            }
+            if (hexad.toJSON()[head] === null)
+              return <i style={{ "color": "salmon" }}>null</i>
+
+            if (hexad.toJSON()[head] === NaN)
+              return <i style={{ "color": "salmon" }}>NaN</i>
+
+            if (hexad.toJSON()[head].toString === "undefined")
+              return <i style={{ "color": "salmon" }}>undefined</i>
+
+            return hexad.toJSON()[head].toString()
+
+          } else {
+            return hexad[head]
           }
-
-          return hexad.toJSON()[head].toString()
-        
-      } else {
-        return hexad[head]
-      }
+        } catch (e) {
+          console.log("BOOOOM", head, hexad, e)
+        }
       }
     });
   });
@@ -155,7 +167,7 @@ export const computeColumns = (header: string[]): Column<any>[] => {
 
 const ArrowTable = ({ data }: { data: any[] }) => {
   const header = Object.keys(data[0].toJSON());
-  
+
   const columns = React.useMemo(() => computeColumns(header), [data]);
   return <VTable columns={columns} data={data} />;
 };
