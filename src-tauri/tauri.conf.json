@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "weld",
-    "version": "0.1.0-RC11"
+    "version": "0.1.0-RC12"
   },
   "tauri": {
     
