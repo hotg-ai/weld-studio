@@ -1,8 +1,10 @@
 import "./table.css";
+import moment from "moment";
 import React, { useRef, useState, useEffect } from "react";
-import { useTable, useBlockLayout } from "react-table";
+import { useTable, useBlockLayout, Column } from "react-table";
 import { FixedSizeList } from "react-window";
 import scrollbarWidth from "./scrollbarwidth";
+import { StructRowProxy } from "apache-arrow";
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -29,7 +31,7 @@ function useWindowDimensions() {
   return windowDimensions;
 }
 
-export function VTable({ columns, data }: { columns: any[]; data: any[] }) {
+export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] }) {
   // Use the state and functions returned from useTable to build your UI
   const targetRef = useRef();
   const { width, height } = getWindowDimensions();
@@ -55,6 +57,7 @@ export function VTable({ columns, data }: { columns: any[]; data: any[] }) {
       columns,
       data,
       defaultColumn,
+
     },
     useBlockLayout
   );
@@ -68,6 +71,7 @@ export function VTable({ columns, data }: { columns: any[]; data: any[] }) {
       style: React.CSSProperties | undefined;
     }) => {
       const row = rows[index];
+  
       prepareRow(row);
       return (
         <div
@@ -120,14 +124,24 @@ export function VTable({ columns, data }: { columns: any[]; data: any[] }) {
   );
 }
 
-declare type Column = { Header: string; accessor: string };
+// declare type Column = { Header: string; accessor: string  };
 
-export const computeColumns = (header: string[]): Column[] => {
-  let columns: Column[] = [];
+export const computeColumns = (header: string[]): Column<any>[] => {
+  let columns: Column<any>[] = [];
   header.forEach((head) => {
     columns.push({
       Header: head,
-      accessor: head,
+      accessor: (hexad: StructRowProxy) => {
+        let res =  hexad.toJSON()[head];
+       
+
+        if (typeof res.getMonth === 'function') {
+          return moment(res).toISOString();
+        }
+
+        return hexad.toJSON()[head].toString()
+      }
+      
     });
   });
   return columns;
@@ -135,6 +149,7 @@ export const computeColumns = (header: string[]): Column[] => {
 
 const ArrowTable = ({ data }: { data: any[] }) => {
   const header = Object.keys(data[0].toJSON());
+  
   const columns = React.useMemo(() => computeColumns(header), [data]);
   return <VTable columns={columns} data={data} />;
 };

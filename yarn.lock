@@ -6938,7 +6938,7 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
-moment@^2.24.0, moment@^2.29.2:
+moment@^2.24.0, moment@^2.29.2, moment@^2.29.3:
   version "2.29.3"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.3.tgz#edd47411c322413999f7a5940d526de183c031f3"
   integrity sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw==
@@ -8594,13 +8594,6 @@ react-is@^18.0.0:
   version "18.1.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.1.0.tgz#61aaed3096d30eacf2a2127118b5b41387d32a67"
   integrity sha512-Fl7FuabXsJnV5Q1qIOQwx/sagGF18kogb4gpfcG4gjLBWO0WDiiz1ko/ExayuxE7InyQkBLkxRFG5oxY6Uu3Kg==
-
-react-monaco-editor@^0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.48.0.tgz#f2b547c619f0ba3b49d3c8a0e0168ff9d0aa70dc"
-  integrity sha512-fD3ww76aIGJynTa6QZqM9hbRHCQe8v20+W2ofTjLzx8P1FTdoWoPPR6AIqCTMc1xjOrmGJVWFYFp5U6z5C04KQ==
-  dependencies:
-    prop-types "^15.8.1"
 
 react-redux@^7.2.6:
   version "7.2.8"

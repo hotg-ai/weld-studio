@@ -5,7 +5,6 @@ import { SerializedFlowDiagram } from "src/canvas2rune/serialized";
 import { useAppSelector } from "src/hooks/hooks";
 import { FlowElements } from "src/redux/reactFlowSlice";
 import Modal from "../Dataset/components/modal";
-import Table from "../Dataset/components/table";
 import "./analysis.css";
 import InputDimensions from "./InputDimensions";
 import OutputDimensions from "./OutputDimensions";
@@ -20,7 +19,7 @@ import _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import { QueryData } from "../../types";
 import { Tensor } from "@hotg-ai/rune";
-import { convertElementType, modelToTensorElementType } from "./model/metadata";
+import { convertElementType } from "./model/metadata";
 import { Carousel, Tabs } from "antd";
 import {
   image6,

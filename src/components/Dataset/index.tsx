@@ -82,14 +82,11 @@ const Dataset = ({
   setQueryError: (error: string) => void;
   selectDataset: (dataset: string, toggle: boolean) => void;
 }) => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const linkInputRef = useRef<any>();
+
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const [datasetName, setDatasetName] = useState("untitled_dataset");
   const history = useNavigate();
-  const [loadedPB, setLoadedPB] = useState(true);
-  const components = useAppSelector((s) => s.builder.components);
 
   useEffect(() => {
     const procBlocks = async () => {
@@ -335,8 +332,7 @@ const Dataset = ({
                                       ? field.data_type
                                       : Object.keys(field.data_type)[0]}
                                   </span>
-                                  {/* <span>{JSON.stringify(field)}</span> */}
-                                  {/* <ProgressBar percent={item.percent} /> */}
+              
                                 </div>
                               </DropdownOption>
                             );
@@ -344,8 +340,6 @@ const Dataset = ({
                         )}
                       </Dropdown>
                     )}
-                    {/* <span>{JSON.stringify(field)}</span> */}
-                    {/* <ProgressBar percent={item.percent} /> */}
                   </div>
                 </div>
               );
@@ -389,39 +383,6 @@ const Dataset = ({
           </div>
         </div>
 
-        {/* {modalVisible && (
-          <Modal
-            className="share_modal__container"
-            title="download Rune"
-            setModalVisible={setModalVisible}
-          >
-            <p>
-              You can download the entire package and share it with anyone as a
-              file or link. They can download the DeFrag app and import it to
-              run the same analytics you have created.
-            </p>
-            <div className="link__container">
-              <input
-                type="text"
-                value="This is the link"
-                id="LinkInput"
-                ref={linkInputRef}
-              />
-              <button
-                onClick={() => {
-                  var copyText = linkInputRef.current as HTMLInputElement;
-
-                  copyText.select();
-                  copyText.setSelectionRange(0, 99999);
-                  copyLinkToClipboard(copyText.value);
-                }}
-              >
-                <span>Copy the Link </span>
-                <img src="/assets/copy.svg" alt="" />
-              </button>
-            </div>
-          </Modal>
-        )} */}
       </div>
       <div className="table__container">
         {queryError ? (
