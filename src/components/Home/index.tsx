@@ -38,6 +38,7 @@ function Home({
   tables,
   queryError,
   setSql,
+  removeDataset
 }: {
   setQueryError: (error: string) => void;
   setIsLoadingTable: (isLoading: boolean) => void;
@@ -54,6 +55,7 @@ function Home({
   setTableGroup: (group: string, table_name: string) => void;
   setDatasetGroup: (group: string, table_name: string) => void;
   queryError: string;
+  removeDataset: (name: string) => void;
 }) {
   const history = useNavigate();
   const [introModalVisible, setIntroModalVisible] = useState(false);
@@ -83,7 +85,7 @@ function Home({
                 </div>
                 <span>Drag and drop analysis</span>
               </div>
-            </Link>}  
+            </Link>}
             <Link to="/dataset/0">
               <div className="header-card" style={{ background: "#DEE5FF" }}>
                 <div>
@@ -164,6 +166,7 @@ function Home({
                     selected={dataset.selected}
                     isSelectable={true}
                     isDataset={true}
+                    onDelete={(name) => removeDataset(name)}
                     title={name}
                     group={dataset.group}
                     setGroup={(group) => {
@@ -301,7 +304,7 @@ function Home({
           setModalVisible={setIntroModalVisible}
         >
           <p className="modal-description">
-          Weld allows you to run analytics and apply machine learning on local data blazingly fast. No need to move your data to a data lake or 3rd party cloud.
+            Weld allows you to run analytics and apply machine learning on local data blazingly fast. No need to move your data to a data lake or 3rd party cloud.
           </p>
           <Carousel arrows prevArrow={<button>Back</button>}>
             <div className="step-one">
@@ -309,13 +312,13 @@ function Home({
                 <img src={introModalStepOne} alt="" />
               </div>
               <p>
-                <b>You can do three things incredibly fast with Weld:</b> <br/><br/>
+                <b>You can do three things incredibly fast with Weld:</b> <br /><br />
                 <ol>
-                <li>Rapid analysis of multiple csv files. Add CSV files and run SQL queries on them, including creating joins on data that is hard to do with excel.
-               </li>
-                <li>Build predictive models (such as logistic regression) by selecting features and outcome variables from the query and using no code - drag and drop editor. 
-                </li>
-                <li>Compare multiple models to pick the best features, rapidly.</li>
+                  <li>Rapid analysis of multiple csv files. Add CSV files and run SQL queries on them, including creating joins on data that is hard to do with excel.
+                  </li>
+                  <li>Build predictive models (such as logistic regression) by selecting features and outcome variables from the query and using no code - drag and drop editor.
+                  </li>
+                  <li>Compare multiple models to pick the best features, rapidly.</li>
                 </ol>
               </p>
             </div>
@@ -324,7 +327,7 @@ function Home({
               <div className="step-two-content">
                 <h3>1. Create SQL analysis and select features and targets for predictive analytics</h3>
                 <span>
-                  Import any number of CSV files and use standard SQL to query them. Perform joins blazingly fast. Select feature and outcome columns for further ML analysis. 
+                  Import any number of CSV files and use standard SQL to query them. Perform joins blazingly fast. Select feature and outcome columns for further ML analysis.
                 </span>
               </div>
             </div>
@@ -367,6 +370,7 @@ interface DatasetBoxProps {
   selectDataset: (n: boolean) => void;
   group?: string;
   setGroup: (group: string) => void;
+  onDelete?: (title: string) => void;
 }
 const DatasetBox = ({
   id,
@@ -378,12 +382,20 @@ const DatasetBox = ({
   selectDataset,
   group,
   setGroup,
+  onDelete
 }: DatasetBoxProps) => {
   const [showGrpBtn, setShowGrpBtn] = useState<boolean>(group === undefined);
   const [localGroup, setLocalGroup] = useState<string | undefined>(group);
 
+  const canDelete = (isDataset && onDelete !== undefined)
   return (
-    <div className="dataset-box__container" onClick={onClick}>
+    <div className="dataset-box__container" onClick={onClick} style={{ position: "relative" }}>
+      {canDelete && <span onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onDelete(title)
+      }} style={{ position: "absolute", borderRadius: "25px", right: "10px", top:"10px", textAlign: "center", justifyContent: "center", background: "white", color: "red", border: "1px solid black", width: "25px", height: "25px" }}>x</span>}
+
       <img src={testDatasetScreenshot} alt="" />
       <div className="dataset-box_content">
         <img src={isDataset ? sqlTableIcon : databaseIcon} alt="" />

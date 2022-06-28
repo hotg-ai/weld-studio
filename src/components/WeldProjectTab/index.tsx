@@ -361,9 +361,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                       this.setState({datasetRegistry: {...reg}})
 
                       
-                    }
-
-                    }
+                    }}
                   />
                 }
                 
@@ -402,6 +400,14 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                 path="/"
                 element={
                   <Home
+                  removeDataset={(name: string) => {
+                    let reg: Record<string, QueryData> =  this.state.datasetRegistry;
+                    delete reg[name]
+
+                    this.setState({datasetRegistry: {...reg}})
+
+                    
+                  }}
                     setTableGroup={(group, name) => {
                       this.setState({
                         tables: {
