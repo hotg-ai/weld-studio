@@ -50,6 +50,7 @@ jobs:
       matrix:
         platform: [macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.platform }}
+    needs: [create-release]
     steps:
       - uses: actions/checkout@v2
       - name: Rust Cache
