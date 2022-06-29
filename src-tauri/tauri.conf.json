@@ -41,7 +41,8 @@
         "exceptionDomain": "",
         "frameworks": [],
         "providerShortName": null,
-        "signingIdentity": null
+        "signingIdentity": null,
+        "minimumSystemVersion": "10.13"
       },
       "resources": ["./preload_tables", "./preload_proc_blocks"],
       "shortDescription": "",
