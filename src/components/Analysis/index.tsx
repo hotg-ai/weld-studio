@@ -15,10 +15,8 @@ import { ComponentsSelector } from "./StudioComponentsSelector";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
-import _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import { QueryData } from "../../types";
-import { Tensor } from "@hotg-ai/rune";
 import { convertElementType } from "./model/metadata";
 import { Carousel, Tabs } from "antd";
 import {
@@ -100,7 +98,7 @@ function Analysis({
         console.error("SELECTED NODE DOES NOT EXIST");
       }
     }
-  }, [selectedNodeId]);
+  }, [selectedNodeId, datasetRegistry, diagram.nodes]);
 
   useEffect(() => {
     // setResultData(undefined);
@@ -212,7 +210,7 @@ function Analysis({
       dimensions: number[];
       buffer: any;
     }) => {
-      const { element_type, dimensions, buffer } = output;
+      const { element_type, buffer } = output;
       const data = new Uint8Array(buffer);
       switch (element_type.toLowerCase()) {
         case "utf8":
@@ -284,8 +282,8 @@ function Analysis({
     let columns = [];
     if (data[0]) columns = Object.keys(data[0]);
     let dataMap = {};
-    data.map((row) => {
-      columns.map((column) => {
+    data.forEach((row) => {
+      columns.forEach((column) => {
         if (dataMap[column]) dataMap[column].push(row[column]);
         else dataMap[column] = [row[column]];
       });
@@ -298,7 +296,6 @@ function Analysis({
     );
 
     capabilities.forEach((node) => {
-      let tensor: Tensor;
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
         input_tensors[node.data.label] = {

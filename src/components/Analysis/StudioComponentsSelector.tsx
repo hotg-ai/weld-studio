@@ -1,6 +1,4 @@
-import _ from "lodash";
 import { useState, useEffect, useRef, useMemo, DragEvent } from "react";
-import { arrowDataTypeToElementType } from "./utils/ArrowConvert";
 import {
   message,
   Popover,
@@ -22,7 +20,7 @@ import { UploadFile } from "antd/lib/upload/interface";
 import Modal from "../Dataset/components/modal";
 import TextArea from "antd/lib/input/TextArea";
 import { UpdateComponents } from "src/redux/builderSlice";
-import { FieldSchema, QueryData } from "../../types";
+import { QueryData } from "../../types";
 import outputs from "./model/outputs";
 import { convertElementType } from "./model/metadata";
 
@@ -104,14 +102,14 @@ const ComponentListItem = ({ id, component }: ComponentListItemProps) => {
               <br />
               Link:{" "}
               <a href={component.helperUrl} target="_blank" rel="noreferrer">
-                <img src={WebWhite} className="select--icon" />
+                <img src={WebWhite} alt="" className="select--icon" />
               </a>
             </p>
           </div>
         }
         trigger="hover"
       >
-        {component.description && <img src={QuestionMark} width="16" />}
+        {component.description && <img src={QuestionMark} width="16" alt="" />}
       </Popover>
     </div>
   );
@@ -233,10 +231,10 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                       {type === "input"
                         ? "Data Sets"
                         : type === "proc-block"
-                        ? "Analysis Blocks"
-                        : type === "output"
-                        ? "Terminator"
-                        : type}
+                          ? "Analysis Blocks"
+                          : type === "output"
+                            ? "Terminator"
+                            : type}
                       {/* {type === "input" && (
                         <button
                           onClick={(e) => {
@@ -252,16 +250,15 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                   }
                   key={type}
                 >
-                  {states.filteredListItems.map(
-                    ([id, component]: [string, Component]) => {
-                      // NOTICE: the same as above replacement, FOR GOD'S SAKE.
-                      if (
-                        type === "input"
-                          ? component.type === "capability"
-                          : type.includes(component.type) &&
-                            component.source !== "custom" &&
-                            ["input", "output", "proc-block"].includes(type)
-                      ) {
+                  {states.filteredListItems
+                    .filter(([id, component]: [string, Component]) => type === "input"
+                      ? component.type === "capability"
+                      : type.includes(component.type) &&
+                      component.source !== "custom" &&
+                      ["input", "output", "proc-block"].includes(type))
+                    .map(
+                      ([id, component]: [string, Component]) => {
+                        // NOTICE: the same as above replacement, FOR GOD'S SAKE.
                         return (
                           <ComponentListItem
                             key={id}
@@ -270,8 +267,7 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                           />
                         );
                       }
-                    }
-                  )}
+                    )}
                 </Collapse.Panel>
               </Collapse>
             ))
@@ -342,7 +338,6 @@ const generateDatasetCapabilities = (
 export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
   const dispatch = useAppDispatch();
   const components = useAppSelector((s) => s.builder.components);
-  const [nodesType, setNodesType] = useState<Component["source"]>("builtin");
   const [progressState, setProgressState] = useState({
     show: false,
     active: false,
@@ -374,7 +369,7 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
         })
       );
     }
-  }, [datasetRegistry]);
+  }, [datasetRegistry, components, dispatch]);
 
   // dispatch(ClearComponents());
 
@@ -400,10 +395,6 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
         show: true,
         active: true,
       });
-
-      const [model] = await Promise.all([originFileObj?.arrayBuffer()]);
-
-      const displayName = _.startCase(fileName.replace(/\..*$/, ""));
 
       let results;
       // if (model && token && fileName && displayName)

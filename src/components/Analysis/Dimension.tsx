@@ -6,7 +6,7 @@ import { QuestionMark } from "../../assets";
 import { Node } from "react-flow-renderer";
 import { calculateSizebyDataType } from "./Properties";
 import { FlowNodeData } from "./model/FlowNodeComponent";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppSelector } from "../../hooks/hooks";
 import { PortErrorComponent } from "./model/Legacy";
 import { isDiagramValid } from "./utils/FlowValidator";
 const { Option } = Select;
@@ -41,7 +41,6 @@ export default function Dimension({
 }: Props) {
   const components = useAppSelector((s) => s.builder.components);
   const diagram = useAppSelector((s) => s.flow);
-  const dispatch = useAppDispatch();
   const { elementType, dimensions, description } = tensor;
 
   const [dimensionText, setDimensionText] = useState("");
@@ -54,7 +53,7 @@ export default function Dimension({
     if (dimensions && dimensionText) {
       const result = isDiagramValid(diagram, components);
     }
-  }, [dimensionText]);
+  }, [dimensionText, components, diagram, dimensions]);
 
   if (typeof acceptedTypes === "string") acceptedTypes = [acceptedTypes];
   acceptedTypes = _.flatten(acceptedTypes);

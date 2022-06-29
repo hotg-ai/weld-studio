@@ -110,9 +110,9 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       }
     );
 
-    listen("compilation_progress", (event) => this.setState({ logs: [...this.state.logs, { method: "info", data: [event.payload] } ] }));
+    listen("compilation_progress", (event) => this.setState({ logs: [...this.state.logs, { method: "info", data: [event.payload] }] }));
 
-    listen("reune_progress", (event) => this.setState({ logs: [...this.state.logs, { method: "info", data: [event.payload] } ] }));
+    listen("reune_progress", (event) => this.setState({ logs: [...this.state.logs, { method: "info", data: [event.payload] }] }));
 
     this.preloadDatafiles()
       .then(() => {
@@ -135,8 +135,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       for (const file of entries) {
         await invoke("log_message", { message: `preloading ${file.path}` });
         console.log(`Entry: ${file.path}`);
-        let res = await invoke("load_csv", { invokeMessage: file.path });
-        let result = res as string;
+        let res: string = await invoke("load_csv", { invokeMessage: file.path });
       }
 
       this.setState({ isLoadingTable: false });
@@ -165,7 +164,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
           curTables[table.table_name] = { ...table, selected: true };
         }
       });
-      this.setState({ ...this.state, tables: curTables }, () => {});
+      this.setState({ ...this.state, tables: curTables }, () => { });
     });
   }
 
@@ -179,7 +178,7 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
         if (result.type === "err") {
           this.setState(
             { queryError: result.error.verbose || result.error.message },
-            () => {}
+            () => { }
           );
           this.setState({ isQueryLoading: false });
         } else {
@@ -187,15 +186,17 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
           if (result.value.preview.schema.fields.length === 0) {
             throw new Error("Failed to fetch data. No schema")
           }
-          const querySchema = {fields: result.value.preview.schema.fields.map((field) => {
-            const fs : FieldSchema = {
-              name: field.name,
-              data_type: field.type.toString(),
-              nullable: field.nullable
-            }
-            return fs
-          })};
-          this.setState({ data: result.value.preview.toArray(), querySchema});
+          const querySchema = {
+            fields: result.value.preview.schema.fields.map((field) => {
+              const fs: FieldSchema = {
+                name: field.name,
+                data_type: field.type.toString(),
+                nullable: field.nullable
+              }
+              return fs
+            })
+          };
+          this.setState({ data: result.value.preview.toArray(), querySchema });
           this.setState({ isQueryLoading: false });
         }
       })
@@ -355,16 +356,16 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                       })
                     }
                     removeDataset={(name: string) => {
-                      let reg: Record<string, QueryData> =  this.state.datasetRegistry;
+                      let reg: Record<string, QueryData> = this.state.datasetRegistry;
                       delete reg[name]
 
-                      this.setState({datasetRegistry: {...reg}})
+                      this.setState({ datasetRegistry: { ...reg } })
 
-                      
+
                     }}
                   />
                 }
-                
+
               />
               <Route
                 path="/analysis/:id"
@@ -400,14 +401,14 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
                 path="/"
                 element={
                   <Home
-                  removeDataset={(name: string) => {
-                    let reg: Record<string, QueryData> =  this.state.datasetRegistry;
-                    delete reg[name]
+                    removeDataset={(name: string) => {
+                      let reg: Record<string, QueryData> = this.state.datasetRegistry;
+                      delete reg[name]
 
-                    this.setState({datasetRegistry: {...reg}})
+                      this.setState({ datasetRegistry: { ...reg } })
 
-                    
-                  }}
+
+                    }}
                     setTableGroup={(group, name) => {
                       this.setState({
                         tables: {

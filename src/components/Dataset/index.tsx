@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/tauri";
-import { resourceDir } from "@tauri-apps/api/path";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Dropdown, DropdownOption } from "../common/dropdown";
 import CodeEditor from "./components/editor";
 // import ProgressBar from "./components/progressBar";
-import Table from "./components/table";
 import "./dataset.css";
 import { QueryData, TableData } from "../../types";
-import { useAppDispatch,  useAppSelector } from "src/hooks/hooks";
+import { useAppDispatch } from "src/hooks/hooks";
 import { RefreshComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
 import { FieldSchema } from "../../types";
@@ -84,8 +82,6 @@ const Dataset = ({
   selectDataset: (dataset: string, toggle: boolean) => void;
   removeDataset: (dataset: string) => void;
 }) => {
-
-  const { id } = useParams();
   const dispatch = useAppDispatch();
   const [datasetName, setDatasetName] = useState("untitled_dataset");
   const history = useNavigate();
@@ -109,7 +105,7 @@ const Dataset = ({
       );
     };
     procBlocks().catch(console.error);
-  }, []);
+  }, [dispatch]);
 
   const copyLinkToClipboard = (text: string) => {
     navigator.clipboard
@@ -123,9 +119,9 @@ const Dataset = ({
   };
   let dataTypes: DatasetTypes = {};
 
-  tables.map((table: TableData, tidx: number) => {
+  tables.forEach((table: TableData, tidx: number) => {
     if (!dataTypes[table.table_name]) dataTypes[table.table_name] = {};
-    table.column_names.map((item, idx) => {
+    table.column_names.forEach((item, idx) => {
       if (!dataTypes[table.table_name][item]) {
         if (table.column_types[idx] === "INTEGER")
           dataTypes[table.table_name][item] = {
@@ -302,7 +298,7 @@ const Dataset = ({
                   key={`DropdownOption-${name}-${iddx}`}
                 //  onClick={() => selectDataset(name, !dataset.selected)}
                 >
-                  <span onClick={() => removeDataset(name)} style={{position:"absolute", borderRadius: "25px", right:"10px", textAlign:"center", justifyContent: "center", background:"white", color:"red", borderColor:"black", width:"25px", height:"25px"}}>x</span>
+                  <span onClick={() => removeDataset(name)} style={{ position: "absolute", borderRadius: "25px", right: "10px", textAlign: "center", justifyContent: "center", background: "white", color: "red", borderColor: "black", width: "25px", height: "25px" }}>x</span>
                   <div key={name} className="dropdownOption__Content">
                     <div className="title-content">
                       <h3
@@ -335,7 +331,7 @@ const Dataset = ({
                                       ? field.data_type
                                       : Object.keys(field.data_type)[0]}
                                   </span>
-              
+
                                 </div>
                               </DropdownOption>
                             );
@@ -417,29 +413,29 @@ function createQueryDataset(
   querySchema: QuerySchema,
   query: string
 ): QueryData {
-  
-
-      const dataType = commonDataType(querySchema);
 
 
-      const tensor = mergeColumnsIntoTensor(
-        data,
-        querySchema.fields.map((f) => f.name),
-        dataType
-      );
-      if (!tensor) {
-        // The data couldn't be merged (because it was a string, etc.).
-        throw new Error("Could not merge data");
-      }
+  const dataType = commonDataType(querySchema);
 
-      return {
-        fields: querySchema.fields,
-        query,
-        tensor,
-        selected: true,
-        data,
-        createdAt: new Date(),
-      };
+
+  const tensor = mergeColumnsIntoTensor(
+    data,
+    querySchema.fields.map((f) => f.name),
+    dataType
+  );
+  if (!tensor) {
+    // The data couldn't be merged (because it was a string, etc.).
+    throw new Error("Could not merge data");
+  }
+
+  return {
+    fields: querySchema.fields,
+    query,
+    tensor,
+    selected: true,
+    data,
+    createdAt: new Date(),
+  };
 
 }
 
@@ -462,14 +458,6 @@ i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using ca
   });
 
   return arrowDataTypeToRunicElementType(first.data_type);
-}
-
-interface TypedArray extends ArrayBuffer {
-  [index: number]: number | bigint;
-}
-
-interface TypedArrayConstructor {
-  new(length: number): TypedArray;
 }
 
 function mergeColumnsIntoTensor(

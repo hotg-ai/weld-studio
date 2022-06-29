@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Col, Tooltip, message, Upload, Button, Select } from "antd";
 import { CloudUploadOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "./../../hooks/hooks";
@@ -13,9 +13,6 @@ import { PropertiesIcon, QuestionMark } from "../../assets";
 
 import { UploadChangeParam } from "antd/lib/upload";
 import { UploadFile } from "antd/lib/upload/interface";
-import {
-  ResourceComponent,
-} from "../../redux/actions/studio/uploadWordlist";
 import { outputPorts } from "./OutputDimensions";
 import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Node } from "react-flow-renderer";
@@ -72,7 +69,7 @@ function NumberInput({
       style={{
         color: name === "source" ? "rgba(255, 255, 255, 1)" : "",
       }}
-      // disabled={true}
+    // disabled={true}
     />
   );
 }
@@ -214,7 +211,7 @@ function SelectInput({
 }
 
 function PropertyInput(props: InputType) {
-  const { name, property, error } = props;
+  const { name, property } = props;
   return (
     <div className="StudioBody--right__form__infoProject--container">
       <div className="StudioBody--right__form__infoProject">
@@ -222,7 +219,7 @@ function PropertyInput(props: InputType) {
           <label
             htmlFor={`${name}-element-type`}
             className="StudioBody--right__form__label main--label"
-            // style={{color: "#000", fontWeight: "bold"}}
+          // style={{color: "#000", fontWeight: "bold"}}
           >
             {_.startCase(name)}:
           </label>
@@ -236,14 +233,14 @@ function PropertyInput(props: InputType) {
           <label
             htmlFor={`${name}-element-type`}
             className="StudioBody--right__form__label sub--label"
-            // style={{color: "#55555", fontWeight: "thin"}}
+          // style={{color: "#55555", fontWeight: "thin"}}
           >
             Property
           </label>
         </Col>
         {property.type &&
-        property.type.endsWith("string") &&
-        name !== "model-format" ? (
+          property.type.endsWith("string") &&
+          name !== "model-format" ? (
           <StringInput {...props} />
         ) : property.type === "string-enum" || name === "model-format" ? (
           // <StringInput {...props} />
@@ -291,7 +288,7 @@ export default function PropertiesForm() {
   const id = useAppSelector((s) => s.builder.selected?.id);
   const components = useAppSelector((s) => s.builder.components);
   const diagram = useAppSelector((e) => e.flow);
-  const { ports, model } = outputPorts(diagram, id);
+  const { ports } = outputPorts(diagram, id);
   const [progressState, setProgressState] = useState({
     show: false,
     active: false,
@@ -316,16 +313,12 @@ export default function PropertiesForm() {
       const wordList = await originFileObj?.arrayBuffer();
 
       const displayName = _.startCase(fileName.replace(/\..*$/, ""));
-      let results: ResourceComponent | undefined = undefined;
       if (wordList && fileName && displayName && id) setFileName(fileName);
     } catch (err) {
       message.error(`${info.file.name} file upload failed with error ${err}`);
     }
     return;
   };
-
-  const [, updateState] = useState<unknown>({});
-  const forceRefresh = useCallback(() => updateState({}), []);
 
   if (!id) {
     return null;
@@ -358,7 +351,6 @@ export default function PropertiesForm() {
     if (!propertiesValueMap) return null;
     const OutputPorts = [...ports];
     // const setter = async (v: number | string) => {};
-    const legiblyDisabled = name === "source";
     return (
       <PropertyInput
         fileName={fileName}

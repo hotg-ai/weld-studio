@@ -109,7 +109,6 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
     ReactFlowInstance | undefined
   >(undefined);
 
-  const loadedProject = useAppSelector((s) => s.builder.project);
   const components = useAppSelector((s) => s.builder.components);
   const dispatch = useAppDispatch();
 
@@ -117,12 +116,12 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
     dispatch(ClearSelectedNode());
     setNodes(diagram.nodes);
     setEdges(diagram.edges);
-  }, [datasetRegistry]);
+  }, [datasetRegistry, diagram.edges, diagram.nodes, dispatch]);
 
   // We ned to clear selection so that we can see the properties panel showing the
   useEffect(() => {
     dispatch(ClearSelectedNode());
-  }, []);
+  }, [dispatch]);
 
   /*
     React Flow Props
@@ -159,9 +158,10 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
 
   const onConnect = useCallback((connection: Connection) => {
     const id = uuid();
-    setEdges((  edges) => {      
+    setEdges((edges) => {
       console.log("ADDING", edges)
-      return addEdge({ ...connection, id, animated: true, type: "custom" }, edges)}
+      return addEdge({ ...connection, id, animated: true, type: "custom" }, edges)
+    }
 
     );
     dispatch({
@@ -170,7 +170,7 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
         ...diagram.edges,
       ]).slice(-1)[0],
     });
-  }, []);
+  }, [dispatch, diagram.edges]);
 
   const onNodeDragStop = (
     event: React.MouseEvent<Element, MouseEvent>,

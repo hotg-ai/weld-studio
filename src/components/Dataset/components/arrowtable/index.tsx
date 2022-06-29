@@ -33,15 +33,13 @@ function useWindowDimensions() {
 
 export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] }) {
   // Use the state and functions returned from useTable to build your UI
-  const targetRef = useRef();
-  const { width, height } = getWindowDimensions();
-
+  const { width } = useWindowDimensions();
 
   const defaultColumn = React.useMemo(
     () => ({
       width: (width / columns.length) < 100 ? 100 : (width / columns.length),
     }),
-    []
+    [columns.length, width]
   );
 
   const scrollBarSize = React.useMemo(() => scrollbarWidth(), []);
@@ -145,10 +143,10 @@ export const computeColumns = (header: string[]): Column<any>[] => {
             if (hexad.toJSON()[head] === null)
               return <i style={{ "color": "salmon" }}>null</i>
 
-            if (hexad.toJSON()[head] === NaN)
+            if (isNaN(hexad.toJSON()[head]))
               return <i style={{ "color": "salmon" }}>NaN</i>
 
-            if (hexad.toJSON()[head].toString === "undefined")
+            if (hexad.toJSON()[head] === undefined)
               return <i style={{ "color": "salmon" }}>undefined</i>
 
             return hexad.toJSON()[head].toString()
@@ -168,7 +166,7 @@ export const computeColumns = (header: string[]): Column<any>[] => {
 const ArrowTable = ({ data }: { data: any[] }) => {
   const header = Object.keys(data[0].toJSON());
 
-  const columns = React.useMemo(() => computeColumns(header), [data]);
+  const columns = React.useMemo(() => computeColumns(header), [data, header]);
   return <VTable columns={columns} data={data} />;
 };
 

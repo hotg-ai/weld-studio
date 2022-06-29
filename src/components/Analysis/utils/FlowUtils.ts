@@ -3,7 +3,6 @@ import { LoadedProject } from "../../../redux/actions/project";
 import { FlowElements } from "../../../redux/reactFlowSlice";
 import { ProjectInfo } from "../../../redux/reducers/builder";
 import {
-  Capability,
   Component,
   Model,
   ProcBlockComponent,
@@ -99,8 +98,8 @@ export const legacy2flow = (
           type: model.type,
           label: model.name.split("----")[0],
           ports: model.ports.reduce(
-            (map: Record<string, Port>, port) => (
-              (map[port.id] = {
+            (map: Record<string, Port>, port) => {
+              map[port.id] = {
                 name: port.name,
                 idx: port.idx,
                 id: port.id,
@@ -113,9 +112,9 @@ export const legacy2flow = (
                   elementType: port.tensor?.elementType,
                   dimensions: port.tensor?.dimensions || [],
                 },
-              }),
-              map
-            ),
+              };
+              return map;
+            },
             {}
           ),
           name: model.name,
@@ -270,7 +269,7 @@ export const flowCanvasToDiagram = (
 };
 
 export const sanitizeResourceNames = (resourceName: string): string => {
-  return resourceName.replace(/\-/g, "");
+  return resourceName.replace("-", "");
 };
 
 const customComponents = (
@@ -353,7 +352,6 @@ export const diagramToRuneCanvas = (
         };
       }
       if (e.data.type === "proc-block") {
-        const name = e.data.componentID.split("proc-block/")[1];
         e.data.componentIdentifier = components[e.data.componentID].identifier;
       }
       if (e.data.type === "model") {

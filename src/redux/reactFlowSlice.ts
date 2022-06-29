@@ -133,18 +133,10 @@ export default function reactFlowDiagramReducer(
       break;
     case "UPDATE_PROPERTY":
       let properties: Record<string, string | number | undefined>;
-      let ports: Port[] = [];
-      let dd: Dimension[] = [];
-      let errors: Record<string, string | number | undefined> = {};
-      const components: Record<string, Component> = {
-        ...action.payload.components,
-      };
       if (action.payload.node.data) {
         properties = { ...action.payload.node.data.propertiesValueMap };
         properties[action.payload.name] = action.payload.value;
       }
-      const name = action.payload.name;
-      const v = action.payload.value;
 
       newState = {
         ...newState,
