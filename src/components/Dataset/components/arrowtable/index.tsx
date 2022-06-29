@@ -31,13 +31,19 @@ function useWindowDimensions() {
   return windowDimensions;
 }
 
-export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] }) {
+export function VTable({
+  columns,
+  data,
+}: {
+  columns: Column<any>[];
+  data: any[];
+}) {
   // Use the state and functions returned from useTable to build your UI
   const { width } = useWindowDimensions();
 
   const defaultColumn = React.useMemo(
     () => ({
-      width: (width / columns.length) < 100 ? 100 : (width / columns.length),
+      width: width / columns.length < 100 ? 100 : width / columns.length,
     }),
     [columns.length, width]
   );
@@ -56,7 +62,6 @@ export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] 
       columns,
       data,
       defaultColumn,
-
     },
     useBlockLayout
   );
@@ -97,7 +102,7 @@ export function VTable({ columns, data }: { columns: Column<any>[]; data: any[] 
   // Render the UI for your table
   return (
     <div {...getTableProps()} className="table">
-      <div>
+      <div className="tableHeader">
         {headerGroups.map((headerGroup) => (
           <div {...headerGroup.getHeaderGroupProps()} className="tr">
             {headerGroup.headers.map((column) => (
@@ -131,33 +136,31 @@ export const computeColumns = (header: string[]): Column<any>[] => {
     columns.push({
       Header: head,
       accessor: (hexad: StructRowProxy | any) => {
-
         try {
+          console.log(hexad.toJSON()[head])
           if (hexad !== null && hexad.toJSON) {
             let res = hexad.toJSON()[head];
 
-
-            if (res && typeof res.getMonth === 'function') {
+            if (res && typeof res.getMonth === "function") {
               return moment(res).toISOString();
             }
             if (hexad.toJSON()[head] === null)
-              return <i style={{ "color": "salmon" }}>null</i>
+              return <i style={{ color: "salmon" }}>null</i>;
 
-            if (isNaN(hexad.toJSON()[head]))
-              return <i style={{ "color": "salmon" }}>NaN</i>
+            if (typeof hexad.toJSON()[head].toString() !== "string" && isNaN(hexad.toJSON()[head]))
+              return <i style={{ color: "salmon" }}>NaN</i>;
 
             if (hexad.toJSON()[head] === undefined)
-              return <i style={{ "color": "salmon" }}>undefined</i>
+              return <i style={{ color: "salmon" }}>undefined</i>;
 
-            return hexad.toJSON()[head].toString()
-
+            return hexad.toJSON()[head].toString();
           } else {
-            return hexad[head]
+            return hexad[head];
           }
         } catch (e) {
-          console.log("BOOOOM", head, hexad, e)
+          console.log("BOOOOM", head, hexad, e);
         }
-      }
+      },
     });
   });
   return columns;
@@ -166,7 +169,7 @@ export const computeColumns = (header: string[]): Column<any>[] => {
 const ArrowTable = ({ data }: { data: any[] }) => {
   const header = Object.keys(data[0].toJSON());
 
-  const columns = React.useMemo(() => computeColumns(header), [data, header]);
+  const columns = React.useMemo(() => computeColumns(header), [header]);
   return <VTable columns={columns} data={data} />;
 };
 
