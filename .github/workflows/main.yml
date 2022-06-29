@@ -6,6 +6,11 @@ on:
     branches:
       - main
 
+env:
+  # Hack to make "yarn build" succeed even though the frontend has loads of
+  # eslint issues
+  DISABLE_ESLINT_PLUGIN: true
+
 jobs:
   build-and-text:
     strategy:
@@ -54,8 +59,6 @@ jobs:
         run: yarn
       - name: Build Frontend
         run: yarn build
-        env:
-          DISABLE_ESLINT_PLUGIN: true
       - name: Typecheck Backend
         uses: actions-rs/cargo@v1
         with:

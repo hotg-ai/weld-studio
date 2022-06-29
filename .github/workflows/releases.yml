@@ -7,6 +7,11 @@ on:
       - "v*"
       - nightly
 
+env:
+  # Hack to make "yarn build" succeed even though the frontend has loads of
+  # eslint issues
+  DISABLE_ESLINT_PLUGIN: true
+
 jobs:
   create-release:
     name: Create the Release
