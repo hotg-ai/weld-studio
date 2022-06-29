@@ -1,5 +1,11 @@
 name: Continuous Integration
 
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
 jobs:
   test-tauri:
     strategy:
