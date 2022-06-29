@@ -27,7 +27,7 @@ jobs:
         with:
           script: |
             const { package: {version} } = require("./src-tauri/tauri.conf.json");
-            const isNightly = ${{ github.ref }} == "refs/tags/nightly" || ${{ github.event_name }} == "workflow_dispatch";
+            const isNightly = "${{ github.ref }}" == "refs/tags/nightly" || "${{ github.event_name }}" == "workflow_dispatch";
 
             const name = isNightly ? "Weld Studio (nightly)" : `Weld Studio v${version}`;
             const { owner, repo } = context.repo;
