@@ -12,7 +12,8 @@
   padding: 0 0 3rem;
   background: #faf8ff;
   overflow-y: scroll;
-  display: flex;
+  overflow-x: scroll;
+  /* display: flex; */
   justify-content: center;
 }
 .table__container table { border-collapse:collapse }

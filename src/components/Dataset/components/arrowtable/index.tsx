@@ -101,8 +101,8 @@ export function VTable({
 
   // Render the UI for your table
   return (
-    <div {...getTableProps()} className="table" style={{ overflowX: "scroll" }}>
-      <div>
+    <div {...getTableProps()} className="table">
+      <div className="tableHeader">
         {headerGroups.map((headerGroup) => (
           <div {...headerGroup.getHeaderGroupProps()} className="tr">
             {headerGroup.headers.map((column) => (

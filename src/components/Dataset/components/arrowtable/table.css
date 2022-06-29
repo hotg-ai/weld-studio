@@ -2,6 +2,13 @@
   display: inline-block;
   border-spacing: 0;
 }
+
+.tableHeader{
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
 .tr {
   width: 100%;
   /* border-left: 1px solid black; */
