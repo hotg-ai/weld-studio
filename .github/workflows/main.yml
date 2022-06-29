@@ -54,6 +54,8 @@ jobs:
         run: yarn
       - name: Build Frontend
         run: yarn build
+        env:
+          DISABLE_ESLINT_PLUGIN: true
       - name: Typecheck Backend
         uses: actions-rs/cargo@v1
         with:
