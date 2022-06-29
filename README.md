@@ -1,4 +1,8 @@
-# Getting Started with Create React App
+# Weld Studio
+
+[![Continuous Integration](https://github.com/hotg-ai/defrag-studio/actions/workflows/main.yml/badge.svg)](https://github.com/hotg-ai/defrag-studio/actions/workflows/main.yml)
+
+([API Docs](https://hotg-ai.github.io/defrag-studio))
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
