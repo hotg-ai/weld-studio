@@ -101,8 +101,8 @@ export function VTable({
 
   // Render the UI for your table
   return (
-    <div {...getTableProps()} className="table">
-      <div className="tableHeader">
+    <div {...getTableProps()} className="table" style={{ overflowX: "scroll" }}>
+      <div>
         {headerGroups.map((headerGroup) => (
           <div {...headerGroup.getHeaderGroupProps()} className="tr">
             {headerGroup.headers.map((column) => (
@@ -137,7 +137,7 @@ export const computeColumns = (header: string[]): Column<any>[] => {
       Header: head,
       accessor: (hexad: StructRowProxy | any) => {
         try {
-          console.log(hexad.toJSON()[head])
+          console.log(hexad.toJSON()[head]);
           if (hexad !== null && hexad.toJSON) {
             let res = hexad.toJSON()[head];
 
@@ -147,7 +147,10 @@ export const computeColumns = (header: string[]): Column<any>[] => {
             if (hexad.toJSON()[head] === null)
               return <i style={{ color: "salmon" }}>null</i>;
 
-            if (typeof hexad.toJSON()[head].toString() !== "string" && isNaN(hexad.toJSON()[head]))
+            if (
+              typeof hexad.toJSON()[head].toString() !== "string" &&
+              isNaN(hexad.toJSON()[head])
+            )
               return <i style={{ color: "salmon" }}>NaN</i>;
 
             if (hexad.toJSON()[head] === undefined)
