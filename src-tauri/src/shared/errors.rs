@@ -162,7 +162,7 @@ impl<E> Display for SerializableError<E> {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, serde::Serialize, serde::Deserialize, ts_rs::TS)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, ts_rs::TS)]
 #[ts(export, export_to = "../src/backend/types/")]
 pub enum Infallible {}
 

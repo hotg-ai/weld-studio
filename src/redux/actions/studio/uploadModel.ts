@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 // Removal of the following import creates scary error phantoms in the tests
-import { AppDispatch, AppStoreState } from "../../../redux/store";
 import {
   ElementType,
   Model,

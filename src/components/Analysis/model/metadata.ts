@@ -201,7 +201,8 @@ function deriveExampleFromTensorHints(
       if (hint.dimensions.tag === "fixed") {
         dimensions = [];
         dimensionType = hint.dimensions.tag;
-        hint.dimensions.val.forEach((d) => {
+
+        for (const d of hint.dimensions.val) {
           if (typeof d === "number") {
             dimensions.push(d);
           } else {
@@ -210,7 +211,7 @@ function deriveExampleFromTensorHints(
             // 0 as a default.
             dimensions.push(0);
           }
-        });
+        }
       }
     }
   }

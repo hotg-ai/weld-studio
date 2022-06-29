@@ -3,12 +3,11 @@ mod app_state;
 mod compiler;
 mod datasets;
 mod legacy;
-pub mod runtime;
 mod logging;
+pub mod runtime;
 pub mod shared;
 mod sql;
 mod wapm;
-
 
 pub use crate::{
     app::configure,

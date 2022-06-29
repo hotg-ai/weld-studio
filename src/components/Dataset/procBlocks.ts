@@ -1,6 +1,6 @@
-import { ProcBlock, Metadata } from "@hotg-ai/rune";
+import { ProcBlock } from "@hotg-ai/rune";
 import { invoke } from "@tauri-apps/api/tauri";
-import { readBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
+import { readBinaryFile } from "@tauri-apps/api/fs";
 import pino from "pino";
 
 export async function loadProcBlocks(): Promise<Record<string, ProcBlock>> {
@@ -8,7 +8,7 @@ export async function loadProcBlocks(): Promise<Record<string, ProcBlock>> {
 
   const allProckBlocks: any[] = await invoke("known_proc_blocks");
   const promises = allProckBlocks.map(async (pb) => {
-    
+
     try {
       procBlocks[pb["name"]] = await loadProcBlock(pb["publicUrl"]);
     } catch (e) {

@@ -15,7 +15,6 @@ import {
 import deleteBlackSvg from "../icons/deleteBlack.svg";
 
 import { Port, PortErrorComponent } from "./Legacy";
-import { useState } from "react";
 
 export type ForgeNodeData = {
   type: Component["type"];
@@ -88,9 +87,7 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
   const components = useAppSelector((s) => s.builder.components);
   const diagram = useAppSelector((s) => s.flow);
   const dispatch = useAppDispatch();
-  const forgeLogs = useAppSelector((state) => state.builder.forgeLogs);
   const { getNodes, setNodes } = useReactFlow();
-  const [highlightPort] = useState(false);
 
   const isValidConnection = (connection: Connection) => {
     const result = isConnectionValid(connection, diagram, components);

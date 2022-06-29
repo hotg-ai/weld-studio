@@ -1,6 +1,4 @@
-import { Tabs } from "antd";
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeaderTabCloseIcon } from "src/assets";
 import { WeldProject } from "src/types";
 import "./header.css";
@@ -28,9 +26,9 @@ const HeaderTabItem = ({
       style={
         selected
           ? {
-              boxShadow: "0px -3.45133px 12.9425px rgba(0, 0, 0, 0.1)",
-              zIndex: 10,
-            }
+            boxShadow: "0px -3.45133px 12.9425px rgba(0, 0, 0, 0.1)",
+            zIndex: 10,
+          }
           : {}
       }
       onClick={() => onSelect()}
@@ -90,22 +88,22 @@ const Header = ({
 
   const [appVersion, setAppVersion] = useState<string | undefined>()
 
-  useEffect( () => {
-      getVersion().then((appVersion: string) => {
-        setAppVersion(appVersion)
-      })
+  useEffect(() => {
+    getVersion().then((appVersion: string) => {
+      setAppVersion(appVersion)
+    })
   })
   return (
     <div className="header__container">
       {/* <div className="header--home__tab">
-  
+
           <img
             src="/assets/DeSilo.svg"
             height="35px"
             alt="DeSilo"
             className="header-logo"
           />
-        
+
       </div>
       <div>
         {weldProjects.map((weldProject) => {
@@ -124,11 +122,11 @@ const Header = ({
           alt="DeSilo"
           className="header-logo"
         />
-        <>WeldStudio <h6>v{appVersion}</h6></> 
+        <>WeldStudio <h6>v{appVersion}</h6></>
       </a>
       <div>
         <span>Powered by</span>
-        <a href="https://hotg.ai" target="_blank">
+        <a href="https://hotg.ai" rel="noreferrer" target="_blank">
           <img src="/assets/hotg.svg" alt="Hotg" />
         </a>
       </div>

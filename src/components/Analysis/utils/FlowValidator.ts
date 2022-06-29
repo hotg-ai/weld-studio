@@ -131,7 +131,6 @@ const isCreatingCycle = (
   diagram: FlowElements
 ): boolean => {
   let cycle = false;
-  const outgoers = getOutgoers(targetNode, diagram.nodes, diagram.edges);
   const incomers = getIncomers(targetNode, diagram.nodes, diagram.edges);
   if (incomers.length === 0) return false;
   if (incomers.filter((node) => node.id === connection.source).length > 0) {
@@ -504,7 +503,6 @@ export const isPropertyIncompatible = (
           targetPortTensor.dimensions
         );
         result.message = message;
-        const s = sourcePortTensor.dimensions;
         if (!result.payload) result.payload = {};
         if (name === "pixel_format") {
           if (
@@ -593,9 +591,6 @@ export const isConnectionValid = (
     connectOnError: false,
   };
 
-  const sourceNode: Node<FlowNodeData> = diagram.nodes.filter(
-    (node) => node.id === connection.source
-  )[0];
   const targetNode: Node<FlowNodeData> = diagram.nodes.filter(
     (node) => node.id === connection.target
   )[0];

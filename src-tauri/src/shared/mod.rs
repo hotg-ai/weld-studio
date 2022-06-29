@@ -19,7 +19,7 @@ pub use self::{
     tensors::{Dimensions, ElementType},
 };
 
-#[derive(Debug, Default, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, TS, serde::Serialize, serde::Deserialize)]
 #[ts(export, export_to = "../src/backend/types/")]
 #[serde(default)]
 pub struct PaginationConfig {

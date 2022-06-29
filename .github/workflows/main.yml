@@ -1,0 +1,127 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+env:
+  # Hack to make "yarn build" succeed even though the frontend has loads of
+  # eslint issues
+  DISABLE_ESLINT_PLUGIN: true
+
+jobs:
+  build-and-text:
+    strategy:
+      matrix:
+        platform: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rust Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: JavaScript Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+      - name: Install System Dependencies (Linux only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libdbus-1-dev pkg-config
+      - name: install Frontend dependencies
+        run: yarn
+      - name: Build Frontend
+        run: yarn build
+      - name: Typecheck Backend
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --workspace --verbose --locked
+      - name: Build Backend
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --workspace --verbose --locked
+      - name: Test Backend
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --workspace --verbose --locked
+      - name: Backend Formatting
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all --check
+      - name: Backend Lints
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --workspace -- --deny warnings
+
+  api-docs:
+    name: API docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rust Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-docs-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install System Dependencies (Linux only)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libdbus-1-dev pkg-config
+      - name: Build API Docs
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          args: --workspace --verbose --locked
+      - name: Redirect top-level GitHub Pages
+        run: 'echo ''<meta http-equiv="refresh" content="0; url=weld/index.html" />'' > target/doc/index.html'
+        shell: bash
+      - name: Upload API Docs
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        if: github.ref == 'refs/heads/main'
+        with:
+          branch: gh-pages
+          folder: target/doc
+          single-commit: true

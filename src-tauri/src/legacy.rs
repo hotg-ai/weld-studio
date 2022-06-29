@@ -307,10 +307,7 @@ pub async fn reune(
     );
 
     window
-        .emit(
-            "reune_progress",
-            &format!("run: Successfully Received the result"),
-        )
+        .emit("reune_progress", "run: Successfully Received the result")
         .map_err(Error::from)?;
 
     Ok(tensor.into())
