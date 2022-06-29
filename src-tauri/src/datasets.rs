@@ -60,14 +60,14 @@ pub fn read_dataset_page(
     todo!();
 }
 
-#[derive(Debug, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, TS, serde::Serialize, serde::Deserialize)]
 #[ts(export, export_to = "../src/backend/types/")]
 pub struct DatasetPage {
     pub total_records: usize,
     pub table: Vec<u8>,
 }
 
-#[derive(Debug, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, TS, serde::Serialize, serde::Deserialize)]
 #[ts(export, export_to = "../src/backend/types/")]
 pub struct DatasetInfo {
     pub id: String,
@@ -96,7 +96,7 @@ impl DatasetInfo {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, TS, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, TS, serde::Serialize, serde::Deserialize)]
 #[ts(export, export_to = "../src/backend/types/")]
 pub struct TensorInfo {
     pub id: String,

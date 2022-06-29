@@ -3,29 +3,20 @@ use std::{io::Cursor, sync::Arc};
 use anyhow::Error;
 use arrow::record_batch::RecordBatch;
 use duckdb::params;
+use futures::stream::{FuturesUnordered, StreamExt};
 use hotg_rune_compiler::{
     asset_loader::{AssetLoader, DefaultAssetLoader},
     BuildConfig, FeatureFlags,
 };
+use serde::Serialize;
 use tauri::{Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 
 use crate::{
     legacy::{Cancelled, Running},
+    shared::Package,
+    wapm::fetch_packages,
     AppState,
 };
-
-use crate::shared::Package;
-
-use crate::wapm::fetch_packages;
-
-
-use futures::{
-    stream::{FuturesUnordered, StreamExt}
-};
-
-
-
-
 
 pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
     let submenu = Submenu::new(
@@ -98,41 +89,44 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
     Ok(builder)
 }
 
-
 #[tracing::instrument(skip_all)]
 async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
     let state: tauri::State<AppState> = handle.state();
     let client: tauri::State<reqwest::Client> = handle.state();
     let home_dir = state.home_dir();
 
-    emit_splashscreen_progress(&main_window, 10, format!("Fetching manifest..."));
+    emit_splashscreen_progress(&main_window, 10, "Fetching manifest...".to_string());
 
     let conn = state.meta_db().await;
 
     let packages = match fetch_packages(client).await {
         Ok(p) => p,
-        Err(_) => { 
-            emit_splashscreen_progress(&main_window, 100, format!("Done"));
+        Err(e) => {
+            tracing::warn!(
+                error = &e as &dyn std::error::Error,
+                "Unable to fetch packages to check",
+            );
+            emit_splashscreen_progress(&main_window, 100, "Done".to_string());
             return;
-         }
+        }
     };
 
-    emit_splashscreen_progress(&main_window, 20, format!("Checking files"));
-    
+    emit_splashscreen_progress(&main_window, 20, "Checking files".to_string());
 
     let packages_to_download: Vec<Package> = packages
         .into_iter()
         .filter(|package| {
-            let package = package.to_owned();
             let name: &str = package.name.as_str();
             let version: &str = package.last_version.as_str();
 
-            let mut stmt = conn.prepare("select version from proc_blocks where name = ? and version = ?").unwrap();
-            let found_pb  = stmt.query_arrow(params![&name, &version]).unwrap();
+            let mut stmt = conn
+                .prepare("select version from proc_blocks where name = ? and version = ?")
+                .unwrap();
+            let found_pb = stmt.query_arrow(params![&name, &version]).unwrap();
 
-            let found_pb:  Vec<RecordBatch> = found_pb.collect();
+            let found_pb: Vec<RecordBatch> = found_pb.collect();
 
-            if found_pb.len() == 0 {
+            if found_pb.is_empty() {
                 // it doesn't exit
                 tracing::info!("No record of {}", package.name);
                 return true;
@@ -140,7 +134,7 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
 
             tracing::info!("Found new version of {}", package.name);
             // it exists but has newer
-            found_pb.len() == 0
+            found_pb.is_empty()
         })
         .collect();
 
@@ -149,7 +143,6 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
     let mut futures = FuturesUnordered::new();
 
     for package in packages_to_download {
-        
         let fut = async move {
             let p = package.clone();
             let response = reqwest::get(&package.public_url)
@@ -194,13 +187,11 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
         let file_loc = proc_blocks_dir.join("pb.wasm");
         progress += 1;
 
-      
         // Note: The body is a Result<Bytes, Error> here
         tracing::info!("Writing {:?}", package);
 
         let _found_pb = conn
             .execute(
-                
                 "INSERT INTO proc_blocks (name, version, publicUrl, description, fileLoc, createdAt) VALUES (?, ?, ?, ?, ?, now())",
                 params![
                     &package.name,
@@ -217,24 +208,25 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
             progress,
             format!("Fetched package {}", package.name),
         );
-
     }
-    
-    emit_splashscreen_progress(&main_window, 100, format!("Done"));
+
+    emit_splashscreen_progress(&main_window, 100, "Done".to_string());
     //splashscreen_window.close().unwrap();
     main_window.show().unwrap();
 }
 
-fn emit_splashscreen_progress(main_window: &tauri::Window, progress: i32, message: String) {
+fn emit_splashscreen_progress(
+    main_window: &tauri::Window,
+    progress: impl Serialize,
+    message: String,
+) {
     main_window // not sure why spashscreen is main window
         .emit(
             "splashscreen_progress",
             serde_json::json!({"progress": progress, "message": message}),
         )
-        .map_err(|e| e.to_string())
         .unwrap();
 }
-
 
 fn handle_menu_event(event: tauri::WindowMenuEvent) {
     let window = event.window();

@@ -24,7 +24,7 @@ pub async fn validate_sql(
 
     let frames = stmt
         .query_arrow(duckdb::params![])
-        .map_err(|e| ValidationFailed::from(e))?;
+        .map_err(ValidationFailed::from)?;
 
     let schema = frames.get_schema();
     let mut records = Vec::new();
@@ -77,9 +77,7 @@ pub enum ValidationFailed {
 
 impl From<duckdb::Error> for ValidationFailed {
     fn from(e: duckdb::Error) -> Self {
-        match e {
-            _ => ValidationFailed::Other(e.to_string()),
-        }
+        ValidationFailed::Other(e.to_string())
     }
 }
 

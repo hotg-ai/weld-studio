@@ -5,7 +5,7 @@ use ts_rs::TS;
 
 /// A duplicate of [`arrow::datatypes::Schema`] which implements the [`TS`]
 /// trait.
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, TS)]
 #[ts(export, export_to = "../src/backend/types/")]
 pub struct Schema {
     pub fields: Vec<Field>,
@@ -30,7 +30,7 @@ impl Schema {
 
 /// A duplicate of [`arrow::datatypes::Field`] which implements the [`TS`]
 /// trait.
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, TS)]
 #[ts(export, export_to = "../src/backend/types/")]
 pub struct Field {
     pub name: String,
