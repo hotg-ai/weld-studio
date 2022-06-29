@@ -57,15 +57,18 @@ jobs:
       - name: Typecheck Backend
         uses: actions-rs/cargo@v1
         with:
-          command: build
+          command: check
+          args: --workspace --verbose --locked
       - name: Build Backend
         uses: actions-rs/cargo@v1
         with:
           command: build
+          args: --workspace --verbose --locked
       - name: Test Backend
         uses: actions-rs/cargo@v1
         with:
           command: build
+          args: --workspace --verbose --locked
       - name: Backend Formatting
         uses: actions-rs/cargo@v1
         with:
@@ -76,3 +79,45 @@ jobs:
         with:
           command: fmt
           args: --all --check -- --deny warnings
+
+  api-docs:
+    name: API docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rust Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install System Dependencies (Linux only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      - name: Build API Docs
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          args: --workspace --verbose --locked
+      - name: Redirect top-level GitHub Pages
+        run: 'echo ''<meta http-equiv="refresh" content="0; url=weld/index.html" />'' > target/doc/index.html'
+        shell: bash
+      - name: Upload API Docs
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        if: github.ref == 'refs/heads/main'
+        with:
+          branch: gh-pages
+          folder: target/doc
+          single-commit: true
