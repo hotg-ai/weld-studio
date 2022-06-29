@@ -98,43 +98,7 @@ function Analysis({
         console.error("SELECTED NODE DOES NOT EXIST");
       }
     }
-  }, [selectedNodeId, datasetRegistry, diagram.nodes]);
-
-  useEffect(() => {
-    // setResultData(undefined);
-    // let newTable = [];
-    // console.log("DATA", data, datasetRegistry);
-    // const capabilities = diagram.nodes.filter(
-    //   (node) => node.data.type === "capability"
-    // );
-    // let labels: string[] = capabilities.map((cap) => cap.data.name);
-    // newTable = data.map((o, index) => {
-    //   console.log("ROW", o.toJSON());
-    //   if (labels && labels.length > 0) {
-    //     let row = labels.reduce((acc, curr) => {
-    //       if (curr.startsWith("Dataset_")) {
-    //         const name = curr.replace("Dataset_", "");
-    //         try {
-    //           Object.entries(datasetRegistry[name].data[index]).forEach(
-    //             ([k, v]) => {
-    //               if (!acc[name]) acc[name] = "";
-    //               acc[name] = acc[name] + `"${k}": ${v}, `;
-    //               if (resultData && resultData[index] !== null) {
-    //                 acc["Result"] = resultData[index];
-    //               }
-    //             }
-    //           );
-    //         } catch (e) {}
-    //       } else {
-    //         acc[curr] = o.toJSON()[curr];
-    //       }
-    //       return acc;
-    //     }, {});
-    //     if (!_.isEmpty(row)) return row;
-    //   }
-    // });
-    // setTableData(newTable);
-  }, [diagram]);
+  }, [selectedNodeId]);
 
   useEffect(() => {
     if (resultData && resultData !== undefined && resultData[0] !== undefined)

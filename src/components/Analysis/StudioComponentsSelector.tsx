@@ -204,12 +204,6 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
     setStates({ ...states, activeCollapseKeys });
   };
 
-  useEffect(() => {
-    // applyNodesListRefHeight();
-    // window.addEventListener("resize", applyNodesListRefHeight);
-    // return () => window.removeEventListener("resize", applyNodesListRefHeight);
-  }, [nodesListRef]);
-
   return (
     <>
       <div ref={nodesListRef} className="nodeList__container">
@@ -231,10 +225,10 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                       {type === "input"
                         ? "Data Sets"
                         : type === "proc-block"
-                          ? "Analysis Blocks"
-                          : type === "output"
-                            ? "Terminator"
-                            : type}
+                        ? "Analysis Blocks"
+                        : type === "output"
+                        ? "Terminator"
+                        : type}
                       {/* {type === "input" && (
                         <button
                           onClick={(e) => {
@@ -251,23 +245,23 @@ const NodesList = ({ components, setIsmodalVisible }: NodesListProps) => {
                   key={type}
                 >
                   {states.filteredListItems
-                    .filter(([id, component]: [string, Component]) => type === "input"
-                      ? component.type === "capability"
-                      : type.includes(component.type) &&
-                      component.source !== "custom" &&
-                      ["input", "output", "proc-block"].includes(type))
-                    .map(
-                      ([id, component]: [string, Component]) => {
-                        // NOTICE: the same as above replacement, FOR GOD'S SAKE.
-                        return (
-                          <ComponentListItem
-                            key={id}
-                            id={id}
-                            component={component}
-                          />
-                        );
-                      }
-                    )}
+                    .filter(([id, component]: [string, Component]) =>
+                      type === "input"
+                        ? component.type === "capability"
+                        : type.includes(component.type) &&
+                          component.source !== "custom" &&
+                          ["input", "output", "proc-block"].includes(type)
+                    )
+                    .map(([id, component]: [string, Component]) => {
+                      // NOTICE: the same as above replacement, FOR GOD'S SAKE.
+                      return (
+                        <ComponentListItem
+                          key={id}
+                          id={id}
+                          component={component}
+                        />
+                      );
+                    })}
                 </Collapse.Panel>
               </Collapse>
             ))
@@ -369,7 +363,7 @@ export const ComponentsSelector = ({ querySchema, datasetRegistry }) => {
         })
       );
     }
-  }, [datasetRegistry, components, dispatch]);
+  }, [datasetRegistry]);
 
   // dispatch(ClearComponents());
 
