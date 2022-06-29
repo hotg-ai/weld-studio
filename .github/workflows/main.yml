@@ -7,9 +7,8 @@ on:
       - main
 
 jobs:
-  test-tauri:
+  build-and-text:
     strategy:
-      fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
