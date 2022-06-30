@@ -190,7 +190,7 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
     dispatch({ type: "REPOSITION_NODE", payload: node });
   };
 
-  const onDrop = (
+  const onDrop = async (
     event: React.DragEvent,
     components: Record<string, Component | undefined>,
     dispatch: ThunkDispatch<
@@ -287,9 +287,9 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
                 });
               }
             );
-          dispatch({ type: "ADD_NODE", payload: data });
+          await dispatch({ type: "ADD_NODE", payload: data });
           setNodes([...canvasNodes, data]);
-          dispatch(SelectNode({ id: nodeId }));
+          await dispatch(SelectNode({ id: nodeId }));
         }
       }
     }
@@ -380,8 +380,8 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
         multiSelectionKeyCode={"Shift"}
         onNodesDelete={removeNode}
         onEdgesDelete={removeEdge}
-        onDrop={(e) => {
-          onDrop(e, components, dispatch);
+        onDrop={async (e) => {
+          await onDrop(e, components, dispatch);
         }}
         onDragOver={(e) => {
           e.preventDefault();

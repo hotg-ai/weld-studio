@@ -87,7 +87,7 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
   const components = useAppSelector((s) => s.builder.components);
   const diagram = useAppSelector((s) => s.flow);
   const dispatch = useAppDispatch();
-  const { getNodes, setNodes } = useReactFlow();
+  const { getNodes, setNodes, getEdges, setEdges } = useReactFlow();
 
   const isValidConnection = (connection: Connection) => {
     const result = isConnectionValid(connection, diagram, components);
@@ -129,6 +129,11 @@ export const FlowNodeComponent = (props: ForgeNodeProps) => {
     await setNodes(getNodes().filter((node) => node.id !== props.id));
     await dispatch(ClearSelectedNode());
     await dispatch({ type: "DELETE_NODE", payload: props.id });
+    const newEdges = getEdges().filter((edge) => 
+      edge.target !== props.id && edge.source !== props.id
+    );
+    await setEdges(newEdges);
+    await dispatch({ type: "SET_EDGES", payload: newEdges });
   };
 
   return (
