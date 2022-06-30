@@ -15,7 +15,11 @@ import {
   TensorDescriptionModel,
 } from "./model";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { ClearSelectedNode, SelectNode } from "../../redux/builderSlice";
+import {
+  builderState,
+  ClearSelectedNode,
+  SelectNode,
+} from "../../redux/builderSlice";
 import ReactFlow, {
   Controls,
   Position,
@@ -32,6 +36,8 @@ import ReactFlow, {
 import { FlowNodeData, FlowNodeComponent } from "./model/FlowNodeComponent";
 import CustomEdge from "./CustomEdge";
 import { QueryData } from "src/types";
+import { AnyAction, Dispatch, ThunkDispatch } from "@reduxjs/toolkit";
+import { FlowElements } from "src/redux/reactFlowSlice";
 
 type OwnProps = {
   datasetRegistry: Record<string, QueryData>;
@@ -186,7 +192,16 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
 
   const onDrop = (
     event: React.DragEvent,
-    components: Record<string, Component | undefined>
+    components: Record<string, Component | undefined>,
+    dispatch: ThunkDispatch<
+      {
+        builder: builderState;
+        flow: FlowElements;
+      },
+      undefined,
+      AnyAction
+    > &
+      Dispatch<AnyAction>
   ) => {
     event.preventDefault();
     if (reactFlowWrapper && reactFlowWrapper.current && reactFlowInstance) {
@@ -200,9 +215,9 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
           event.dataTransfer.getData("forge-node-dragged");
         const component = components[componentID];
         if (component) {
-          const id: string = uuid();
+          const nodeId: string = uuid();
           const data: Node<FlowNodeData> = {
-            id: id,
+            id: nodeId,
             position: position,
             type: component.type,
             data: {
@@ -274,6 +289,7 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
             );
           dispatch({ type: "ADD_NODE", payload: data });
           setNodes([...canvasNodes, data]);
+          dispatch(SelectNode({ id: nodeId }));
         }
       }
     }
@@ -365,7 +381,7 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
         onNodesDelete={removeNode}
         onEdgesDelete={removeEdge}
         onDrop={(e) => {
-          onDrop(e, components);
+          onDrop(e, components, dispatch);
         }}
         onDragOver={(e) => {
           e.preventDefault();
