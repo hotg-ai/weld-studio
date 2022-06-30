@@ -116,7 +116,7 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
     dispatch(ClearSelectedNode());
     setNodes(diagram.nodes);
     setEdges(diagram.edges);
-  }, [datasetRegistry, diagram.edges, diagram.nodes, dispatch]);
+  }, [datasetRegistry]);
 
   // We ned to clear selection so that we can see the properties panel showing the
   useEffect(() => {
@@ -156,21 +156,26 @@ export default function StudioCanvas({ datasetRegistry }: OwnProps) {
     });
   };
 
-  const onConnect = useCallback((connection: Connection) => {
-    const id = uuid();
-    setEdges((edges) => {
-      console.log("ADDING", edges)
-      return addEdge({ ...connection, id, animated: true, type: "custom" }, edges)
-    }
-
-    );
-    dispatch({
-      type: "ADD_EDGE",
-      payload: addEdge({ ...connection, id, animated: true, type: "custom" }, [
-        ...diagram.edges,
-      ]).slice(-1)[0],
-    });
-  }, [dispatch, diagram.edges]);
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      const id = uuid();
+      setEdges((edges) => {
+        console.log("ADDING", edges);
+        return addEdge(
+          { ...connection, id, animated: true, type: "custom" },
+          edges
+        );
+      });
+      dispatch({
+        type: "ADD_EDGE",
+        payload: addEdge(
+          { ...connection, id, animated: true, type: "custom" },
+          [...diagram.edges]
+        ).slice(-1)[0],
+      });
+    },
+    [dispatch, diagram.edges]
+  );
 
   const onNodeDragStop = (
     event: React.MouseEvent<Element, MouseEvent>,
