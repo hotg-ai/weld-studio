@@ -72,7 +72,7 @@ jobs:
       - name: Test Backend
         uses: actions-rs/cargo@v1
         with:
-          command: build
+          command: test
           args: --workspace --verbose --locked
       - name: Backend Formatting
         uses: actions-rs/cargo@v1
