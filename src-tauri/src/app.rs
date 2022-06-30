@@ -1,6 +1,6 @@
-use std::{io::Cursor, sync::Arc};
+use std::{fs::OpenOptions, io::Cursor, path::Path, sync::Arc};
 
-use anyhow::Error;
+use anyhow::{Context, Error};
 use arrow::record_batch::RecordBatch;
 use duckdb::params;
 use futures::stream::{FuturesUnordered, StreamExt};
@@ -10,6 +10,10 @@ use hotg_rune_compiler::{
 };
 use serde::Serialize;
 use tauri::{Builder, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
+use tracing_subscriber::{
+    fmt::format::FmtSpan, prelude::__tracing_subscriber_SubscriberExt, registry::LookupSpan,
+    util::SubscriberInitExt, EnvFilter, Layer, Registry,
+};
 
 use crate::{
     legacy::{Cancelled, Running},
@@ -18,7 +22,7 @@ use crate::{
     AppState,
 };
 
-pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
+pub fn configure() -> Result<Builder<tauri::Wry>, Error> {
     let submenu = Submenu::new(
         "Edit",
         Menu::new()
@@ -41,19 +45,31 @@ pub fn configure(state: AppState) -> Result<Builder<tauri::Wry>, Error> {
         .danger_accept_invalid_certs(true)
         .build()?;
 
-    let build_config = BuildConfig {
+    let rune_compiler_config = BuildConfig {
         current_directory: std::env::current_dir()?,
         features: FeatureFlags::stable(),
     };
 
     let builder = Builder::default()
-        .manage(state)
         .manage(Running::default())
         .manage(Cancelled::default())
         .manage(assets)
         .manage(client)
-        .manage(build_config)
+        .manage(rune_compiler_config)
         .setup(|app: &mut tauri::App| {
+            let paths = app.path_resolver();
+
+            let log_dir = paths
+                .log_dir()
+                .context("Unable to determine the log directory")?;
+            let log_file = log_dir.join("weld.log");
+
+            initialize_logging(&log_file).context("Unable to initialize the logger")?;
+
+            let home_dir = paths.app_dir().context("Unable to determine the app dir")?;
+            let state = AppState::load(home_dir).context("Unable to load the app state")?;
+            app.manage(state);
+
             let handle = app.app_handle();
 
             //let _splashscreen_window = app.get_window("splashscreen").unwrap();
@@ -128,17 +144,17 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
 
             if found_pb.is_empty() {
                 // it doesn't exit
-                tracing::info!("No record of {}", package.name);
+                tracing::debug!("No record of {}", package.name);
                 return true;
             }
 
-            tracing::info!("Found new version of {}", package.name);
+            tracing::debug!("Found new version of {}", package.name);
             // it exists but has newer
             found_pb.is_empty()
         })
         .collect();
 
-    tracing::info!(packages_to_download=?packages_to_download);
+    tracing::debug!(packages_to_download=?packages_to_download);
 
     let mut futures = FuturesUnordered::new();
 
@@ -156,10 +172,11 @@ async fn setup_weld(handle: tauri::AppHandle, main_window: tauri::Window) {
                 .join("proc_blocks")
                 .join(package.name)
                 .join(package.last_version);
-            match std::fs::create_dir_all(&proc_blocks_dir) {
-                Ok(_) => tracing::info!("Dir made"),
-                Err(e) => tracing::warn!("Dir err {:?}", e),
+
+            if let Err(e) = std::fs::create_dir_all(&proc_blocks_dir) {
+                tracing::warn!("Dir err {:?}", e)
             }
+
             let file_name = proc_blocks_dir.join("pb.wasm");
 
             tracing::info!("Writing to {:?}", &file_name.as_os_str());
@@ -252,4 +269,48 @@ fn handle_window_event(event: tauri::GlobalWindowEvent<impl tauri::Runtime>) {
         tauri::WindowEvent::CloseRequested { .. } => tracing::debug!("Window was closed"),
         payload => tracing::trace!(?payload, "Ignoring a global window event"),
     }
+}
+
+fn initialize_logging(log_file: &Path) -> Result<(), Error> {
+    if std::env::var_os("RUST_LOG").is_none() {
+        std::env::set_var(
+            "RUST_LOG",
+            "warn,weld=debug,hotg_rune_compiler=debug,hotg_rune_runtime=debug",
+        );
+    }
+
+    let console = tracing_subscriber::fmt::layer()
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        .with_writer(std::io::stdout)
+        .with_filter(EnvFilter::from_default_env());
+
+    let file = file_logger(log_file);
+
+    Registry::default().with(file).with(console).init();
+
+    tracing::info!(path = %log_file.display(), "Writing logs to disk");
+    Ok(())
+}
+
+fn file_logger<R>(log_file: &Path) -> Option<impl Layer<R>>
+where
+    R: tracing::Subscriber + for<'lookup> LookupSpan<'lookup>,
+{
+    if let Some(parent) = log_file.parent() {
+        std::fs::create_dir_all(parent).ok()?;
+    }
+
+    let f = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(log_file)
+        .ok()?;
+
+    let layer = tracing_subscriber::fmt::layer()
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        .json()
+        .with_writer(Arc::new(f))
+        .with_filter(EnvFilter::from_default_env());
+
+    Some(layer)
 }
