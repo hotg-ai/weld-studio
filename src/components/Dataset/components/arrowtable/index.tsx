@@ -137,8 +137,7 @@ export const computeColumns = (header: string[]): Column<any>[] => {
       Header: head,
       accessor: (hexad: StructRowProxy | any) => {
         try {
-          console.log(hexad.toJSON()[head]);
-          if (hexad !== null && hexad.toJSON) {
+          if (hexad !== null && typeof hexad.toJSON === "function") {
             let res = hexad.toJSON()[head];
 
             if (res && typeof res.getMonth === "function") {
