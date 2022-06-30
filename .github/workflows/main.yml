@@ -10,12 +10,17 @@ env:
   # Hack to make "yarn build" succeed even though the frontend has loads of
   # eslint issues
   DISABLE_ESLINT_PLUGIN: true
+  # Compiling with the Windows compiler (cl) doesn't work, so we force it to
+  # use clang everywhere
+  # https://github.com/wangfenjin/duckdb-rs/issues/62
+  CXX: clang++
+  CC: clang
 
 jobs:
   build-and-text:
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-latest]
+        platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -55,6 +60,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libdbus-1-dev pkg-config
+      - name: Download DuckDB
+        if: matrix.platform == 'windows-latest'
+        run: |
+          wget https://github.com/duckdb/duckdb/releases/download/v0.4.0/libduckdb-windows-amd64.zip -O libduckdb.zip
+
+          export DUCKDB_DIR="${{ runner.temp }}/libduckdb"
+          unzip libduckdb.zip -d $DUCKDB_DIR
+
+          echo "DUCKDB_LIB_DIR=$DUCKDB_DIR" >> $GITHUB_ENV
+          echo "DUCKDB_INCLUDE_DIR=$DUCKDB_DIR" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$DUCKDB_DIR" >> $GITHUB_ENV
       - name: install Frontend dependencies
         run: yarn
       - name: Build Frontend
