@@ -108,9 +108,9 @@ checksum = "8da52d66c7071e2e3fa2a1e5c6d088fec47b593032b254f5e980de8ea54454d6"
 
 [[package]]
 name = "arrow"
-version = "16.0.0"
+version = "17.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cdc4456252b8108b914f41450a754d23b8d21299322f24f81fc46a834fa0293"
+checksum = "20f88d9bd22ae87d3d9faa19316b51ebb692a3b402f8a5e02916ad33c2435d2b"
 dependencies = [
  "bitflags",
  "chrono",
@@ -1006,7 +1006,7 @@ dependencies = [
 [[package]]
 name = "duckdb"
 version = "0.4.0"
-source = "git+https://github.com/wangfenjin/duckdb-rs.git#54c326a0bb54eb6640e7cfe8e740199136bc699a"
+source = "git+https://github.com/hotg-ai/duckdb-rs.git?rev=2c4276f#2c4276f0da52c0027d751b323326332d5862558b"
 dependencies = [
  "arrow",
  "cast",
@@ -1729,9 +1729,9 @@ dependencies = [
 
 [[package]]
 name = "half"
-version = "1.8.2"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eabb4a44450da02c90444cf74558da904edde8fb4e9035a9a6a4e15445af0bd7"
+checksum = "c207b0ee023c7fce79daf01828163aaf53a1ddd0be8b1ef9541da7d41f6fa63a"
 
 [[package]]
 name = "hashbrown"
@@ -2309,7 +2309,7 @@ dependencies = [
 [[package]]
 name = "libduckdb-sys"
 version = "0.4.0"
-source = "git+https://github.com/wangfenjin/duckdb-rs.git#54c326a0bb54eb6640e7cfe8e740199136bc699a"
+source = "git+https://github.com/hotg-ai/duckdb-rs.git?rev=2c4276f#2c4276f0da52c0027d751b323326332d5862558b"
 dependencies = [
  "bindgen",
  "cc",

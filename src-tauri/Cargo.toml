@@ -16,7 +16,7 @@ tauri-build = { version = "1.0.0", features = [] }
 
 [dependencies]
 anyhow = "1.0.57"
-arrow = { version = "16.0.0", features = ["prettyprint"] }
+arrow = { version = "17.0", features = ["prettyprint"] }
 change-case = "0.2.0"
 directories = "4.0.1"
 duckdb = { git = "https://github.com/wangfenjin/duckdb-rs.git", features = ["bundled"] }

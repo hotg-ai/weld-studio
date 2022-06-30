@@ -1,2 +1,6 @@
 [workspace]
 members = ["src-tauri"]
+
+[patch."https://github.com/wangfenjin/duckdb-rs.git"]
+# See https://github.com/wangfenjin/duckdb-rs/issues/62
+duckdb = { git = "https://github.com/hotg-ai/duckdb-rs.git", rev = "2c4276f" }
