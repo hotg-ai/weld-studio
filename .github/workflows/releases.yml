@@ -67,7 +67,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ job.name }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Get yarn cache directory path
@@ -98,8 +98,6 @@ jobs:
         run: yarn
       - name: Build Frontend
         run: yarn build
-        env:
-          DISABLE_ESLINT_PLUGIN: true
       - name: Build and upload artifacts
         uses: tauri-apps/tauri-action@v0
         env:
