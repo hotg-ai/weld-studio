@@ -301,13 +301,20 @@ function Analysis({
           zune: zune,
           inputTensors: input_tensors,
         });
-
-        const tensorResult = convertTensorResult(result);
-
-        const Result = transformByDimensions(result.dimensions, tensorResult);
-        Result.forEach((row, index) => {
-          resultTable.push({
-            Result: Result[index] !== undefined ? Result[index] : "",
+        Object.entries(result).forEach(([key, value]: [string, any]) => {
+          const resultSet = result[key];
+          const tensorResult = convertTensorResult(resultSet);
+          const Result = transformByDimensions(
+            resultSet.dimensions,
+            tensorResult
+          );
+          Result.forEach((row, index) => {
+            let tup = {};
+            tup[key] = Result[index] !== undefined ? Result[index] : "";
+            if (resultTable[index])
+              resultTable[index][key] =
+                Result[index] !== undefined ? Result[index] : "";
+            else resultTable[index] = tup;
           });
         });
         setResultData(resultTable);
@@ -315,7 +322,7 @@ function Analysis({
           "Run Succeeded. Got result with row count: " + resultTable.length
         );
       } catch (error) {
-        console.log("RUN ERROR", error);
+        console.log("RUN ERROR", error, result);
         setLogs(error.backtrace);
       }
     } catch (error) {
