@@ -25,7 +25,7 @@ import {
   studioCanvasScreenshot,
   testDatasetScreenshot,
 } from "src/assets";
-import { storm2rune } from "src/canvas2rune";
+import { generateNodeKey, sanitizeName, storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
 import { Console } from "console-feed";
 import React from "react";
@@ -262,7 +262,16 @@ function Analysis({
     capabilities.forEach((node) => {
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
-        input_tensors[node.data.label] = {
+        input_tensors[
+          sanitizeName(
+            generateNodeKey({
+              ...node,
+              name: "",
+              componentIdentifier: "",
+              type: "capability",
+            })
+          )
+        ] = {
           element_type: convertElementType(
             datasetRegistry[name].tensor.elementType
           ).toUpperCase(),
@@ -301,8 +310,11 @@ function Analysis({
           zune: zune,
           inputTensors: input_tensors,
         });
-        Object.entries(result).forEach(([key, value]: [string, any]) => {
-          const resultSet = result[key];
+        Object.entries(result).forEach(([rkey, value]: [string, any]) => {
+          const keys = rkey.split("_");
+          let key: string = rkey;
+          if (keys && keys.length && keys.length > 1) key = keys[1];
+          const resultSet = result[rkey];
           const tensorResult = convertTensorResult(resultSet);
           const Result = transformByDimensions(
             resultSet.dimensions,
