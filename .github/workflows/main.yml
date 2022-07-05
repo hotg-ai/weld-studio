@@ -13,6 +13,7 @@ env:
 
 jobs:
   lints:
+    name: Lints and Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,6 +39,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libdbus-1-dev pkg-config
+      - name: install Frontend dependencies
+        run: yarn
+      - name: Build Frontend
+        run: yarn build
       - name: Rustfmt
         uses: actions-rs/cargo@v1
         with:
@@ -50,6 +55,7 @@ jobs:
           args: --workspace -- --deny warnings
 
   build-and-test:
+    name: Build and Test
     strategy:
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
