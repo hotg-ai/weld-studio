@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+
 use hotg_rune_compiler::{
     asset_loader::AssetLoader,
     codegen::{Codegen, CodegenStorage},
@@ -9,6 +10,8 @@ use hotg_rune_compiler::{
 };
 use salsa::Storage;
 
+use crate::shared::SerializableError;
+
 #[tauri::command]
 #[tracing::instrument(skip_all, err)]
 pub async fn compile(
@@ -16,13 +19,12 @@ pub async fn compile(
     assets: tauri::State<'_, Arc<dyn AssetLoader + Send + Sync>>,
     cfg: tauri::State<'_, BuildConfig>,
     window: tauri::Window,
-) -> Result<Vector<u8>, String> {
+) -> Result<Vector<u8>, SerializableError> {
     let assets = Arc::clone(&assets);
     let cfg = BuildConfig::clone(&cfg);
 
     window
-        .emit("compilation_progress", "Compilation Started")
-        .map_err(|e| e.to_string())?;
+        .emit("compilation_progress", "Compilation Started")?;
 
     let result = tokio::task::spawn_blocking(move || {
         let mut db = Database::new(assets);
@@ -33,21 +35,20 @@ pub async fn compile(
     .await;
 
     window
-        .emit("compilation_progress", "Compilation Finished")
-        .map_err(|e| e.to_string())?;
+        .emit("compilation_progress", "Compilation Finished")?;
 
     match result {
         Ok(Ok(rune)) => Ok(rune),
         Ok(Err(compile_error)) => {
             tracing::warn!(error = &*compile_error, "Compilation failed");
-            Err(compile_error.to_string())
+            Err(compile_error.into())
         }
         Err(e) => {
             tracing::error!(
                 error = &e as &dyn std::error::Error,
                 "Unable to wait for the compiler to finish running",
             );
-            Err(e.to_string())
+            Err(e.into())
         }
     }
 }

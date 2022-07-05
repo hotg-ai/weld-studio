@@ -314,6 +314,8 @@ function Analysis({
           const keys = rkey.split("_");
           let key: string = rkey;
           if (keys && keys.length && keys.length > 1) key = keys[1];
+          if (keys[1] === "block" && keys[0] === "proc" && keys.length > 2)
+            key = keys[2];
           const resultSet = result[rkey];
           const tensorResult = convertTensorResult(resultSet);
           const Result = transformByDimensions(

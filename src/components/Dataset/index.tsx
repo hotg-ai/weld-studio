@@ -92,8 +92,10 @@ const Dataset = ({
       const allProckBlocks: any[] = await invoke("known_proc_blocks");
       const pbs = Object.entries(pb).map(([name, procBlock]) => {
         const match = allProckBlocks.filter((p) => p["name"] === name);
+
         const matchUrl = `${match[0]["publicUrl"]
           .replace(" ", "")
+          // @ts-ignore
           .replace("ApplicationSupport", "Application Support")}`;
         return [
           `proc-block/${name}`,
