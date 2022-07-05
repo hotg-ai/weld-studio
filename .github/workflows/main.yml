@@ -112,7 +112,7 @@ jobs:
           command: build
           args: --workspace --verbose --locked
       - name: Build the Installer (dev mode)
-        run: yarn tauri dev --debug
+        run: yarn tauri build --debug
 
   api-docs:
     name: API docs
