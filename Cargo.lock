@@ -5449,7 +5449,7 @@ checksum = "9c97e489d8f836838d497091de568cf16b117486d529ec5579233521065bd5e4"
 
 [[package]]
 name = "weld"
-version = "0.1.1"
+version = "0.0.0"
 dependencies = [
  "anyhow",
  "arrow",

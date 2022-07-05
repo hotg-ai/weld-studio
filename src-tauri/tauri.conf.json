@@ -9,17 +9,20 @@
   },
   "package": {
     "productName": "weld",
-    "version": "0.1.0-RC14"
+    "version": "0.1.14"
   },
   "tauri": {
-    
     "allowlist": {
-      "all": true,"fs": {
-        "scope": ["$RESOURCE/**/*", "**/*", "**"]
+      "all": true,
+      "fs": {
+        "scope": [
+          "$RESOURCE/**/*",
+          "**/*",
+          "**"
+        ]
       }
     },
     "bundle": {
-
       "active": true,
       "category": "DeveloperTool",
       "copyright": "",
@@ -44,7 +47,10 @@
         "signingIdentity": null,
         "minimumSystemVersion": "10.13"
       },
-      "resources": ["./preload_tables", "./preload_proc_blocks"],
+      "resources": [
+        "./preload_tables",
+        "./preload_proc_blocks"
+      ],
       "shortDescription": "",
       "targets": "all",
       "windows": {
