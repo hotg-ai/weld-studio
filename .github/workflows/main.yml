@@ -15,7 +15,7 @@ jobs:
   build-and-text:
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-latest]
+        platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2

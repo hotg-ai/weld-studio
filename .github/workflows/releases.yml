@@ -53,7 +53,7 @@ jobs:
     name: Upload Installers
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-latest]
+        platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     needs: [create-release]
     steps:
