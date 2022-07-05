@@ -32,8 +32,17 @@ jobs:
         with:
           script: |
             const { package: {version} } = require("./src-tauri/tauri.conf.json");
-            const isNightly = "${{ github.ref }}" == "refs/tags/nightly" || "${{ github.event_name }}" == "workflow_dispatch";
+            const manuallyTriggered = "${{ github.event_name }}" == "workflow_dispatch";
+            let tag = "${{ github.ref }}";
 
+            if (manuallyTriggered) {
+              console.log("Pointing the nightly tag at this commit");
+              exec.exec("git", ["tag", "nightly", "--force", "--annotate", "--message", "Nightly commit"])
+              exec.exec("git", ["push", "origin", "nightly", "--force"])
+              tag = "refs/tags/nightly";
+            }
+
+            const isNightly = tag == "refs/tags/nightly";
             const name = isNightly ? "Weld Studio (nightly)" : `Weld Studio v${version}`;
             const { owner, repo } = context.repo;
 
@@ -41,7 +50,7 @@ jobs:
               owner,
               repo,
               name,
-              tag_name: "${{ github.ref }}",
+              tag_name: tag,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
@@ -109,6 +118,7 @@ jobs:
     name: Make the release public
     runs-on: ubuntu-latest
     needs: [create-release, upload-installers]
+    if:
     steps:
       - name: publish release
         id: publish-release
