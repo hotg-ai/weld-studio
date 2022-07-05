@@ -25,7 +25,7 @@ import {
   studioCanvasScreenshot,
   testDatasetScreenshot,
 } from "src/assets";
-import { storm2rune } from "src/canvas2rune";
+import { generateNodeKey, sanitizeName, storm2rune } from "src/canvas2rune";
 import { diagramToRuneCanvas } from "./utils/FlowUtils";
 import { Console } from "console-feed";
 import React from "react";
@@ -262,7 +262,16 @@ function Analysis({
     capabilities.forEach((node) => {
       if (node.data.name.startsWith("Dataset_")) {
         const name = node.data.name.replace("Dataset_", "");
-        input_tensors[node.data.label] = {
+        input_tensors[
+          sanitizeName(
+            generateNodeKey({
+              ...node,
+              name: "",
+              componentIdentifier: "",
+              type: "capability",
+            })
+          )
+        ] = {
           element_type: convertElementType(
             datasetRegistry[name].tensor.elementType
           ).toUpperCase(),
@@ -301,12 +310,25 @@ function Analysis({
           zune: zune,
           inputTensors: input_tensors,
         });
-        const tensorResult = convertTensorResult(result);
-
-        const Result = transformByDimensions(result.dimensions, tensorResult);
-        Result.forEach((row, index) => {
-          resultTable.push({
-            Result: Result[index] !== undefined ? Result[index] : "",
+        Object.entries(result).forEach(([rkey, value]: [string, any]) => {
+          const keys = rkey.split("_");
+          let key: string = rkey;
+          if (keys && keys.length && keys.length > 1) key = keys[1];
+          if (keys[1] === "block" && keys[0] === "proc" && keys.length > 2)
+            key = keys[2];
+          const resultSet = result[rkey];
+          const tensorResult = convertTensorResult(resultSet);
+          const Result = transformByDimensions(
+            resultSet.dimensions,
+            tensorResult
+          );
+          Result.forEach((row, index) => {
+            let tup = {};
+            tup[key] = Result[index] !== undefined ? Result[index] : "";
+            if (resultTable[index])
+              resultTable[index][key] =
+                Result[index] !== undefined ? Result[index] : "";
+            else resultTable[index] = tup;
           });
         });
         setResultData(resultTable);
@@ -314,7 +336,7 @@ function Analysis({
           "Run Succeeded. Got result with row count: " + resultTable.length
         );
       } catch (error) {
-        console.log("RUN ERROR", error);
+        console.log("RUN ERROR", error, result);
         setLogs(error.backtrace);
       }
     } catch (error) {

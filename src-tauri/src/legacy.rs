@@ -5,7 +5,7 @@ use std::{
     sync::atomic::{AtomicBool, Ordering},
 };
 
-use anyhow::{Context, Error};
+use anyhow::{anyhow, Context, Error};
 use arrow::{json, record_batch::RecordBatch};
 use hotg_rune_runtime::zune::{ElementType, TensorResult, ZuneEngine};
 
@@ -249,7 +249,7 @@ pub async fn reune(
     window: tauri::Window,
     zune: Vec<u8>,
     input_tensors: HashMap<String, MyTensor>,
-) -> Result<MyTensor, SeriazableError> {
+) -> Result<HashMap<String, MyTensor>, SeriazableError> {
     let mut zune_engine = ZuneEngine::load(&zune).context("Unable to initialize Zune Engine!")?;
     tracing::info!(input_nodes = ?zune_engine.input_nodes(), output_nodes=?zune_engine.output_nodes());
     for (name, tensor) in input_tensors {
@@ -291,26 +291,26 @@ pub async fn reune(
     }
 
     let output_node = zune_engine.output_nodes()[0].to_string();
-    let output_node_input_name = zune_engine.get_input_tensor_names(&output_node)?;
-    let output_node_input_name = &output_node_input_name[0];
-    let tensor = zune_engine
-        .get_input_tensor(&output_node, output_node_input_name)
-        .context("Unable to fetch the result")?;
+    let output_node_input_names = zune_engine.get_input_tensor_names(&output_node)?;
 
-    tracing::debug!(
-        node = %output_node,
-        tensor.name = %output_node_input_name,
-        ?tensor.element_type,
-        ?tensor.dimensions,
-        tensor.buffer_length = tensor.buffer.len(),
-        "Received the result",
-    );
+    let output_tensors: Result<HashMap<String, MyTensor>, Error> = output_node_input_names
+        .iter()
+        .map(|tensor_name| -> Result<(String, MyTensor), Error> {
+            let tensor =
+                zune_engine
+                    .get_input_tensor(&output_node, tensor_name)
+                    .ok_or_else(|| anyhow!("Unable to fetch output tensor: {tensor_name}"))?;
+            Ok((tensor_name.to_string(), MyTensor::from(tensor)))
+        })
+        .collect();
+    
+    tracing::debug!("Received the result: {:?}", output_node_input_names);
 
     window
         .emit("reune_progress", "run: Successfully Received the result")
         .map_err(Error::from)?;
 
-    Ok(tensor.into())
+    Ok(output_tensors?)
 }
 
 #[derive(Debug, serde::Serialize)]

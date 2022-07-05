@@ -39,6 +39,7 @@ pub async fn known_proc_blocks(
             .map_err(|e| anyhow::Error::msg(e.to_string()))?;
 
     let white_list: Vec<&str> = vec![
+        "hotg-ai/argmax",
         "hotg-ai/linear_regression",
         "hotg-ai/elastic_net",
         "hotg-ai/metric",

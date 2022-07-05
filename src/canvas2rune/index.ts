@@ -50,7 +50,7 @@ export const storm2rune = async (
     pipeline,
   };
 
-  return dump(runefile, {forceQuotes:true});
+  return dump(runefile, { forceQuotes: true });
 };
 
 const loadResourceValue = async (
@@ -136,18 +136,15 @@ function loadStage(node: Node, graph: Graph): Stage {
   }
 }
 
-function generateNodeKey(node: Node): string {
-  // return `${node.type}_${node.id}`;
-  // console.log("NOOODE ===>>>", node);
-  return `${node.label || node.name}`;
+export function generateNodeKey(node: Node): string {
+  return `${node.type}_${node.id}`;
 }
 
-function generateNodePortKey(node: Node, index: number): string {
-  // return `${node.type}_${node.id}.${index}`;
-  return `${node.label}.${index}`;
+export function generateNodePortKey(node: Node, index: number): string {
+  return `${node.type}_${node.id}.${index}`;
 }
 
-function sanitizeName(id: string): string {
+export function sanitizeName(id: string): string {
   return id.replace(/[- ]/g, "_");
 }
 
