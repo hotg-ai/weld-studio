@@ -296,14 +296,13 @@ pub async fn reune(
     let output_tensors: Result<HashMap<String, MyTensor>, Error> = output_node_input_names
         .iter()
         .map(|tensor_name| -> Result<(String, MyTensor), Error> {
-            let tensor =
-                zune_engine
-                    .get_input_tensor(&output_node, tensor_name)
-                    .ok_or_else(|| anyhow!("Unable to fetch output tensor: {tensor_name}"))?;
+            let tensor = zune_engine
+                .get_input_tensor(&output_node, tensor_name)
+                .ok_or_else(|| anyhow!("Unable to fetch output tensor: {tensor_name}"))?;
             Ok((tensor_name.to_string(), MyTensor::from(tensor)))
         })
         .collect();
-    
+
     tracing::debug!("Received the result: {:?}", output_node_input_names);
 
     window

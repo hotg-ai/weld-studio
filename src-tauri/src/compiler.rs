@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-
 use hotg_rune_compiler::{
     asset_loader::AssetLoader,
     codegen::{Codegen, CodegenStorage},
@@ -23,8 +22,7 @@ pub async fn compile(
     let assets = Arc::clone(&assets);
     let cfg = BuildConfig::clone(&cfg);
 
-    window
-        .emit("compilation_progress", "Compilation Started")?;
+    window.emit("compilation_progress", "Compilation Started")?;
 
     let result = tokio::task::spawn_blocking(move || {
         let mut db = Database::new(assets);
@@ -34,8 +32,7 @@ pub async fn compile(
     })
     .await;
 
-    window
-        .emit("compilation_progress", "Compilation Finished")?;
+    window.emit("compilation_progress", "Compilation Finished")?;
 
     match result {
         Ok(Ok(rune)) => Ok(rune),
