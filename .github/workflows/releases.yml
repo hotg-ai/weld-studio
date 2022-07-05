@@ -36,6 +36,10 @@ jobs:
             let tag = "${{ github.ref }}";
 
             if (manuallyTriggered) {
+              const actor = context.actor;
+              exec.exec("git", ["config", "user.name", actor]);
+              exec.exec("git", ["config", "user.email", `${actor}@users.noreply.github.com`]);
+
               console.log("Pointing the nightly tag at this commit");
               exec.exec("git", ["tag", "nightly", "--force", "--annotate", "--message", "Nightly commit"])
               exec.exec("git", ["push", "origin", "nightly", "--force"])
