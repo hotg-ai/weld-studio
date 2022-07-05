@@ -65,7 +65,7 @@ const Dataset = ({
   setQueryError,
   selectDataset,
   setIsQueryLoading,
-  removeDataset
+  removeDataset,
 }: {
   setSql: (sql: string) => void;
   sql: string | undefined;
@@ -92,7 +92,9 @@ const Dataset = ({
       const allProckBlocks: any[] = await invoke("known_proc_blocks");
       const pbs = Object.entries(pb).map(([name, procBlock]) => {
         const match = allProckBlocks.filter((p) => p["name"] === name);
-        const matchUrl = `${match[0]["publicUrl"].replace(' ', '')}`;
+        const matchUrl = `${match[0]["publicUrl"]
+          .replace(" ", "")
+          .replace("ApplicationSupport", "Application Support")}`;
         return [
           `proc-block/${name}`,
           metadataToComponent(name, procBlock, matchUrl),
@@ -296,9 +298,25 @@ const Dataset = ({
                 <div
                   className={datasetName === name ? "activeDataset" : undefined}
                   key={`DropdownOption-${name}-${iddx}`}
-                //  onClick={() => selectDataset(name, !dataset.selected)}
+                  //  onClick={() => selectDataset(name, !dataset.selected)}
                 >
-                  <span onClick={() => removeDataset(name)} style={{ position: "absolute", borderRadius: "25px", right: "10px", textAlign: "center", justifyContent: "center", background: "white", color: "red", borderColor: "black", width: "25px", height: "25px" }}>x</span>
+                  <span
+                    onClick={() => removeDataset(name)}
+                    style={{
+                      position: "absolute",
+                      borderRadius: "25px",
+                      right: "10px",
+                      textAlign: "center",
+                      justifyContent: "center",
+                      background: "white",
+                      color: "red",
+                      borderColor: "black",
+                      width: "25px",
+                      height: "25px",
+                    }}
+                  >
+                    x
+                  </span>
                   <div key={name} className="dropdownOption__Content">
                     <div className="title-content">
                       <h3
@@ -331,7 +349,6 @@ const Dataset = ({
                                       ? field.data_type
                                       : Object.keys(field.data_type)[0]}
                                   </span>
-
                                 </div>
                               </DropdownOption>
                             );
@@ -381,7 +398,6 @@ const Dataset = ({
             {/* <span>No changes in row count</span> */}
           </div>
         </div>
-
       </div>
       <div className="table__container">
         {queryError ? (
@@ -413,10 +429,7 @@ function createQueryDataset(
   querySchema: QuerySchema,
   query: string
 ): QueryData {
-
-
   const dataType = commonDataType(querySchema);
-
 
   const tensor = mergeColumnsIntoTensor(
     data,
@@ -436,7 +449,6 @@ function createQueryDataset(
     data,
     createdAt: new Date(),
   };
-
 }
 
 /**
@@ -452,9 +464,9 @@ function commonDataType(schema: QuerySchema): ElementType {
     if (fail) {
       throw new Error(`Field: '${field.name}'(${field.data_type}) and isn't the same data type as '${first.name}'(${first.data_type})\n
 Analysis features must be common datatype.
-i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using cast \`::double\` or \`(column as DOUBLE)\``)
+i.e. all columns must be of the same type: DOUBLE, INT etc. \n Consider using cast \`::double\` or \`(column as DOUBLE)\``);
     }
-    return fail
+    return fail;
   });
 
   return arrowDataTypeToRunicElementType(first.data_type);
@@ -616,7 +628,8 @@ const GroupedTableInner = ({
             selectBtnIcon={sqlTableIcon}
             onSelect={() => {
               setSql(
-                `${sql ? sql + "\n" : ""} select * from "${table.table_name
+                `${sql ? sql + "\n" : ""} select * from "${
+                  table.table_name
                 }" limit 10`
               );
             }}
