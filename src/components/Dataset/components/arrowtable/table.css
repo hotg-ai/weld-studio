@@ -29,18 +29,17 @@
   text-overflow: nowrap;
 }
 .tr .td:hover {
-  /* display: flex !important; */
-  margin: 0 !important;
+  display: flex !important;
   padding: 5px !important;
   font-family: "Montserrat";
-  font-size: 12px;
+  font-weight: bold;
   background: #eaedee;
   color: #000;
   z-index: 100;
   height:fit-content !important;
   text-align: left;
   align-items: center;
-  transform: scale(1.1);
+  /* transform: scale(1.2); */
   overflow: hidden;
   word-wrap: break-word !important;
 }
