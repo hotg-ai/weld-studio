@@ -33,11 +33,11 @@
   margin: 0 !important;
   padding: 5px !important;
   font-family: "Montserrat";
+  font-size: 12px;
   background: #eaedee;
   color: #000;
   z-index: 100;
   height:fit-content !important;
-  max-width: 200px !important;
   text-align: left;
   align-items: center;
   transform: scale(1.1);
