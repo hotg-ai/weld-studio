@@ -408,7 +408,7 @@ function Analysis({
                 <span>{"</> "}Build &amp; Run</span>
               )}
             </button>
-            <button onClick={() => setCustomModalVisible(true)}>
+            <button style={{visibility: "hidden"}} onClick={() => setCustomModalVisible(true)}>
               {/* <img src="/assets/share.svg" alt="<" /> */}
               <span>Save and Share</span>
             </button>
