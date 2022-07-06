@@ -29,22 +29,20 @@
   text-overflow: nowrap;
 }
 .tr .td:hover {
-  display: flex !important;
+  /* display: flex !important; */
   margin: 0 !important;
+  padding: 5px !important;
   font-family: "Montserrat";
   background: #eaedee;
   color: #000;
   z-index: 100;
-  height:auto !important;
-  width: auto !important;
-  min-width: 100px;
+  height:fit-content !important;
   max-width: 200px !important;
-  max-height: none !important;
   text-align: left;
   align-items: center;
   transform: scale(1.1);
-  /* overflow: none; */
-  /* word-wrap: break-word !important; */
+  overflow: hidden;
+  word-wrap: break-word !important;
 }
 .tr .th,
 .tr .td::-webkit-scrollbar {
