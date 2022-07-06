@@ -33,15 +33,15 @@
 
 .tr .td:hover {
   text-align: left;
-  padding: 10px 13px;
   font-family: "Montserrat";
   margin: 0px;
-  background: #000000;
-  color:red;
+  background: #eaedee;
+  color: #000;
   font-weight: bold;
   z-index: 100;
-  overflow: visible;  
-  word-wrap: break-word;
+  overflow: hidden; 
+  padding-left: 5px;
+  transform: scale(1.1);
 }
 .tr .th,
 .tr .td::-webkit-scrollbar {
