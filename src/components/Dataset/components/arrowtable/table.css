@@ -58,17 +58,19 @@
 }
 .tr .th:hover {
   display: flex !important;
+  padding: 5px !important;
   font-family: "Montserrat";
+  font-weight: bold;
   background: #eaedee;
   color: #000;
-  font-weight: bold;
   z-index: 100;
-  height:auto !important;
-  width: auto !important;
+  height:fit-content !important;
+  min-height: 45px;
   text-align: left;
   align-items: center;
-  word-wrap: break-word;
-  transform: scale(1.1);
+  /* transform: scale(1.2); */
+  overflow: hidden;
+  word-wrap: break-word !important;
 }
 .tr .td {
   font-weight: 400;
