@@ -122,7 +122,6 @@ jobs:
     name: Make the release public
     runs-on: ubuntu-latest
     needs: [create-release, upload-installers]
-    if:
     steps:
       - name: publish release
         id: publish-release
