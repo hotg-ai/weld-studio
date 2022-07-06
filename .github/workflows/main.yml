@@ -12,10 +12,52 @@ env:
   DISABLE_ESLINT_PLUGIN: true
 
 jobs:
-  build-and-text:
+  lints:
+    name: Lints and Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rust Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+      - name: Install System Dependencies (Linux only)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf libdbus-1-dev pkg-config
+      - name: install Frontend dependencies
+        run: yarn
+      - name: Build Frontend
+        run: yarn build
+      - name: Rustfmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all --check
+      - name: Clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --workspace -- --deny warnings
+
+  build-and-test:
+    name: Build and Test
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-latest]
+        platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -28,7 +70,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Get yarn cache directory path
@@ -74,16 +116,8 @@ jobs:
         with:
           command: build
           args: --workspace --verbose --locked
-      - name: Backend Formatting
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all --check
-      - name: Backend Lints
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --workspace -- --deny warnings
+      - name: Build the Installer (dev mode)
+        run: yarn tauri build --debug
 
   api-docs:
     name: API docs
@@ -99,7 +133,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-docs-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Install Rust

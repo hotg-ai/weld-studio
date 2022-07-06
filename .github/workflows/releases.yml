@@ -32,8 +32,21 @@ jobs:
         with:
           script: |
             const { package: {version} } = require("./src-tauri/tauri.conf.json");
-            const isNightly = "${{ github.ref }}" == "refs/tags/nightly" || "${{ github.event_name }}" == "workflow_dispatch";
+            const manuallyTriggered = "${{ github.event_name }}" == "workflow_dispatch";
+            let tag = "${{ github.ref }}";
 
+            if (manuallyTriggered) {
+              const actor = context.actor;
+              exec.exec("git", ["config", "user.name", actor]);
+              exec.exec("git", ["config", "user.email", `${actor}@users.noreply.github.com`]);
+
+              console.log("Pointing the nightly tag at this commit");
+              exec.exec("git", ["tag", "nightly", "--force", "--annotate", "--message", "Nightly commit"])
+              exec.exec("git", ["push", "origin", "nightly", "--force"])
+              tag = "refs/tags/nightly";
+            }
+
+            const isNightly = tag == "refs/tags/nightly";
             const name = isNightly ? "Weld Studio (nightly)" : `Weld Studio v${version}`;
             const { owner, repo } = context.repo;
 
@@ -41,7 +54,7 @@ jobs:
               owner,
               repo,
               name,
-              tag_name: "${{ github.ref }}",
+              tag_name: tag,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
@@ -53,7 +66,7 @@ jobs:
     name: Upload Installers
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-latest]
+        platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     needs: [create-release]
     steps:
@@ -67,7 +80,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
       - name: Get yarn cache directory path
@@ -98,8 +111,6 @@ jobs:
         run: yarn
       - name: Build Frontend
         run: yarn build
-        env:
-          DISABLE_ESLINT_PLUGIN: true
       - name: Build and upload artifacts
         uses: tauri-apps/tauri-action@v0
         env:
