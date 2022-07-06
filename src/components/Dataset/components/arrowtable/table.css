@@ -16,7 +16,7 @@
 .tr .th,
 .tr .td {
   text-align: left;
-  width: 33%;
+  height: 3em !important;
   padding: 10px 13px;
   font-family: "Montserrat";
   margin: 0;
@@ -24,29 +24,27 @@
   color: #000;
   font-weight: bold;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
+  text-overflow: nowrap;
 }
 .tr .td:hover {
   display: flex !important;
-  padding: 8px !important;
   margin: 0 !important;
   font-family: "Montserrat";
   background: #eaedee;
   color: #000;
+  z-index: 100;
   height:auto !important;
   width: auto !important;
-  max-width: none !important;
+  min-width: 100px;
+  max-width: 200px !important;
   max-height: none !important;
   text-align: left;
   align-items: center;
-  word-wrap: break-word;
   transform: scale(1.1);
-  white-space: none;
-  overflow: visible;
-  text-overflow: none;
+  /* overflow: none; */
+  /* word-wrap: break-word !important; */
 }
 .tr .th,
 .tr .td::-webkit-scrollbar {
