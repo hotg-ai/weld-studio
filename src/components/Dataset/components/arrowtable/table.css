@@ -30,21 +30,18 @@
 }
 .tr .td:hover {
   display: flex !important;
-  margin: 0 !important;
+  padding: 5px !important;
   font-family: "Montserrat";
+  font-weight: bold;
   background: #eaedee;
   color: #000;
   z-index: 100;
-  height:auto !important;
-  width: auto !important;
-  min-width: 100px;
-  max-width: 200px !important;
-  max-height: none !important;
+  height:fit-content !important;
   text-align: left;
   align-items: center;
-  transform: scale(1.1);
-  /* overflow: none; */
-  /* word-wrap: break-word !important; */
+  /* transform: scale(1.2); */
+  overflow: hidden;
+  word-wrap: break-word !important;
 }
 .tr .th,
 .tr .td::-webkit-scrollbar {
@@ -61,17 +58,19 @@
 }
 .tr .th:hover {
   display: flex !important;
+  padding: 5px !important;
   font-family: "Montserrat";
+  font-weight: bold;
   background: #eaedee;
   color: #000;
-  font-weight: bold;
   z-index: 100;
-  height:auto !important;
-  width: auto !important;
+  height:fit-content !important;
+  min-height: 45px;
   text-align: left;
   align-items: center;
-  word-wrap: break-word;
-  transform: scale(1.1);
+  /* transform: scale(1.2); */
+  overflow: hidden;
+  word-wrap: break-word !important;
 }
 .tr .td {
   font-weight: 400;
