@@ -16,7 +16,7 @@ import { FlowNodeData } from "./model/FlowNodeComponent";
 import { Node } from "react-flow-renderer";
 import { TensorDescriptionModel } from "./model";
 import ClipLoader from "react-spinners/ClipLoader";
-import { QueryData } from "../../types";
+import { BigInt64ArrayShim, BigUint64ArrayShim, QueryData } from "../../types";
 import { convertElementType } from "./model/metadata";
 import { Carousel, Tabs } from "antd";
 import {
@@ -153,7 +153,7 @@ function Analysis({
         case "u32":
           return Uint32Array.from(data);
         case "u64":
-          return BigUint64Array.from(data);
+          return BigUint64ArrayShim.from(data);
         case "i8":
           return Int8Array.from(data);
         case "i16":
@@ -161,7 +161,7 @@ function Analysis({
         case "i32":
           return Int32Array.from(data);
         case "i64":
-          return BigInt64Array.from(data);
+          return BigInt64ArrayShim.from(data);
         case "f32":
           return Float32Array.from(data);
         case "f64":
@@ -186,7 +186,7 @@ function Analysis({
         case "u32":
           return new Uint32Array(data.buffer);
         case "u64":
-          return new BigUint64Array(data.buffer);
+          return new BigUint64ArrayShim(data.buffer);
         case "i8":
           return new Int8Array(data.buffer);
         case "i16":
@@ -194,7 +194,7 @@ function Analysis({
         case "i32":
           return new Int32Array(data.buffer);
         case "i64":
-          return new BigInt64Array(data.buffer);
+          return new BigInt64ArrayShim(data.buffer);
         case "f32":
           return new Float32Array(data.buffer);
         case "f64":
@@ -408,7 +408,7 @@ function Analysis({
                 <span>{"</> "}Build &amp; Run</span>
               )}
             </button>
-            <button style={{visibility: "hidden"}} onClick={() => setCustomModalVisible(true)}>
+            <button style={{ visibility: "hidden" }} onClick={() => setCustomModalVisible(true)}>
               {/* <img src="/assets/share.svg" alt="<" /> */}
               <span>Save and Share</span>
             </button>
