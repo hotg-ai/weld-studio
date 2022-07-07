@@ -136,11 +136,12 @@ jobs:
           envs: DISABLE_ESLINT_PLUGIN
           script_stop: true
           script: |
+            set -xe
             cd ~/Documents/weld-studio
             git fetch
-            git checkout $SHA
-            yarn
-            yarn tauri build --verbose
+            git checkout $SHA && git log -1
+            /usr/local/bin/yarn
+            /usr/local/bin/yarn tauri build --verbose
             DMG_FILE=$(ls target/release/bundle/dmg/*.dmg)
             cp "$DMG_FILE" "$(basename $DMG_FILE | sed 's/\.dmg$/.catalina.dmg/')"
             ls -l
