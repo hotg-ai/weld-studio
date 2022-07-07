@@ -133,15 +133,19 @@ jobs:
           host: ${{ secrets.CATALINA_HOST }}
           username: ${{ secrets.CATALINA_USERNAME }}
           key: ${{ secrets.CATALINA_SSH_KEY }}
-          envs: DISABLE_ESLINT_PLUGIN
+          envs: DISABLE_ESLINT_PLUGIN,SHA
           script_stop: true
           script: |
             set -xe
+            echo $PATH
+            # For some reason we can't access the globally installed yarn and node?
+            export PATH=$HOME/.cargo/bin:/usr/local/bin:$PATH
+
             cd ~/Documents/weld-studio
             git fetch
             git checkout $SHA && git log -1
-            /usr/local/bin/yarn
-            /usr/local/bin/yarn tauri build --verbose
+            yarn
+            yarn tauri build --verbose
             DMG_FILE=$(ls target/release/bundle/dmg/*.dmg)
             cp "$DMG_FILE" "$(basename $DMG_FILE | sed 's/\.dmg$/.catalina.dmg/')"
             ls -l
