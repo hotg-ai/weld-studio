@@ -135,7 +135,12 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
       for (const file of entries) {
         await invoke("log_message", { message: `preloading ${file.path}` });
         console.log(`Entry: ${file.path}`);
-        let res: string = await invoke("load_csv", { invokeMessage: file.path });
+        const path = file.path.startsWith("\\\\?\\")
+          ? file.path.replace("\\\\?\\", "")
+          : file.path;
+        let res: string = await invoke("load_csv", {
+          invokeMessage: path,
+        });
       }
 
       this.setState({ isLoadingTable: false });
