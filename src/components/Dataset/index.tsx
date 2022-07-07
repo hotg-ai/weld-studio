@@ -18,6 +18,7 @@ import { open } from "@tauri-apps/api/dialog";
 import { downloadDir, join } from "@tauri-apps/api/path";
 import { loadProcBlocks } from "./procBlocks";
 import ArrowTable from "./components/arrowtable";
+import { isArray } from "lodash";
 
 type IntegerColumnType = {
   type: "INTEGER";
@@ -195,6 +196,13 @@ const Dataset = ({
 
                   if (file) {
                     setIsQueryLoading(true);
+                    if (isArray(file)) {
+                      if (file[0].startsWith("\\\\?\\"))
+                        file[0].replace("\\\\?\\", "");
+                    } else {
+                      if (file.startsWith("\\\\?\\"))
+                        file.replace("\\\\?\\", "");
+                    }
                     invoke("load_csv", { invokeMessage: file })
                       .then((res) => {
                         let result = res as string;

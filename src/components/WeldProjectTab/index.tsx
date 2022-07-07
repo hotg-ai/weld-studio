@@ -229,6 +229,8 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
     this.setState({ isLoadingTable: true });
     let files = event.payload as string[];
     if (files.length > 0) {
+      if (files[0].startsWith("\\\\?\\"))
+        files[0].replace("\\\\?\\", "");
       invoke("load_csv", { invokeMessage: files[0] })
         .then((res) => {
           let result = res as string;
