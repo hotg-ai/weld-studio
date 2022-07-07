@@ -130,18 +130,16 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
         dir: BaseDirectory.Resource,
         recursive: false,
       });
-
       this.setState({ isLoadingTable: true });
-      for (const file of entries) {
+      entries.forEach(async (file) => {
         await invoke("log_message", { message: `preloading ${file.path}` });
-        console.log(`Entry: ${file.path}`);
         const path = file.path.startsWith("\\\\?\\")
           ? file.path.replace("\\\\?\\", "")
           : file.path;
         let res: string = await invoke("load_csv", {
           invokeMessage: path,
         });
-      }
+      });
 
       this.setState({ isLoadingTable: false });
       this.setState({ queryError: "Finished loading preloading datasets" });
