@@ -58,9 +58,9 @@ jobs:
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
-            })
+            });
 
-            return data.id
+            return data.id;
 
   upload-installers:
     name: Upload Installers
@@ -118,10 +118,72 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
+  # To make a build that is compatible with MacOS Catalina, we SSH into a
+  # dedicated build machine.
+  upload-installers-catalina:
+    name: Upload Installers (Catalina MacOS)
+    runs-on: ubuntu-latest
+    needs: [create-release]
+    steps:
+      - name: Compile
+        uses: appleboy/ssh-action@master
+        env:
+          SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.CATALINA_HOST }}
+          username: ${{ secrets.CATALINA_USERNAME }}
+          key: ${{ secrets.CATALINA_SSH_KEY }}
+          envs: DISABLE_ESLINT_PLUGIN
+          script_stop: true
+          script: |
+            cd ~/Documents/weld-studio
+            git fetch
+            git checkout $SHA
+            yarn
+            yarn tauri build --verbose
+            DMG_FILE=$(ls target/release/bundle/dmg/*.dmg)
+            cp "$DMG_FILE" "$(basename $DMG_FILE | sed 's/\.dmg$/.catalina.dmg/')"
+            ls -l
+      - name: Fetch the Release Binary
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.CATALINA_HOST }}
+          username: ${{ secrets.CATALINA_USERNAME }}
+          key: ${{ secrets.CATALINA_SSH_KEY }}
+          source: "Documents/weld-studio/*.dmg"
+          target: "."
+      - run: ls -l
+      - name: Attach to Release
+        uses: actions/github-script@v6
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            const fs = require("fs");
+
+            const { release_id } = process.env;
+
+            // First we need to get the actual name of our DMG file
+            const pattern = await glob.create("*.catalina.dmg");
+            const [dmg] = pattern.glob();
+
+            console.log(`Attaching "${dmg}" to release "${release_id}"`);
+
+            const data = fs.readDataSync(dmg);
+
+            const { owner, repo } = context.repo;
+            octokit.rest.repos.uploadReleaseAsset({
+              owner,
+              repo,
+              release_id,
+              name: dmg,
+              data,
+            });
+
   publish-release:
     name: Make the release public
     runs-on: ubuntu-latest
-    needs: [create-release, upload-installers]
+    needs: [create-release, upload-installers, upload-installers-catalina]
     steps:
       - name: publish release
         id: publish-release
