@@ -18,9 +18,7 @@ import { Carousel, Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import { CloseOutlined, InfoCircleFilled } from "@ant-design/icons";
 import Modal from "../Dataset/components/modal";
-
-
-
+import { isArray } from "lodash";
 
 function Home({
   setQueryError,
@@ -38,7 +36,7 @@ function Home({
   tables,
   queryError,
   setSql,
-  removeDataset
+  removeDataset,
 }: {
   setQueryError: (error: string) => void;
   setIsLoadingTable: (isLoading: boolean) => void;
@@ -67,8 +65,6 @@ function Home({
     }
   }, []);
 
-
-
   return (
     <div className="home__container">
       {/* <div className="home_sidebar">
@@ -77,15 +73,20 @@ function Home({
       <div className="home_content">
         <div className="home_content-header">
           <div className="home-header-cards__container">
-            {numberSelectedDatasets > 0 && <Link to="/analysis/0">
-              <div className="header-card" style={{ background: "#00B59433" }}>
-                <div>
-                  Start with No Code
-                  <img src={databaseIcon} alt="" />
+            {numberSelectedDatasets > 0 && (
+              <Link to="/analysis/0">
+                <div
+                  className="header-card"
+                  style={{ background: "#00B59433" }}
+                >
+                  <div>
+                    Start with No Code
+                    <img src={databaseIcon} alt="" />
+                  </div>
+                  <span>Drag and drop analysis</span>
                 </div>
-                <span>Drag and drop analysis</span>
-              </div>
-            </Link>}
+              </Link>
+            )}
             <Link to="/dataset/0">
               <div className="header-card" style={{ background: "#DEE5FF" }}>
                 <div>
@@ -135,6 +136,12 @@ function Home({
 
                 if (file) {
                   setIsLoadingTable(true);
+                  if (isArray(file)) {
+                    if (file[0].startsWith("\\\\?\\"))
+                      file[0].replace("\\\\?\\", "");
+                  } else {
+                    if (file.startsWith("\\\\?\\")) file.replace("\\\\?\\", "");
+                  }
                   invoke("load_csv", { invokeMessage: file })
                     .then((res) => {
                       let result = res as string;
@@ -304,7 +311,9 @@ function Home({
           setModalVisible={setIntroModalVisible}
         >
           <p className="modal-description">
-            Weld allows you to run analytics and apply machine learning on local data blazingly fast. No need to move your data to a data lake or 3rd party cloud.
+            Weld allows you to run analytics and apply machine learning on local
+            data blazingly fast. No need to move your data to a data lake or 3rd
+            party cloud.
           </p>
           <Carousel arrows prevArrow={<button>Back</button>}>
             <div className="step-one">
@@ -312,22 +321,36 @@ function Home({
                 <img src={introModalStepOne} alt="" />
               </div>
               <p>
-                <b>You can do three things incredibly fast with Weld:</b> <br /><br />
+                <b>You can do three things incredibly fast with Weld:</b> <br />
+                <br />
                 <ol>
-                  <li>Rapid analysis of multiple csv files. Add CSV files and run SQL queries on them, including creating joins on data that is hard to do with excel.
+                  <li>
+                    Rapid analysis of multiple csv files. Add CSV files and run
+                    SQL queries on them, including creating joins on data that
+                    is hard to do with excel.
                   </li>
-                  <li>Build predictive models (such as logistic regression) by selecting features and outcome variables from the query and using no code - drag and drop editor.
+                  <li>
+                    Build predictive models (such as logistic regression) by
+                    selecting features and outcome variables from the query and
+                    using no code - drag and drop editor.
                   </li>
-                  <li>Compare multiple models to pick the best features, rapidly.</li>
+                  <li>
+                    Compare multiple models to pick the best features, rapidly.
+                  </li>
                 </ol>
               </p>
             </div>
             <div className="step-two">
               <img src={testDatasetScreenshot} alt="" />
               <div className="step-two-content">
-                <h3>1. Create SQL analysis and select features and targets for predictive analytics</h3>
+                <h3>
+                  1. Create SQL analysis and select features and targets for
+                  predictive analytics
+                </h3>
                 <span>
-                  Import any number of CSV files and use standard SQL to query them. Perform joins blazingly fast. Select feature and outcome columns for further ML analysis.
+                  Import any number of CSV files and use standard SQL to query
+                  them. Perform joins blazingly fast. Select feature and outcome
+                  columns for further ML analysis.
                 </span>
               </div>
             </div>
@@ -335,14 +358,25 @@ function Home({
               <img src={studioCanvasScreenshot} alt="" />
               <div className="step-three-content">
                 <h3>2. Build predictive models on selected data</h3>
-                <span>You can use our drag and drop no code editor to build predictive models on the features data to predict the selected outcome data. You can use out of the box analysis blocks like train-test-split, logistic regression, and others to rapidly build and test this. </span>
+                <span>
+                  You can use our drag and drop no code editor to build
+                  predictive models on the features data to predict the selected
+                  outcome data. You can use out of the box analysis blocks like
+                  train-test-split, logistic regression, and others to rapidly
+                  build and test this.{" "}
+                </span>
               </div>
             </div>
             <div className="step-four">
               <img src={image6} alt="" />
               <div className="step-four-content">
                 <h3>3. Compare and share the analysis</h3>
-                <span>You can build and test several models as well as test several features rapidly. You can compare each result with all previous runs and pick the best models and share it with others on your data team.</span>
+                <span>
+                  You can build and test several models as well as test several
+                  features rapidly. You can compare each result with all
+                  previous runs and pick the best models and share it with
+                  others on your data team.
+                </span>
               </div>
             </div>
           </Carousel>
@@ -382,19 +416,42 @@ const DatasetBox = ({
   selectDataset,
   group,
   setGroup,
-  onDelete
+  onDelete,
 }: DatasetBoxProps) => {
   const [showGrpBtn, setShowGrpBtn] = useState<boolean>(group === undefined);
   const [localGroup, setLocalGroup] = useState<string | undefined>(group);
 
-  const canDelete = (isDataset && onDelete !== undefined)
+  const canDelete = isDataset && onDelete !== undefined;
   return (
-    <div className="dataset-box__container" onClick={onClick} style={{ position: "relative" }}>
-      {canDelete && <span onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onDelete(title)
-      }} style={{ position: "absolute", borderRadius: "25px", right: "10px", top:"10px", textAlign: "center", justifyContent: "center", background: "white", color: "red", border: "1px solid black", width: "25px", height: "25px" }}>x</span>}
+    <div
+      className="dataset-box__container"
+      onClick={onClick}
+      style={{ position: "relative" }}
+    >
+      {canDelete && (
+        <span
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(title);
+          }}
+          style={{
+            position: "absolute",
+            borderRadius: "25px",
+            right: "10px",
+            top: "10px",
+            textAlign: "center",
+            justifyContent: "center",
+            background: "white",
+            color: "red",
+            border: "1px solid black",
+            width: "25px",
+            height: "25px",
+          }}
+        >
+          x
+        </span>
+      )}
 
       <img src={testDatasetScreenshot} alt="" />
       <div className="dataset-box_content">

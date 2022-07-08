@@ -187,16 +187,16 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "backtrace"
-version = "0.3.65"
+version = "0.3.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11a17d453482a265fd5f8479f2a3f405566e6ca627837aaddb85af8b1ab8ef61"
+checksum = "cab84319d616cfb654d03394f38ab7e6f0919e181b1b57e1fd15e7fb4077d9a7"
 dependencies = [
  "addr2line",
  "cc",
  "cfg-if",
  "libc",
  "miniz_oxide 0.5.3",
- "object",
+ "object 0.29.0",
  "rustc-demangle",
 ]
 
@@ -1917,9 +1917,9 @@ checksum = "c4a1e36c821dbe04574f602848a19f742f4fb3c98d40449f11bcad18d6b17421"
 
 [[package]]
 name = "hyper"
-version = "0.14.19"
+version = "0.14.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42dc3c131584288d375f2d07f822b0cb012d8c6fb899a5b9fdb3cb7eb9b6004f"
+checksum = "02c929dc5c39e335a03c405292728118860721b10190d98c2a0f0efd5baafbac"
 dependencies = [
  "bytes",
  "futures-channel",
@@ -2821,6 +2821,15 @@ dependencies = [
  "crc32fast",
  "hashbrown 0.11.2",
  "indexmap",
+ "memchr",
+]
+
+[[package]]
+name = "object"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "21158b2c33aa6d4561f1c0a6ea283ca92bc54802a93b263e910746d679a7eb53"
+dependencies = [
  "memchr",
 ]
 
@@ -3974,9 +3983,9 @@ dependencies = [
 
 [[package]]
 name = "serde_yaml"
-version = "0.8.24"
+version = "0.8.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "707d15895415db6628332b737c838b88c598522e4dc70647e59b72312924aebc"
+checksum = "1ec0091e1f5aa338283ce049bd9dfefd55e1f168ac233e85c1ffe0038fb48cbe"
 dependencies = [
  "indexmap",
  "ryu",
@@ -4335,9 +4344,9 @@ checksum = "c02424087780c9b71cc96799eaeddff35af2bc513278cda5c99fc1f5d026d3c1"
 
 [[package]]
 name = "tauri"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "421641ec549d34935530886151a42ce5ecbbb57beb30e5eec1b22f8e08e10ee9"
+checksum = "d61fc211e0bd2c04c0aecd202d2cd72dd797a89da02989a39e1b9691462386d6"
 dependencies = [
  "anyhow",
  "attohttpc",
@@ -4388,13 +4397,14 @@ dependencies = [
 
 [[package]]
 name = "tauri-build"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "598bd36884ee15ac73dfca9921066fd87d13d9beea60384b99a66c3a5d800d70"
+checksum = "2f2b32e551ec810ba4ab2ad735de5e3576e54bf0322ab0f4b7ce41244bc65ecf"
 dependencies = [
  "anyhow",
  "cargo_toml",
  "heck 0.4.0",
+ "json-patch",
  "semver 1.0.12",
  "serde_json",
  "tauri-utils",
@@ -4403,13 +4413,14 @@ dependencies = [
 
 [[package]]
 name = "tauri-codegen"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "048a7b404b92c86e7dc32458fd0963f042a76d520681e6f598d73a97c2feeeef"
+checksum = "f6f1f7928dd040fc03c94207adfad506c0cf5b152982fd1dc0a621f7fd777e22"
 dependencies = [
  "base64",
  "brotli",
  "ico",
+ "json-patch",
  "plist",
  "png 0.17.5",
  "proc-macro2",
@@ -4428,9 +4439,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-macros"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aaf70098bfab21efde9b2c089008b319ba333f4ee6e55c38bdea188dea86497f"
+checksum = "e50b9f52871c088857360319a37472d59f4644f1ed004489599d62831a1b6996"
 dependencies = [
  "heck 0.4.0",
  "proc-macro2",
@@ -4442,9 +4453,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-runtime"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82d34f58c61a6790ba3de5753daea61b5beb6926b2384d1ad03b9dfe622c72be"
+checksum = "4e4cff3b4d9469727fa2107c4b3d2eda110df1ba45103fb420178e536362fae4"
 dependencies = [
  "gtk",
  "http",
@@ -4462,9 +4473,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-runtime-wry"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd9a56e25146ff1f13f37bdb010ed0d692e7e81c824b9f977ae439f446f37ab4"
+checksum = "3fa8c4edaf01d8b556e7172c844b1b4dd3399adcd1a606bd520fc3e65f698546"
 dependencies = [
  "cocoa",
  "gtk",
@@ -4482,9 +4493,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-utils"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "616f178da1e0466ca45963ed108a1567d4b8803662addaca313169d0dcd97715"
+checksum = "12ff4b68d9faeb57c9c727bf58c9c9768d2b67d8e84e62ce6146e7859a2e9c6b"
 dependencies = [
  "brotli",
  "ctor",
@@ -5235,7 +5246,7 @@ dependencies = [
  "leb128",
  "libloading",
  "loupe",
- "object",
+ "object 0.28.4",
  "rkyv",
  "serde",
  "tempfile",
@@ -5291,7 +5302,7 @@ version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8d831335ff3a44ecf451303f6f891175c642488036b92ceceb24ac8623a8fa8b"
 dependencies = [
- "object",
+ "object 0.28.4",
  "thiserror",
  "wasmer-compiler",
  "wasmer-types",
@@ -5470,7 +5481,7 @@ checksum = "9c97e489d8f836838d497091de568cf16b117486d529ec5579233521065bd5e4"
 
 [[package]]
 name = "weld"
-version = "0.0.0"
+version = "0.1.14"
 dependencies = [
  "anyhow",
  "arrow",

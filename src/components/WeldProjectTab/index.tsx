@@ -130,13 +130,16 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
         dir: BaseDirectory.Resource,
         recursive: false,
       });
-
       this.setState({ isLoadingTable: true });
-      for (const file of entries) {
+      entries.forEach(async (file) => {
         await invoke("log_message", { message: `preloading ${file.path}` });
-        console.log(`Entry: ${file.path}`);
-        let res: string = await invoke("load_csv", { invokeMessage: file.path });
-      }
+        const path = file.path.startsWith("\\\\?\\")
+          ? file.path.replace("\\\\?\\", "")
+          : file.path;
+        let res: string = await invoke("load_csv", {
+          invokeMessage: path,
+        });
+      });
 
       this.setState({ isLoadingTable: false });
       this.setState({ queryError: "Finished loading preloading datasets" });
@@ -229,6 +232,8 @@ class WeldProjectTab extends React.Component<WeldProject, WeldProject> {
     this.setState({ isLoadingTable: true });
     let files = event.payload as string[];
     if (files.length > 0) {
+      if (files[0].startsWith("\\\\?\\"))
+        files[0].replace("\\\\?\\", "");
       invoke("load_csv", { invokeMessage: files[0] })
         .then((res) => {
           let result = res as string;
