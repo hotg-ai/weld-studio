@@ -153,7 +153,7 @@ jobs:
         run: 'echo ''<meta http-equiv="refresh" content="0; url=weld/index.html" />'' > target/doc/index.html'
         shell: bash
       - name: Upload API Docs
-        uses: JamesIves/github-pages-deploy-action@4.3.4
+        uses: JamesIves/github-pages-deploy-action@v4.3.4
         if: github.ref == 'refs/heads/main'
         with:
           branch: gh-pages
