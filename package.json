@@ -8,7 +8,7 @@
     "@hotg-ai/rune": "0.12.0-rc.1",
     "@monaco-editor/react": "^4.4.5",
     "@reduxjs/toolkit": "^1.8.2",
-    "@tauri-apps/api": "^1.0.0-rc.5",
+    "@tauri-apps/api": "^1.0.2",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -68,7 +68,7 @@
     ]
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.0.0",
+    "@tauri-apps/cli": "^1.0.3",
     "@types/lodash": "^4.14.182",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-table": "^7.7.12",
