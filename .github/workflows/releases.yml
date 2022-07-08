@@ -121,69 +121,55 @@ jobs:
   # To make a build that is compatible with MacOS Catalina, we SSH into a
   # dedicated build machine.
   upload-installers-catalina:
-    name: Upload Installers (Catalina MacOS)
-    runs-on: ubuntu-latest
+    name: Upload Installers (Catalina)
+    runs-on: [self-hosted, catalina]
     needs: [create-release]
     steps:
-      - name: Compile
-        uses: appleboy/ssh-action@master
+      - uses: actions/checkout@v2
+      - name: Rust Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: JavaScript Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+      - name: Install Frontend Dependencies
+        run: yarn
+      - name: Customise package name to avoid collisions
+        run: |
+          sed -i 's/"productName": "weld"/"productName": "weld-catalina"/' ./src-tauri/tauri.conf.json
+      - name: Build Frontend
+        run: yarn build
+      - name: Build and upload artifacts
+        uses: tauri-apps/tauri-action@v0
         env:
-          SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          host: ${{ secrets.CATALINA_HOST }}
-          username: ${{ secrets.CATALINA_USERNAME }}
-          key: ${{ secrets.CATALINA_SSH_KEY }}
-          envs: DISABLE_ESLINT_PLUGIN,SHA
-          script_stop: true
-          script: |
-            set -xe
-            echo $PATH
-            # For some reason we can't access the globally installed yarn and node?
-            export PATH=$HOME/.cargo/bin:/usr/local/bin:$PATH
-
-            cd ~/Documents/weld-studio
-            git fetch
-            git checkout $SHA && git log -1
-            yarn
-            yarn tauri build --verbose
-            DMG_FILE=$(ls target/release/bundle/dmg/*.dmg)
-            cp "$DMG_FILE" "$(basename $DMG_FILE | sed 's/\.dmg$/.catalina.dmg/')"
-            ls -l
-      - name: Fetch the Release Binary
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.CATALINA_HOST }}
-          username: ${{ secrets.CATALINA_USERNAME }}
-          key: ${{ secrets.CATALINA_SSH_KEY }}
-          source: "Documents/weld-studio/*.dmg"
-          target: "."
-      - run: ls -l
-      - name: Attach to Release
-        uses: actions/github-script@v6
-        env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
-        with:
-          script: |
-            const fs = require("fs");
-
-            const { release_id } = process.env;
-
-            // First we need to get the actual name of our DMG file
-            const pattern = await glob.create("*.catalina.dmg");
-            const [dmg] = pattern.glob();
-
-            console.log(`Attaching "${dmg}" to release "${release_id}"`);
-
-            const data = fs.readDataSync(dmg);
-
-            const { owner, repo } = context.repo;
-            octokit.rest.repos.uploadReleaseAsset({
-              owner,
-              repo,
-              release_id,
-              name: dmg,
-              data,
-            });
+          releaseId: ${{ needs.create-release.outputs.release_id }}
 
   publish-release:
     name: Make the release public
