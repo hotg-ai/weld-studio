@@ -6,7 +6,7 @@ import { Dropdown, DropdownOption } from "../common/dropdown";
 import CodeEditor from "./components/editor";
 // import ProgressBar from "./components/progressBar";
 import "./dataset.css";
-import { QueryData, TableData } from "../../types";
+import { BigInt64ArrayShim, BigUint64ArrayShim, QueryData, TableData } from "../../types";
 import { useAppDispatch } from "src/hooks/hooks";
 import { RefreshComponents } from "src/redux/builderSlice";
 import { metadataToComponent } from "../Analysis/model/metadata";
@@ -308,7 +308,7 @@ const Dataset = ({
                 <div
                   className={datasetName === name ? "activeDataset" : undefined}
                   key={`DropdownOption-${name}-${iddx}`}
-                  //  onClick={() => selectDataset(name, !dataset.selected)}
+                //  onClick={() => selectDataset(name, !dataset.selected)}
                 >
                   <span
                     onClick={() => removeDataset(name)}
@@ -546,14 +546,14 @@ function mergeColumnsIntoTensor(
         elementType,
         dimensions,
         buffer: new Uint8Array(
-          BigUint64Array.from(elements.map(BigInt)).buffer
+          BigUint64ArrayShim.from(elements.map(BigInt)).buffer
         ),
       };
     case ElementType.I64:
       return {
         elementType,
         dimensions,
-        buffer: new Uint8Array(BigInt64Array.from(elements.map(BigInt)).buffer),
+        buffer: new Uint8Array(BigInt64ArrayShim.from(elements.map(BigInt)).buffer),
       };
     case ElementType.F64:
       return {
@@ -638,8 +638,7 @@ const GroupedTableInner = ({
             selectBtnIcon={sqlTableIcon}
             onSelect={() => {
               setSql(
-                `${sql ? sql + "\n" : ""} select * from "${
-                  table.table_name
+                `${sql ? sql + "\n" : ""} select * from "${table.table_name
                 }" limit 10`
               );
             }}

@@ -51,3 +51,30 @@ export type WeldProject = {
   searchValue: string;
   logs: any[];
 };
+
+// Some versions of Safari doesn't support BigUint64Array and friends, and
+// it's not possible to polyfill these types because bigint is a builtin type.
+//
+// This workaround lets us use them when possible and throws an exception at
+// runtime when they aren't.
+//
+// https://github.com/hotg-ai/weld-studio/issues/65
+
+class NotImplemented {
+  static readonly BYTES_PER_ELEMENT: number = 8;
+
+  constructor() {
+    throw new Error("64-bit integers aren't supported on this device");
+  }
+
+  static of(): never {
+    throw new Error("64-bit integers aren't supported on this device");
+  }
+
+  static from(): never {
+    throw new Error("64-bit integers aren't supported on this device");
+  }
+}
+
+export const BigInt64ArrayShim: BigInt64ArrayConstructor = window.BigInt64Array || NotImplemented as any as BigInt64ArrayConstructor;
+export const BigUint64ArrayShim: BigUint64ArrayConstructor = window.BigUint64Array || NotImplemented as any as BigUint64ArrayConstructor;
