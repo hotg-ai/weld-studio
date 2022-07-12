@@ -33,10 +33,6 @@ pub async fn validate_sql(
     for frame in frames {
         num_records += frame.num_rows();
         records.push(frame);
-
-        if num_records >= max_rows {
-            break;
-        }
     }
     let row_count = stmt.row_count();
     let record_batch = RecordBatch::concat(&schema, &records)?;
