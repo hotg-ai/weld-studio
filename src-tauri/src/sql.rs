@@ -17,7 +17,7 @@ use crate::{shared::SerializableError, AppState};
 pub async fn validate_sql(
     app: tauri::State<'_, AppState>,
     sql: &str,
-    max_rows: usize,
+    _max_rows: usize,
 ) -> Result<ValidationResponse, SerializableError<ValidationFailed>> {
     let db = app.db().await;
     let mut stmt = db.prepare(sql).map_err(ValidationFailed::from)?;
@@ -28,15 +28,11 @@ pub async fn validate_sql(
 
     let schema = frames.get_schema();
     let mut records = Vec::new();
-    let mut num_records = 0;
+    let mut _num_records = 0;
 
     for frame in frames {
-        num_records += frame.num_rows();
+        _num_records += frame.num_rows();
         records.push(frame);
-
-        if num_records >= max_rows {
-            break;
-        }
     }
     let row_count = stmt.row_count();
     let record_batch = RecordBatch::concat(&schema, &records)?;
