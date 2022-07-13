@@ -6,8 +6,3 @@ Weld Studio is a no code environment platform to perform analytics and run Machi
 
 
 [![Continuous Integration](https://github.com/hotg-ai/defrag-studio/actions/workflows/main.yml/badge.svg)](https://github.com/hotg-ai/defrag-studio/actions/workflows/main.yml)
-
-## Preview 
-
-![Preview](/docs/img/preview.gif?raw=true "Weld Preview")
-
