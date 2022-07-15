@@ -43,10 +43,10 @@ export async function log_message(message: string): Promise<void> {
  * @param maxRows Limit the number of records in the preview.
  * @returns
  */
-export async function validate_sql(sql: string, maxRows: number = 10): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
+export async function validate_sql(sql: string, _maxRows: number = 10): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
 
     try {
-        const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql, maxRows});
+        const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql });
        
         return ok({
             numRows: row_count,
