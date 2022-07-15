@@ -1,0 +1,602 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/tao-0.12.1/src/platform_impl/linux/keycode.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>keycode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../tao/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../../../../tao/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../tao/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::keyboard</span>::{<span class="ident">KeyCode</span>, <span class="ident">NativeKeyCode</span>};
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keycode_to_scancode</span>(<span class="ident">code</span>: <span class="ident">KeyCode</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
+  <span class="comment">// See `from_scancode` for more info</span>
+  <span class="kw">match</span> <span class="ident">code</span> {
+    <span class="ident">KeyCode::Backquote</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0031</span>),
+    <span class="ident">KeyCode::Backslash</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0033</span>),
+    <span class="ident">KeyCode::Backspace</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0016</span>),
+    <span class="ident">KeyCode::BracketLeft</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0022</span>),
+    <span class="ident">KeyCode::BracketRight</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x001B</span>),
+    <span class="ident">KeyCode::Comma</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x003B</span>),
+    <span class="ident">KeyCode::Digit0</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0013</span>),
+    <span class="ident">KeyCode::Digit1</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x000A</span>),
+    <span class="ident">KeyCode::Digit2</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x000B</span>),
+    <span class="ident">KeyCode::Digit3</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x000C</span>),
+    <span class="ident">KeyCode::Digit4</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x000D</span>),
+    <span class="ident">KeyCode::Digit5</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x000E</span>),
+    <span class="ident">KeyCode::Digit6</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x000F</span>),
+    <span class="ident">KeyCode::Digit7</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0010</span>),
+    <span class="ident">KeyCode::Digit8</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0011</span>),
+    <span class="ident">KeyCode::Digit9</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0012</span>),
+    <span class="ident">KeyCode::Equal</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0015</span>),
+    <span class="ident">KeyCode::IntlBackslash</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x005E</span>),
+    <span class="ident">KeyCode::IntlRo</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0061</span>),
+    <span class="ident">KeyCode::IntlYen</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0084</span>),
+    <span class="ident">KeyCode::KeyA</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0026</span>),
+    <span class="ident">KeyCode::KeyB</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0038</span>),
+    <span class="ident">KeyCode::KeyC</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0036</span>),
+    <span class="ident">KeyCode::KeyD</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0028</span>),
+    <span class="ident">KeyCode::KeyE</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x001A</span>),
+    <span class="ident">KeyCode::KeyF</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0029</span>),
+    <span class="ident">KeyCode::KeyG</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x002A</span>),
+    <span class="ident">KeyCode::KeyH</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x002B</span>),
+    <span class="ident">KeyCode::KeyI</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x001F</span>),
+    <span class="ident">KeyCode::KeyJ</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x002C</span>),
+    <span class="ident">KeyCode::KeyK</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x002D</span>),
+    <span class="ident">KeyCode::KeyL</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x002E</span>),
+    <span class="ident">KeyCode::KeyM</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x002E</span>),
+    <span class="ident">KeyCode::KeyN</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0039</span>),
+    <span class="ident">KeyCode::KeyO</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0020</span>),
+    <span class="ident">KeyCode::KeyP</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0021</span>),
+    <span class="ident">KeyCode::KeyQ</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0018</span>),
+    <span class="ident">KeyCode::KeyR</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x001B</span>),
+    <span class="ident">KeyCode::KeyS</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0027</span>),
+    <span class="ident">KeyCode::KeyT</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x001C</span>),
+    <span class="ident">KeyCode::KeyU</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x001E</span>),
+    <span class="ident">KeyCode::KeyV</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0037</span>),
+    <span class="ident">KeyCode::KeyW</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0019</span>),
+    <span class="ident">KeyCode::KeyX</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0035</span>),
+    <span class="ident">KeyCode::KeyY</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x001D</span>),
+    <span class="ident">KeyCode::KeyZ</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0034</span>),
+    <span class="ident">KeyCode::Minus</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0014</span>),
+    <span class="ident">KeyCode::Period</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x003C</span>),
+    <span class="ident">KeyCode::Quote</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0030</span>),
+    <span class="ident">KeyCode::Semicolon</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x002F</span>),
+    <span class="ident">KeyCode::Slash</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x003D</span>),
+    <span class="ident">KeyCode::AltLeft</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0040</span>),
+    <span class="ident">KeyCode::AltRight</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x006C</span>),
+    <span class="ident">KeyCode::CapsLock</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0042</span>),
+    <span class="ident">KeyCode::ContextMenu</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0087</span>),
+    <span class="ident">KeyCode::ControlLeft</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0025</span>),
+    <span class="ident">KeyCode::ControlRight</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0069</span>),
+    <span class="ident">KeyCode::Enter</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0024</span>),
+    <span class="ident">KeyCode::SuperLeft</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0085</span>),
+    <span class="ident">KeyCode::SuperRight</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0086</span>),
+    <span class="ident">KeyCode::ShiftLeft</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0032</span>),
+    <span class="ident">KeyCode::ShiftRight</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x003E</span>),
+    <span class="ident">KeyCode::Space</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0041</span>),
+    <span class="ident">KeyCode::Tab</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0017</span>),
+    <span class="ident">KeyCode::Convert</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0064</span>),
+    <span class="ident">KeyCode::Lang1</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0082</span>),
+    <span class="ident">KeyCode::Lang2</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0083</span>),
+    <span class="ident">KeyCode::KanaMode</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0065</span>),
+    <span class="ident">KeyCode::NonConvert</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0066</span>),
+    <span class="ident">KeyCode::Delete</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0077</span>),
+    <span class="ident">KeyCode::End</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0073</span>),
+    <span class="ident">KeyCode::Home</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x006E</span>),
+    <span class="ident">KeyCode::Insert</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0076</span>),
+    <span class="ident">KeyCode::PageDown</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0075</span>),
+    <span class="ident">KeyCode::PageUp</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0070</span>),
+    <span class="ident">KeyCode::ArrowDown</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0074</span>),
+    <span class="ident">KeyCode::ArrowLeft</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0071</span>),
+    <span class="ident">KeyCode::ArrowRight</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0072</span>),
+    <span class="ident">KeyCode::ArrowUp</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x006F</span>),
+    <span class="ident">KeyCode::NumLock</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x004D</span>),
+    <span class="ident">KeyCode::Numpad0</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x005A</span>),
+    <span class="ident">KeyCode::Numpad1</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0057</span>),
+    <span class="ident">KeyCode::Numpad2</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0058</span>),
+    <span class="ident">KeyCode::Numpad3</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0059</span>),
+    <span class="ident">KeyCode::Numpad4</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0058</span>),
+    <span class="ident">KeyCode::Numpad5</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0053</span>),
+    <span class="ident">KeyCode::Numpad6</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0054</span>),
+    <span class="ident">KeyCode::Numpad7</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0055</span>),
+    <span class="ident">KeyCode::Numpad8</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0050</span>),
+    <span class="ident">KeyCode::Numpad9</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0051</span>),
+    <span class="ident">KeyCode::NumpadAdd</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0056</span>),
+    <span class="ident">KeyCode::NumpadComma</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0081</span>),
+    <span class="ident">KeyCode::NumpadDecimal</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x005B</span>),
+    <span class="ident">KeyCode::NumpadDivide</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x006A</span>),
+    <span class="ident">KeyCode::NumpadEnter</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0068</span>),
+    <span class="ident">KeyCode::NumpadEqual</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x007D</span>),
+    <span class="ident">KeyCode::NumpadMultiply</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x003F</span>),
+    <span class="ident">KeyCode::NumpadSubtract</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0052</span>),
+    <span class="ident">KeyCode::Escape</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0009</span>),
+    <span class="ident">KeyCode::F1</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0043</span>),
+    <span class="ident">KeyCode::F2</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0044</span>),
+    <span class="ident">KeyCode::F3</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0045</span>),
+    <span class="ident">KeyCode::F4</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0046</span>),
+    <span class="ident">KeyCode::F5</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0047</span>),
+    <span class="ident">KeyCode::F6</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0048</span>),
+    <span class="ident">KeyCode::F7</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0049</span>),
+    <span class="ident">KeyCode::F8</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x004A</span>),
+    <span class="ident">KeyCode::F9</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x004B</span>),
+    <span class="ident">KeyCode::F10</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x004C</span>),
+    <span class="ident">KeyCode::F11</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x005F</span>),
+    <span class="ident">KeyCode::F12</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0060</span>),
+    <span class="ident">KeyCode::PrintScreen</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x006B</span>),
+    <span class="ident">KeyCode::ScrollLock</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x004E</span>),
+    <span class="ident">KeyCode::Pause</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x007F</span>),
+    <span class="ident">KeyCode::BrowserBack</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00A6</span>),
+    <span class="ident">KeyCode::BrowserFavorites</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00A4</span>),
+    <span class="ident">KeyCode::BrowserForward</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00A7</span>),
+    <span class="ident">KeyCode::BrowserHome</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00B4</span>),
+    <span class="ident">KeyCode::BrowserRefresh</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00B5</span>),
+    <span class="ident">KeyCode::BrowserSearch</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00E1</span>),
+    <span class="ident">KeyCode::BrowserStop</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0088</span>),
+
+    <span class="ident">KeyCode::LaunchApp1</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0098</span>),
+    <span class="ident">KeyCode::LaunchApp2</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0094</span>),
+    <span class="ident">KeyCode::LaunchMail</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00A3</span>),
+    <span class="ident">KeyCode::MediaPlayPause</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00AC</span>),
+    <span class="ident">KeyCode::MediaSelect</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00B3</span>),
+    <span class="ident">KeyCode::MediaStop</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00AE</span>),
+    <span class="ident">KeyCode::MediaTrackNext</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00AB</span>),
+    <span class="ident">KeyCode::MediaTrackPrevious</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x00AD</span>),
+    <span class="ident">KeyCode::AudioVolumeDown</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x007A</span>),
+    <span class="ident">KeyCode::AudioVolumeMute</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x0079</span>),
+    <span class="ident">KeyCode::AudioVolumeUp</span> =&gt; <span class="prelude-val">Some</span>(<span class="number">0x007B</span>),
+    <span class="ident">KeyCode::Unidentified</span>(<span class="ident">NativeKeyCode::Gtk</span>(<span class="ident">scancode</span>)) =&gt; <span class="prelude-val">Some</span>(<span class="ident">scancode</span> <span class="kw">as</span> <span class="ident">u32</span>),
+    <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
+  }
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keycode_from_scancode</span>(<span class="ident">scancode</span>: <span class="ident">u32</span>) -&gt; <span class="ident">KeyCode</span> {
+  <span class="comment">// See: https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html</span>
+  <span class="comment">// and: https://www.w3.org/TR/uievents-code/</span>
+  <span class="comment">// and: The widget/NativeKeyToDOMCodeName.h file in the firefox source</span>
+  <span class="kw">match</span> <span class="ident">scancode</span> {
+    <span class="number">0x0009</span> =&gt; <span class="ident">KeyCode::Escape</span>,
+    <span class="number">0x000A</span> =&gt; <span class="ident">KeyCode::Digit1</span>,
+    <span class="number">0x000B</span> =&gt; <span class="ident">KeyCode::Digit2</span>,
+    <span class="number">0x000C</span> =&gt; <span class="ident">KeyCode::Digit3</span>,
+    <span class="number">0x000D</span> =&gt; <span class="ident">KeyCode::Digit4</span>,
+    <span class="number">0x000E</span> =&gt; <span class="ident">KeyCode::Digit5</span>,
+    <span class="number">0x000F</span> =&gt; <span class="ident">KeyCode::Digit6</span>,
+    <span class="number">0x0010</span> =&gt; <span class="ident">KeyCode::Digit7</span>,
+    <span class="number">0x0011</span> =&gt; <span class="ident">KeyCode::Digit8</span>,
+    <span class="number">0x0012</span> =&gt; <span class="ident">KeyCode::Digit9</span>,
+    <span class="number">0x0013</span> =&gt; <span class="ident">KeyCode::Digit0</span>,
+    <span class="number">0x0014</span> =&gt; <span class="ident">KeyCode::Minus</span>,
+    <span class="number">0x0015</span> =&gt; <span class="ident">KeyCode::Equal</span>,
+    <span class="number">0x0016</span> =&gt; <span class="ident">KeyCode::Backspace</span>,
+    <span class="number">0x0017</span> =&gt; <span class="ident">KeyCode::Tab</span>,
+    <span class="number">0x0018</span> =&gt; <span class="ident">KeyCode::KeyQ</span>,
+    <span class="number">0x0019</span> =&gt; <span class="ident">KeyCode::KeyW</span>,
+    <span class="number">0x001A</span> =&gt; <span class="ident">KeyCode::KeyE</span>,
+    <span class="number">0x001B</span> =&gt; <span class="ident">KeyCode::KeyR</span>,
+    <span class="number">0x001C</span> =&gt; <span class="ident">KeyCode::KeyT</span>,
+    <span class="number">0x001D</span> =&gt; <span class="ident">KeyCode::KeyY</span>,
+    <span class="number">0x001E</span> =&gt; <span class="ident">KeyCode::KeyU</span>,
+    <span class="number">0x001F</span> =&gt; <span class="ident">KeyCode::KeyI</span>,
+    <span class="number">0x0020</span> =&gt; <span class="ident">KeyCode::KeyO</span>,
+    <span class="number">0x0021</span> =&gt; <span class="ident">KeyCode::KeyP</span>,
+    <span class="number">0x0022</span> =&gt; <span class="ident">KeyCode::BracketLeft</span>,
+    <span class="number">0x0023</span> =&gt; <span class="ident">KeyCode::BracketRight</span>,
+    <span class="number">0x0024</span> =&gt; <span class="ident">KeyCode::Enter</span>,
+    <span class="number">0x0025</span> =&gt; <span class="ident">KeyCode::ControlLeft</span>,
+    <span class="number">0x0026</span> =&gt; <span class="ident">KeyCode::KeyA</span>,
+    <span class="number">0x0027</span> =&gt; <span class="ident">KeyCode::KeyS</span>,
+    <span class="number">0x0028</span> =&gt; <span class="ident">KeyCode::KeyD</span>,
+    <span class="number">0x0029</span> =&gt; <span class="ident">KeyCode::KeyF</span>,
+    <span class="number">0x002A</span> =&gt; <span class="ident">KeyCode::KeyG</span>,
+    <span class="number">0x002B</span> =&gt; <span class="ident">KeyCode::KeyH</span>,
+    <span class="number">0x002C</span> =&gt; <span class="ident">KeyCode::KeyJ</span>,
+    <span class="number">0x002D</span> =&gt; <span class="ident">KeyCode::KeyK</span>,
+    <span class="number">0x002E</span> =&gt; <span class="ident">KeyCode::KeyL</span>,
+    <span class="number">0x002F</span> =&gt; <span class="ident">KeyCode::Semicolon</span>,
+    <span class="number">0x0030</span> =&gt; <span class="ident">KeyCode::Quote</span>,
+    <span class="number">0x0031</span> =&gt; <span class="ident">KeyCode::Backquote</span>,
+    <span class="number">0x0032</span> =&gt; <span class="ident">KeyCode::ShiftLeft</span>,
+    <span class="number">0x0033</span> =&gt; <span class="ident">KeyCode::Backslash</span>,
+    <span class="number">0x0034</span> =&gt; <span class="ident">KeyCode::KeyZ</span>,
+    <span class="number">0x0035</span> =&gt; <span class="ident">KeyCode::KeyX</span>,
+    <span class="number">0x0036</span> =&gt; <span class="ident">KeyCode::KeyC</span>,
+    <span class="number">0x0037</span> =&gt; <span class="ident">KeyCode::KeyV</span>,
+    <span class="number">0x0038</span> =&gt; <span class="ident">KeyCode::KeyB</span>,
+    <span class="number">0x0039</span> =&gt; <span class="ident">KeyCode::KeyN</span>,
+    <span class="number">0x003A</span> =&gt; <span class="ident">KeyCode::KeyM</span>,
+    <span class="number">0x003B</span> =&gt; <span class="ident">KeyCode::Comma</span>,
+    <span class="number">0x003C</span> =&gt; <span class="ident">KeyCode::Period</span>,
+    <span class="number">0x003D</span> =&gt; <span class="ident">KeyCode::Slash</span>,
+    <span class="number">0x003E</span> =&gt; <span class="ident">KeyCode::ShiftRight</span>,
+    <span class="number">0x003F</span> =&gt; <span class="ident">KeyCode::NumpadMultiply</span>,
+    <span class="number">0x0040</span> =&gt; <span class="ident">KeyCode::AltLeft</span>,
+    <span class="number">0x0041</span> =&gt; <span class="ident">KeyCode::Space</span>,
+    <span class="number">0x0042</span> =&gt; <span class="ident">KeyCode::CapsLock</span>,
+    <span class="number">0x0043</span> =&gt; <span class="ident">KeyCode::F1</span>,
+    <span class="number">0x0044</span> =&gt; <span class="ident">KeyCode::F2</span>,
+    <span class="number">0x0045</span> =&gt; <span class="ident">KeyCode::F3</span>,
+    <span class="number">0x0046</span> =&gt; <span class="ident">KeyCode::F4</span>,
+    <span class="number">0x0047</span> =&gt; <span class="ident">KeyCode::F5</span>,
+    <span class="number">0x0048</span> =&gt; <span class="ident">KeyCode::F6</span>,
+    <span class="number">0x0049</span> =&gt; <span class="ident">KeyCode::F7</span>,
+    <span class="number">0x004A</span> =&gt; <span class="ident">KeyCode::F8</span>,
+    <span class="number">0x004B</span> =&gt; <span class="ident">KeyCode::F9</span>,
+    <span class="number">0x004C</span> =&gt; <span class="ident">KeyCode::F10</span>,
+    <span class="number">0x004D</span> =&gt; <span class="ident">KeyCode::NumLock</span>,
+    <span class="number">0x004E</span> =&gt; <span class="ident">KeyCode::ScrollLock</span>,
+    <span class="number">0x004F</span> =&gt; <span class="ident">KeyCode::Numpad7</span>,
+    <span class="number">0x0050</span> =&gt; <span class="ident">KeyCode::Numpad8</span>,
+    <span class="number">0x0051</span> =&gt; <span class="ident">KeyCode::Numpad9</span>,
+    <span class="number">0x0052</span> =&gt; <span class="ident">KeyCode::NumpadSubtract</span>,
+    <span class="number">0x0053</span> =&gt; <span class="ident">KeyCode::Numpad4</span>,
+    <span class="number">0x0054</span> =&gt; <span class="ident">KeyCode::Numpad5</span>,
+    <span class="number">0x0055</span> =&gt; <span class="ident">KeyCode::Numpad6</span>,
+    <span class="number">0x0056</span> =&gt; <span class="ident">KeyCode::NumpadAdd</span>,
+    <span class="number">0x0057</span> =&gt; <span class="ident">KeyCode::Numpad1</span>,
+    <span class="number">0x0058</span> =&gt; <span class="ident">KeyCode::Numpad2</span>,
+    <span class="number">0x0059</span> =&gt; <span class="ident">KeyCode::Numpad3</span>,
+    <span class="number">0x005A</span> =&gt; <span class="ident">KeyCode::Numpad0</span>,
+    <span class="number">0x005B</span> =&gt; <span class="ident">KeyCode::NumpadDecimal</span>,
+    <span class="number">0x005E</span> =&gt; <span class="ident">KeyCode::IntlBackslash</span>,
+    <span class="number">0x005F</span> =&gt; <span class="ident">KeyCode::F11</span>,
+    <span class="number">0x0060</span> =&gt; <span class="ident">KeyCode::F12</span>,
+    <span class="number">0x0061</span> =&gt; <span class="ident">KeyCode::IntlRo</span>,
+    <span class="number">0x0064</span> =&gt; <span class="ident">KeyCode::Convert</span>,
+    <span class="number">0x0065</span> =&gt; <span class="ident">KeyCode::KanaMode</span>,
+    <span class="number">0x0066</span> =&gt; <span class="ident">KeyCode::NonConvert</span>,
+    <span class="number">0x0068</span> =&gt; <span class="ident">KeyCode::NumpadEnter</span>,
+    <span class="number">0x0069</span> =&gt; <span class="ident">KeyCode::ControlRight</span>,
+    <span class="number">0x006A</span> =&gt; <span class="ident">KeyCode::NumpadDivide</span>,
+    <span class="number">0x006B</span> =&gt; <span class="ident">KeyCode::PrintScreen</span>,
+    <span class="number">0x006C</span> =&gt; <span class="ident">KeyCode::AltRight</span>,
+    <span class="number">0x006E</span> =&gt; <span class="ident">KeyCode::Home</span>,
+    <span class="number">0x006F</span> =&gt; <span class="ident">KeyCode::ArrowUp</span>,
+    <span class="number">0x0070</span> =&gt; <span class="ident">KeyCode::PageUp</span>,
+    <span class="number">0x0071</span> =&gt; <span class="ident">KeyCode::ArrowLeft</span>,
+    <span class="number">0x0072</span> =&gt; <span class="ident">KeyCode::ArrowRight</span>,
+    <span class="number">0x0073</span> =&gt; <span class="ident">KeyCode::End</span>,
+    <span class="number">0x0074</span> =&gt; <span class="ident">KeyCode::ArrowDown</span>,
+    <span class="number">0x0075</span> =&gt; <span class="ident">KeyCode::PageDown</span>,
+    <span class="number">0x0076</span> =&gt; <span class="ident">KeyCode::Insert</span>,
+    <span class="number">0x0077</span> =&gt; <span class="ident">KeyCode::Delete</span>,
+    <span class="number">0x0079</span> =&gt; <span class="ident">KeyCode::AudioVolumeMute</span>,
+    <span class="number">0x007A</span> =&gt; <span class="ident">KeyCode::AudioVolumeDown</span>,
+    <span class="number">0x007B</span> =&gt; <span class="ident">KeyCode::AudioVolumeUp</span>,
+    <span class="number">0x007D</span> =&gt; <span class="ident">KeyCode::NumpadEqual</span>,
+    <span class="number">0x007F</span> =&gt; <span class="ident">KeyCode::Pause</span>,
+    <span class="number">0x0081</span> =&gt; <span class="ident">KeyCode::NumpadComma</span>,
+    <span class="number">0x0082</span> =&gt; <span class="ident">KeyCode::Lang1</span>,
+    <span class="number">0x0083</span> =&gt; <span class="ident">KeyCode::Lang2</span>,
+    <span class="number">0x0084</span> =&gt; <span class="ident">KeyCode::IntlYen</span>,
+    <span class="number">0x0085</span> =&gt; <span class="ident">KeyCode::SuperLeft</span>,
+    <span class="number">0x0086</span> =&gt; <span class="ident">KeyCode::SuperRight</span>,
+    <span class="number">0x0087</span> =&gt; <span class="ident">KeyCode::ContextMenu</span>,
+    <span class="number">0x0088</span> =&gt; <span class="ident">KeyCode::BrowserStop</span>,
+    <span class="number">0x0089</span> =&gt; <span class="ident">KeyCode::Again</span>,
+    <span class="number">0x008A</span> =&gt; <span class="ident">KeyCode::Props</span>,
+    <span class="number">0x008B</span> =&gt; <span class="ident">KeyCode::Undo</span>,
+    <span class="number">0x008C</span> =&gt; <span class="ident">KeyCode::Select</span>,
+    <span class="number">0x008D</span> =&gt; <span class="ident">KeyCode::Copy</span>,
+    <span class="number">0x008E</span> =&gt; <span class="ident">KeyCode::Open</span>,
+    <span class="number">0x008F</span> =&gt; <span class="ident">KeyCode::Paste</span>,
+    <span class="number">0x0090</span> =&gt; <span class="ident">KeyCode::Find</span>,
+    <span class="number">0x0091</span> =&gt; <span class="ident">KeyCode::Cut</span>,
+    <span class="number">0x0092</span> =&gt; <span class="ident">KeyCode::Help</span>,
+    <span class="number">0x0094</span> =&gt; <span class="ident">KeyCode::LaunchApp2</span>,
+    <span class="number">0x0097</span> =&gt; <span class="ident">KeyCode::WakeUp</span>,
+    <span class="number">0x0098</span> =&gt; <span class="ident">KeyCode::LaunchApp1</span>,
+    <span class="comment">// key to right of volume controls on T430s produces 0x9C</span>
+    <span class="comment">// but no documentation of what it should map to :/</span>
+    <span class="number">0x00A3</span> =&gt; <span class="ident">KeyCode::LaunchMail</span>,
+    <span class="number">0x00A4</span> =&gt; <span class="ident">KeyCode::BrowserFavorites</span>,
+    <span class="number">0x00A6</span> =&gt; <span class="ident">KeyCode::BrowserBack</span>,
+    <span class="number">0x00A7</span> =&gt; <span class="ident">KeyCode::BrowserForward</span>,
+    <span class="number">0x00A9</span> =&gt; <span class="ident">KeyCode::Eject</span>,
+    <span class="number">0x00AB</span> =&gt; <span class="ident">KeyCode::MediaTrackNext</span>,
+    <span class="number">0x00AC</span> =&gt; <span class="ident">KeyCode::MediaPlayPause</span>,
+    <span class="number">0x00AD</span> =&gt; <span class="ident">KeyCode::MediaTrackPrevious</span>,
+    <span class="number">0x00AE</span> =&gt; <span class="ident">KeyCode::MediaStop</span>,
+    <span class="number">0x00B3</span> =&gt; <span class="ident">KeyCode::MediaSelect</span>,
+    <span class="number">0x00B4</span> =&gt; <span class="ident">KeyCode::BrowserHome</span>,
+    <span class="number">0x00B5</span> =&gt; <span class="ident">KeyCode::BrowserRefresh</span>,
+    <span class="number">0x00E1</span> =&gt; <span class="ident">KeyCode::BrowserSearch</span>,
+    <span class="kw">_</span> =&gt; <span class="ident">KeyCode::Unidentified</span>(<span class="ident">NativeKeyCode::Gtk</span>(<span class="ident">scancode</span> <span class="kw">as</span> <span class="ident">u16</span>)),
+  }
+}
+</code></pre></div>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="tao" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
+</body></html>

@@ -1,0 +1,1 @@
+initSidebarItems({"macro":[["Container","Type constructor for `Container` variants."]],"struct":[["Container","A container for global type-based state."],["Storage","A single storage location for global access to a value."]]});

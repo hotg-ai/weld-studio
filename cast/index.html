@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Ergonomic, checked cast functions for primitive types"><meta name="keywords" content="rust, rustlang, rust-lang, cast"><title>cast - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../cast/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../cast/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate cast</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.3.0</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div></section><div id="sidebar-vars" data-name="cast" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../cast/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">cast</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/cast/lib.rs.html#1-539">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Ergonomic, checked cast functions for primitive types</p>
+<p>This crate provides one checked cast function for each numeric primitive.
+Use these functions to perform a cast from any other numeric primitive:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">cast</span>::{<span class="ident">u8</span>, <span class="ident">u16</span>, <span class="ident">Error</span>};
+
+<span class="comment">// Infallible operations, like integer promotion, are equivalent to a normal</span>
+<span class="comment">// cast with `as`</span>
+<span class="macro">assert_eq!</span>(<span class="ident">u16</span>(<span class="number">0u8</span>), <span class="number">0u16</span>);
+
+<span class="comment">// Everything else will return a `Result` depending on the success of the</span>
+<span class="comment">// operation</span>
+<span class="macro">assert_eq!</span>(<span class="ident">u8</span>(<span class="number">0u16</span>), <span class="prelude-val">Ok</span>(<span class="number">0u8</span>));
+<span class="macro">assert_eq!</span>(<span class="ident">u8</span>(<span class="number">256u16</span>), <span class="prelude-val">Err</span>(<span class="ident">Error::Overflow</span>));
+<span class="macro">assert_eq!</span>(<span class="ident">u8</span>(<span class="op">-</span><span class="number">1i8</span>), <span class="prelude-val">Err</span>(<span class="ident">Error::Underflow</span>));
+<span class="macro">assert_eq!</span>(<span class="ident">u8</span>(<span class="number">1.</span> <span class="op">/</span> <span class="number">0.</span>), <span class="prelude-val">Err</span>(<span class="ident">Error::Infinite</span>));
+<span class="macro">assert_eq!</span>(<span class="ident">u8</span>(<span class="number">0.</span> <span class="op">/</span> <span class="number">0.</span>), <span class="prelude-val">Err</span>(<span class="ident">Error::NaN</span>));</code></pre></div>
+<p>There are no namespace problems between these functions, the “primitive
+modules” in <code>core</code>/<code>std</code> and the built-in primitive types, so all them can
+be in the same scope:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::u8</span>;
+<span class="kw">use</span> <span class="ident">cast</span>::{<span class="ident">u8</span>, <span class="ident">u16</span>};
+
+<span class="comment">// `u8` as a type</span>
+<span class="kw">let</span> <span class="ident">x</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">0</span>;
+<span class="comment">// `u8` as a module</span>
+<span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">u16</span>(<span class="ident">u8::MAX</span>);
+<span class="comment">// `u8` as a function</span>
+<span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">u8</span>(<span class="ident">y</span>).<span class="ident">unwrap</span>();</code></pre></div>
+<p>The checked cast functionality is also usable with type aliases via the
+<code>cast</code> static method:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::os::raw::c_ulonglong</span>;
+<span class="comment">// NOTE avoid shadowing `std::convert::From` - cf. rust-lang/rfcs#1311</span>
+<span class="kw">use</span> <span class="ident">cast::From</span> <span class="kw">as</span> <span class="ident">_0</span>;
+
+<span class="macro">assert_eq!</span>(<span class="ident">c_ulonglong::cast</span>(<span class="number">0u8</span>), <span class="number">0u64</span>);</code></pre></div>
+<p>This crate also provides a <code>From</code> trait that can be used, for example,
+to create a generic function that accepts any type that can be infallibly
+casted to <code>u32</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn</span> <span class="ident">to_u32</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) -&gt; <span class="ident">u32</span>
+    <span class="comment">// reads as: &quot;where u32 can be casted from T with output u32&quot;</span>
+    <span class="kw">where</span> <span class="ident">u32</span>: <span class="ident">cast::From</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Output</span><span class="op">=</span><span class="ident">u32</span><span class="op">&gt;</span>,
+{
+    <span class="ident">cast::u32</span>(<span class="ident">x</span>)
+}
+
+<span class="macro">assert_eq!</span>(<span class="ident">to_u32</span>(<span class="number">0u8</span>), <span class="number">0u32</span>);
+<span class="macro">assert_eq!</span>(<span class="ident">to_u32</span>(<span class="number">1u16</span>), <span class="number">1u32</span>);
+<span class="macro">assert_eq!</span>(<span class="ident">to_u32</span>(<span class="number">2u32</span>), <span class="number">2u32</span>);
+
+<span class="comment">// to_u32(-1i32);  // Compile error</span></code></pre></div>
+<h3 id="minimal-supported-rust-version"><a href="#minimal-supported-rust-version">Minimal Supported Rust Version</a></h3>
+<p>This crate is guaranteed to compile <em>as a dependency</em> on stable Rust 1.31 and up.
+It’s not guaranteed that <code>cargo test</code>-ing this crate follows the MSRV.
+It <em>might</em> compile on older versions but that may change in any new patch release.</p>
+<h3 id="building-without-std"><a href="#building-without-std">Building without <code>std</code></a></h3>
+<p>This crate can be used without Rust’s <code>std</code> crate by declaring it as
+follows in your <code>Cargo.toml</code>:</p>
+<div class="example-wrap"><pre class="language-toml"><code>cast = { version = &quot;*&quot;, default-features = false }</code></pre></div></div></details><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Error.html" title="cast::Error enum">Error</a></div><div class="item-right docblock-short"><p>Cast errors</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.From.html" title="cast::From trait">From</a></div><div class="item-right docblock-short"><p>The “cast from” operation</p>
+</div></div></div><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.f32.html" title="cast::f32 fn">f32</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.f64.html" title="cast::f64 fn">f64</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.i8.html" title="cast::i8 fn">i8</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.i16.html" title="cast::i16 fn">i16</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.i32.html" title="cast::i32 fn">i32</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.i64.html" title="cast::i64 fn">i64</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.i128.html" title="cast::i128 fn">i128</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.isize.html" title="cast::isize fn">isize</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.u8.html" title="cast::u8 fn">u8</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.u16.html" title="cast::u16 fn">u16</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.u32.html" title="cast::u32 fn">u32</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.u64.html" title="cast::u64 fn">u64</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.u128.html" title="cast::u128 fn">u128</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.usize.html" title="cast::usize fn">usize</a></div><div class="item-right docblock-short"><p>Checked cast function</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="cast" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
+</body></html>

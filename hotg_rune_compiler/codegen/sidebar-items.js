@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CodegenStorage","Representative struct for the query group."]],"trait":[["Codegen",""]]});

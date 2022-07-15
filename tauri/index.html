@@ -1,0 +1,230 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Tauri is a framework for building tiny, blazing fast binaries for all major desktop platforms. Developers can integrate any front-end framework that compiles to HTML, JS and CSS for building their user interface. The backend of the application is a rust-sourced binary with an API that the front-end can interact with."><meta name="keywords" content="rust, rustlang, rust-lang, tauri"><title>tauri - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../tauri/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../tauri/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate tauri</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 1.0.3</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li><li><a href="#attributes">Attribute Macros</a></li></ul></div></section><div id="sidebar-vars" data-name="tauri" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../tauri/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">tauri</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/tauri/lib.rs.html#5-937">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Tauri is a framework for building tiny, blazing fast binaries for all major desktop platforms.
+Developers can integrate any front-end framework that compiles to HTML, JS and CSS for building their user interface.
+The backend of the application is a rust-sourced binary with an API that the front-end can interact with.</p>
+<h2 id="cargo-features"><a href="#cargo-features">Cargo features</a></h2>
+<p>The following are a list of <a href="https://doc.rust-lang.org/stable/cargo/reference/manifest.html#the-features-section">Cargo features</a> that can be enabled or disabled:</p>
+<ul>
+<li><strong>wry</strong> <em>(enabled by default)</em>: Enables the <a href="https://github.com/tauri-apps/wry">wry</a> runtime. Only disable it if you want a custom runtime.</li>
+<li><strong>dox</strong>: Internal feature to generate Rust documentation without linking on Linux.</li>
+<li><strong>objc-exception</strong>: Wrap each msg_send! in a @try/@catch and panics if an exception is caught, preventing Objective-C from unwinding into Rust.</li>
+<li><strong>isolation</strong>: Enables the isolation pattern. Enabled by default if the <code>tauri &gt; pattern &gt; use</code> config option is set to <code>isolation</code> on the <code>tauri.conf.json</code> file.</li>
+<li><strong>custom-protocol</strong>: Feature managed by the Tauri CLI. When enabled, Tauri assumes a production environment instead of a development one.</li>
+<li><strong>updater</strong>: Enables the application auto updater. Enabled by default if the <code>updater</code> config is defined on the <code>tauri.conf.json</code> file.</li>
+<li><strong>devtools</strong>: Enables the developer tools (Web inspector) and <a href="window/struct.Window.html#method.open_devtools" title="Window::open_devtools"><code>Window::open_devtools</code></a>. Enabled by default on debug builds.
+On macOS it uses private APIs, so you can’t enable it if your app will be published to the App Store.</li>
+<li><strong>shell-open-api</strong>: Enables the <a href="api/shell/index.html" title="api::shell"><code>api::shell</code></a> module.</li>
+<li><strong>http-api</strong>: Enables the <a href="api/http/index.html" title="api::http"><code>api::http</code></a> module.</li>
+<li><strong>http-multipart</strong>: Adds support to <code>multipart/form-data</code> requests.</li>
+<li><strong>reqwest-client</strong>: Uses <code>reqwest</code> as HTTP client on the <code>http</code> APIs. Improves performance, but increases the bundle size.</li>
+<li><strong>process-command-api</strong>: Enables the <a href="api/process/struct.Command.html" title="api::process::Command"><code>api::process::Command</code></a> APIs.</li>
+<li><strong>global-shortcut</strong>: Enables the global shortcut APIs.</li>
+<li><strong>clipboard</strong>: Enables the clipboard APIs.</li>
+<li><strong>process-relaunch-dangerous-allow-symlink-macos</strong>: Allows the <a href="api/process/fn.current_binary.html" title="api::process::current_binary"><code>api::process::current_binary</code></a> function to allow symlinks on macOS (this is dangerous, see the Security section in the documentation website).</li>
+<li><strong>dialog</strong>: Enables the <a href="api/dialog/index.html" title="api::dialog"><code>api::dialog</code></a> module.</li>
+<li><strong>notification</strong>: Enables the <a href="api/notification/index.html" title="api::notification"><code>api::notification</code></a> module.</li>
+<li><strong>fs-extract-api</strong>: Enabled the <code>tauri::api::file::Extract</code> API.</li>
+<li><strong>cli</strong>: Enables usage of <code>clap</code> for CLI argument parsing. Enabled by default if the <code>cli</code> config is defined on the <code>tauri.conf.json</code> file.</li>
+<li><strong>system-tray</strong>: Enables application system tray API. Enabled by default if the <code>systemTray</code> config is defined on the <code>tauri.conf.json</code> file.</li>
+<li><strong>macos-private-api</strong>: Enables features only available in <strong>macOS</strong>’s private APIs, currently the <code>transparent</code> window functionality and the <code>fullScreenEnabled</code> preference setting to <code>true</code>. Enabled by default if the <code>tauri &gt; macosPrivateApi</code> config flag is set to <code>true</code> on the <code>tauri.conf.json</code> file.</li>
+<li><strong>windows7-compat</strong>: Enables compatibility with Windows 7 for the notification API.</li>
+<li><strong>window-data-url</strong>: Enables usage of data URLs on the webview.</li>
+<li><strong>compression</strong> *(enabled by default): Enables asset compression. You should only disable this if you want faster compile times in release builds - it produces larger binaries.</li>
+<li><strong>config-json5</strong>: Adds support to JSON5 format for <code>tauri.conf.json</code>.</li>
+<li><strong>icon-ico</strong>: Adds support to set <code>.ico</code> window icons. Enables [<code>Icon::File</code>] and [<code>Icon::Raw</code>] variants.</li>
+<li><strong>icon-png</strong>: Adds support to set <code>.png</code> window icons. Enables [<code>Icon::File</code>] and [<code>Icon::Raw</code>] variants.</li>
+</ul>
+<h3 id="cargo-allowlist-features"><a href="#cargo-allowlist-features">Cargo allowlist features</a></h3>
+<p>The following are a list of <a href="https://doc.rust-lang.org/stable/cargo/reference/manifest.html#the-features-section">Cargo features</a> that enables commands for Tauri’s API package.
+These features are automatically enabled by the Tauri CLI based on the <code>allowlist</code> configuration under <code>tauri.conf.json</code>.</p>
+<ul>
+<li><strong>api-all</strong>: Enables all API endpoints.</li>
+</ul>
+<h4 id="clipboard-allowlist"><a href="#clipboard-allowlist">Clipboard allowlist</a></h4>
+<ul>
+<li><strong>clipboard-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/clipboard/">Clipboard APIs</a>.</li>
+<li><strong>clipboard-read-text</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/clipboard/#readtext"><code>readText</code> API</a>.</li>
+<li><strong>clipboard-write-text</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/clipboard/#writetext"><code>writeText</code> API</a>.</li>
+</ul>
+<h4 id="dialog-allowlist"><a href="#dialog-allowlist">Dialog allowlist</a></h4>
+<ul>
+<li><strong>dialog-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/dialog">Dialog APIs</a>.</li>
+<li><strong>dialog-ask</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/dialog#ask"><code>ask</code> API</a>.</li>
+<li><strong>dialog-confirm</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/dialog#confirm"><code>confirm</code> API</a>.</li>
+<li><strong>dialog-message</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/dialog#message"><code>message</code> API</a>.</li>
+<li><strong>dialog-open</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/dialog#open"><code>open</code> API</a>.</li>
+<li><strong>dialog-save</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/dialog#save"><code>save</code> API</a>.</li>
+</ul>
+<h4 id="filesystem-allowlist"><a href="#filesystem-allowlist">Filesystem allowlist</a></h4>
+<ul>
+<li><strong>fs-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/fs">Filesystem APIs</a>.</li>
+<li><strong>fs-copy-file</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#copyfile"><code>copyFile</code> API</a>.</li>
+<li><strong>fs-create-dir</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#createdir"><code>createDir</code> API</a>.</li>
+<li><strong>fs-read-dir</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#readdir"><code>readDir</code> API</a>.</li>
+<li><strong>fs-read-file</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#readtextfile"><code>readTextFile</code> API</a> and the <a href="https://tauri.app/en/docs/api/js/modules/fs#readbinaryfile"><code>readBinaryFile</code> API</a>.</li>
+<li><strong>fs-remove-dir</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#removedir"><code>removeDir</code> API</a>.</li>
+<li><strong>fs-remove-file</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#removefile"><code>removeFile</code> API</a>.</li>
+<li><strong>fs-rename-file</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#renamefile"><code>renameFile</code> API</a>.</li>
+<li><strong>fs-write-file</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/fs#writefile"><code>writeFile</code> API</a> and the <a href="https://tauri.app/en/docs/api/js/modules/fs#writebinaryfile"><code>writeBinaryFile</code> API</a>.</li>
+</ul>
+<h4 id="global-shortcut-allowlist"><a href="#global-shortcut-allowlist">Global shortcut allowlist</a></h4>
+<ul>
+<li><strong>global-shortcut-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/globalShortcut">GlobalShortcut APIs</a>.</li>
+</ul>
+<h4 id="http-allowlist"><a href="#http-allowlist">HTTP allowlist</a></h4>
+<ul>
+<li><strong>http-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/http">HTTP APIs</a>.</li>
+<li><strong>http-request</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/http.client/"><code>request</code> APIs</a>.</li>
+</ul>
+<h4 id="notification-allowlist"><a href="#notification-allowlist">Notification allowlist</a></h4>
+<ul>
+<li><strong>notification-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/notification">Notification APIs</a>.</li>
+</ul>
+<h4 id="os-allowlist"><a href="#os-allowlist">OS allowlist</a></h4>
+<ul>
+<li><strong>os-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/os">OS APIs</a>.</li>
+</ul>
+<h4 id="path-allowlist"><a href="#path-allowlist">Path allowlist</a></h4>
+<ul>
+<li><strong>path-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/path">Path APIs</a>.</li>
+</ul>
+<h4 id="process-allowlist"><a href="#process-allowlist">Process allowlist</a></h4>
+<ul>
+<li><strong>process-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/process">Process APIs</a>.</li>
+<li><strong>process-exit</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/process#exit"><code>exit</code> API</a>.</li>
+<li><strong>process-relaunch</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/process#relaunch"><code>relaunch</code> API</a>.</li>
+</ul>
+<h4 id="protocol-allowlist"><a href="#protocol-allowlist">Protocol allowlist</a></h4>
+<ul>
+<li><strong>protocol-all</strong>: Enables all Protocol APIs.</li>
+<li><strong>protocol-asset</strong>: Enables the <code>asset</code> custom protocol.</li>
+</ul>
+<h4 id="shell-allowlist"><a href="#shell-allowlist">Shell allowlist</a></h4>
+<ul>
+<li><strong>shell-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/shell">Clipboard APIs</a>.</li>
+<li><strong>shell-execute</strong>: Enables <a href="https://tauri.app/en/docs/api/js/classes/shell.Command#constructor">executing arbitrary programs</a>.</li>
+<li><strong>shell-sidecar</strong>: Enables <a href="https://tauri.app/en/docs/api/js/classes/shell.Command#sidecar">executing a <code>sidecar</code> program</a>.</li>
+<li><strong>shell-open</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/modules/shell#open"><code>open</code> API</a>.</li>
+</ul>
+<h4 id="window-allowlist"><a href="#window-allowlist">Window allowlist</a></h4>
+<ul>
+<li><strong>window-all</strong>: Enables all <a href="https://tauri.app/en/docs/api/js/modules/window">Window APIs</a>.</li>
+<li><strong>window-create</strong>: Enables the API used to <a href="https://tauri.app/en/docs/api/js/classes/window.webviewwindow/">create new windows</a>.</li>
+<li><strong>window-center</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#center"><code>center</code> API</a>.</li>
+<li><strong>window-request-user-attention</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#requestuserattention"><code>requestUserAttention</code> API</a>.</li>
+<li><strong>window-set-resizable</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setresizable"><code>setResizable</code> API</a>.</li>
+<li><strong>window-set-title</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#settitle"><code>setTitle</code> API</a>.</li>
+<li><strong>window-maximize</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#maximize"><code>maximize</code> API</a>.</li>
+<li><strong>window-unmaximize</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#unmaximize"><code>unmaximize</code> API</a>.</li>
+<li><strong>window-minimize</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#minimize"><code>minimize</code> API</a>.</li>
+<li><strong>window-unminimize</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#unminimize"><code>unminimize</code> API</a>.</li>
+<li><strong>window-show</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#show"><code>show</code> API</a>.</li>
+<li><strong>window-hide</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#hide"><code>hide</code> API</a>.</li>
+<li><strong>window-close</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#close"><code>close</code> API</a>.</li>
+<li><strong>window-set-decorations</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setdecorations"><code>setDecorations</code> API</a>.</li>
+<li><strong>window-set-always-on-top</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setalwaysontop"><code>setAlwaysOnTop</code> API</a>.</li>
+<li><strong>window-set-size</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setsize"><code>setSize</code> API</a>.</li>
+<li><strong>window-set-min-size</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setminsize"><code>setMinSize</code> API</a>.</li>
+<li><strong>window-set-max-size</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setmaxsize"><code>setMaxSize</code> API</a>.</li>
+<li><strong>window-set-position</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setposition"><code>setPosition</code> API</a>.</li>
+<li><strong>window-set-fullscreen</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setfullscreen"><code>setFullscreen</code> API</a>.</li>
+<li><strong>window-set-focus</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setfocus"><code>setFocus</code> API</a>.</li>
+<li><strong>window-set-icon</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#seticon"><code>setIcon</code> API</a>.</li>
+<li><strong>window-set-skip-taskbar</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setskiptaskbar"><code>setSkipTaskbar</code> API</a>.</li>
+<li><strong>window-set-cursor-grab</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setcursorgrab"><code>setCursorGrab</code> API</a>.</li>
+<li><strong>window-set-cursor-visible</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setcursorvisible"><code>setCursorVisible</code> API</a>.</li>
+<li><strong>window-set-cursor-icon</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setcursoricon"><code>setCursorIcon</code> API</a>.</li>
+<li><strong>window-set-cursor-position</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#setcursorposition"><code>setCursorPosition</code> API</a>.</li>
+<li><strong>window-start-dragging</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#startdragging"><code>startDragging</code> API</a>.</li>
+<li><strong>window-print</strong>: Enables the <a href="https://tauri.app/en/docs/api/js/classes/window.WebviewWindow#print"><code>print</code> API</a>.</li>
+</ul>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left import-item" id="reexport.utils"><code>pub use <a class="mod" href="../tauri_utils/index.html" title="mod tauri_utils">tauri_utils</a> as utils;</code></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left import-item" id="reexport.Monitor"><code>pub use self::window::<a class="struct" href="window/struct.Monitor.html" title="struct tauri::window::Monitor">Monitor</a>;</code></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left import-item" id="reexport.Window"><code>pub use self::window::<a class="struct" href="window/struct.Window.html" title="struct tauri::window::Window">Window</a>;</code></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left import-item" id="reexport.WindowBuilder"><code>pub use self::window::<a class="struct" href="window/struct.WindowBuilder.html" title="struct tauri::window::WindowBuilder">WindowBuilder</a>;</code></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left import-item"><code>pub use <a class="mod" href="scope/index.html" title="mod tauri::scope">scope</a>::*;</code></div><div class="item-right docblock-short"></div></div></div><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="api/index.html" title="tauri::api mod">api</a></div><div class="item-right docblock-short"><p>The Tauri API interface.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="async_runtime/index.html" title="tauri::async_runtime mod">async_runtime</a></div><div class="item-right docblock-short"><p>The singleton async runtime used by Tauri and exposed to users.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="command/index.html" title="tauri::command mod">command</a></div><div class="item-right docblock-short"><p>The Tauri custom commands types and traits.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="http/index.html" title="tauri::http mod">http</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="plugin/index.html" title="tauri::plugin mod">plugin</a></div><div class="item-right docblock-short"><p>The Tauri plugin extension to expand Tauri functionality.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="scope/index.html" title="tauri::scope mod">scope</a></div><div class="item-right docblock-short"><p>The allowlist scopes.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="window/index.html" title="tauri::window mod">window</a></div><div class="item-right docblock-short"><p>The Tauri window types and functions.</p>
+</div></div></div><h2 id="macros" class="small-section-header"><a href="#macros">Macros</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.generate_context.html" title="tauri::generate_context macro">generate_context</a></div><div class="item-right docblock-short"><p>Reads the config file at compile time and generates a <a href="struct.Context.html" title="Context"><code>Context</code></a> based on its content.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.generate_handler.html" title="tauri::generate_handler macro">generate_handler</a></div><div class="item-right docblock-short"><p>Accepts a list of commands functions. Creates a handler that allows commands to be called from JS with invoke().</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="macro" href="macro.tauri_build_context.html" title="tauri::tauri_build_context macro">tauri_build_context</a></div><div class="item-right docblock-short"><p>Include a <a href="struct.Context.html" title="Context"><code>Context</code></a> that was generated by <a href="https://docs.rs/tauri-build"><code>tauri-build</code></a> inside your build script.</p>
+</div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.AboutMetadata.html" title="tauri::AboutMetadata struct">AboutMetadata</a></div><div class="item-right docblock-short"><p>Application metadata for the <a href="enum.MenuItem.html#variant.About" title="MenuItem::About"><code>MenuItem::About</code></a> action.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.App.html" title="tauri::App struct">App</a></div><div class="item-right docblock-short"><p>The instance of the currently running application.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.AppHandle.html" title="tauri::AppHandle struct">AppHandle</a></div><div class="item-right docblock-short"><p>A handle to the currently running application.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Asset.html" title="tauri::Asset struct">Asset</a></div><div class="item-right docblock-short"><p>A resolved asset.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.AssetResolver.html" title="tauri::AssetResolver struct">AssetResolver</a></div><div class="item-right docblock-short"><p>The asset resolver is a helper to access the <a href="trait.Assets.html" title="tauri_utils::assets::Assets"><code>tauri_utils::assets::Assets</code></a> interface.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Builder.html" title="tauri::Builder struct">Builder</a></div><div class="item-right docblock-short"><p>Builds a Tauri application.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.CloseRequestApi.html" title="tauri::CloseRequestApi struct">CloseRequestApi</a></div><div class="item-right docblock-short"><p>Api exposed on the <code>CloseRequested</code> event.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Config.html" title="tauri::Config struct">Config</a></div><div class="item-right docblock-short"><p>The tauri.conf.json is a file generated by the
+<a href="https://tauri.app/v1/api/cli#init"><code>tauri init</code></a> command that lives in
+your Tauri application source directory (src-tauri).</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Context.html" title="tauri::Context struct">Context</a></div><div class="item-right docblock-short"><p>User supplied data required inside of a Tauri application.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.CustomMenuItem.html" title="tauri::CustomMenuItem struct">CustomMenuItem</a></div><div class="item-right docblock-short"><p>A custom menu item.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Env.html" title="tauri::Env struct">Env</a></div><div class="item-right docblock-short"><p>Information about environment variables.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Event.html" title="tauri::Event struct">Event</a></div><div class="item-right docblock-short"><p>An event that was triggered.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.EventHandler.html" title="tauri::EventHandler struct">EventHandler</a></div><div class="item-right docblock-short"><p>Represents an event handler.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.GlobalWindowEvent.html" title="tauri::GlobalWindowEvent struct">GlobalWindowEvent</a></div><div class="item-right docblock-short"><p>A window event that was triggered on the specified window.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Invoke.html" title="tauri::Invoke struct">Invoke</a></div><div class="item-right docblock-short"><p>The message and resolver given to a custom command.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.InvokeError.html" title="tauri::InvokeError struct">InvokeError</a></div><div class="item-right docblock-short"><p>Error response from an <a href="struct.InvokeMessage.html" title="InvokeMessage"><code>InvokeMessage</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.InvokeMessage.html" title="tauri::InvokeMessage struct">InvokeMessage</a></div><div class="item-right docblock-short"><p>An invoke message.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.InvokePayload.html" title="tauri::InvokePayload struct">InvokePayload</a></div><div class="item-right docblock-short"><p>The payload used on the IPC invoke.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.InvokeResolver.html" title="tauri::InvokeResolver struct">InvokeResolver</a></div><div class="item-right docblock-short"><p>Resolver of a invoke message.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.LogicalPosition.html" title="tauri::LogicalPosition struct">LogicalPosition</a></div><div class="item-right docblock-short"><p>A position represented in logical pixels.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.LogicalSize.html" title="tauri::LogicalSize struct">LogicalSize</a></div><div class="item-right docblock-short"><p>A size represented in logical pixels.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Menu.html" title="tauri::Menu struct">Menu</a></div><div class="item-right docblock-short"><p>A window menu.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.MenuEvent.html" title="tauri::MenuEvent struct">MenuEvent</a></div><div class="item-right docblock-short"><p>The window menu event.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.PackageInfo.html" title="tauri::PackageInfo struct">PackageInfo</a></div><div class="item-right docblock-short"><p><code>tauri::App</code> package information.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.PageLoadPayload.html" title="tauri::PageLoadPayload struct">PageLoadPayload</a></div><div class="item-right docblock-short"><p>The payload for the <a href="type.OnPageLoad.html" title="OnPageLoad"><code>OnPageLoad</code></a> hook.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.PathResolver.html" title="tauri::PathResolver struct">PathResolver</a></div><div class="item-right docblock-short"><p>The path resolver is a helper for the application-specific <a href="api/path/index.html" title="crate::api::path"><code>crate::api::path</code></a> APIs.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.PhysicalPosition.html" title="tauri::PhysicalPosition struct">PhysicalPosition</a></div><div class="item-right docblock-short"><p>A position represented in physical pixels.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.PhysicalSize.html" title="tauri::PhysicalSize struct">PhysicalSize</a></div><div class="item-right docblock-short"><p>A size represented in physical pixels.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.RunIteration.html" title="tauri::RunIteration struct">RunIteration</a></div><div class="item-right docblock-short"><p>Metadata for a runtime event loop iteration on <code>run_iteration</code>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.State.html" title="tauri::State struct">State</a></div><div class="item-right docblock-short"><p>A guard for a state value.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.StateManager.html" title="tauri::StateManager struct">StateManager</a></div><div class="item-right docblock-short"><p>The Tauri state manager.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Submenu.html" title="tauri::Submenu struct">Submenu</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.WebviewAttributes.html" title="tauri::WebviewAttributes struct">WebviewAttributes</a></div><div class="item-right docblock-short"><p>The attributes used to create an webview.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.WindowMenuEvent.html" title="tauri::WindowMenuEvent struct">WindowMenuEvent</a></div><div class="item-right docblock-short"><p>A menu event that was triggered on a window.</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.CursorIcon.html" title="tauri::CursorIcon enum">CursorIcon</a></div><div class="item-right docblock-short"><p>Describes the appearance of the mouse cursor.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Error.html" title="tauri::Error enum">Error</a></div><div class="item-right docblock-short"><p>Runtime errors that can happen inside a Tauri application.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.EventLoopMessage.html" title="tauri::EventLoopMessage enum">EventLoopMessage</a></div><div class="item-right docblock-short"><p>The user event type.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.FileDropEvent.html" title="tauri::FileDropEvent enum">FileDropEvent</a></div><div class="item-right docblock-short"><p>The file drop event payload.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Icon.html" title="tauri::Icon enum">Icon</a></div><div class="item-right docblock-short"><p>A icon definition.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.InvokeResponse.html" title="tauri::InvokeResponse enum">InvokeResponse</a></div><div class="item-right docblock-short"><p>Response from a <a href="struct.InvokeMessage.html" title="InvokeMessage"><code>InvokeMessage</code></a> passed to the <a href="struct.InvokeResolver.html" title="InvokeResolver"><code>InvokeResolver</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.MenuEntry.html" title="tauri::MenuEntry enum">MenuEntry</a></div><div class="item-right docblock-short"><p>An entry on the system tray menu.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.MenuItem.html" title="tauri::MenuItem enum">MenuItem</a></div><div class="item-right docblock-short"><p>A menu item, bound to a pre-defined action or <code>Custom</code> emit an event. Note that status bar only
+supports <code>Custom</code> menu item variants. And on the menu bar, some platforms might not support some
+of the variants. Unsupported variant will be no-op on such platform.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Pattern.html" title="tauri::Pattern enum">Pattern</a></div><div class="item-right docblock-short"><p>An application pattern.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Position.html" title="tauri::Position enum">Position</a></div><div class="item-right docblock-short"><p>A position that’s either physical or logical.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.RunEvent.html" title="tauri::RunEvent enum">RunEvent</a></div><div class="item-right docblock-short"><p>An application event, triggered from the event loop.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Size.html" title="tauri::Size enum">Size</a></div><div class="item-right docblock-short"><p>A size that’s either physical or logical.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Theme.html" title="tauri::Theme enum">Theme</a></div><div class="item-right docblock-short"><p>System theme.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.UserAttentionType.html" title="tauri::UserAttentionType enum">UserAttentionType</a></div><div class="item-right docblock-short"><p>Type of user attention requested on a window.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.WindowEvent.html" title="tauri::WindowEvent enum">WindowEvent</a></div><div class="item-right docblock-short"><p>An event from a window.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.WindowUrl.html" title="tauri::WindowUrl enum">WindowUrl</a></div><div class="item-right docblock-short"><p>An URL to open on a Tauri webview window.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Assets.html" title="tauri::Assets trait">Assets</a></div><div class="item-right docblock-short"><p>Represents a container of file assets that are retrievable during runtime.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.ClipboardManager.html" title="tauri::ClipboardManager trait">ClipboardManager</a></div><div class="item-right docblock-short"><p>Clipboard manager.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.GlobalShortcutManager.html" title="tauri::GlobalShortcutManager trait">GlobalShortcutManager</a></div><div class="item-right docblock-short"><p>A global shortcut manager.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Manager.html" title="tauri::Manager trait">Manager</a></div><div class="item-right docblock-short"><p>Manages a running application.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Pixel.html" title="tauri::Pixel trait">Pixel</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Runtime.html" title="tauri::Runtime trait">Runtime</a></div><div class="item-right docblock-short"><p>The webview runtime interface. A wrapper around <a href="../tauri_runtime/trait.Runtime.html" title="runtime::Runtime"><code>runtime::Runtime</code></a> with the proper user event type associated.</p>
+</div></div></div><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="type" href="type.InvokeHandler.html" title="tauri::InvokeHandler type">InvokeHandler</a></div><div class="item-right docblock-short"><p>A closure that is run everytime Tauri receives a message it doesn’t explicitly handle.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.InvokeResponder.html" title="tauri::InvokeResponder type">InvokeResponder</a></div><div class="item-right docblock-short"><p>A closure that is responsible for respond a JS message.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.OnPageLoad.html" title="tauri::OnPageLoad type">OnPageLoad</a></div><div class="item-right docblock-short"><p>A closure that is run once every time a window is created and loaded.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.Result.html" title="tauri::Result type">Result</a></div><div class="item-right docblock-short"><p><code>Result&lt;T, ::tauri::Error&gt;</code></p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.SetupHook.html" title="tauri::SetupHook type">SetupHook</a></div><div class="item-right docblock-short"><p>A closure that is run when the Tauri application is setting up.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.SyncTask.html" title="tauri::SyncTask type">SyncTask</a></div><div class="item-right docblock-short"><p>A task to run on the main thread.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.Wry.html" title="tauri::Wry type">Wry</a></div><div class="item-right docblock-short"><p>A Tauri <a href="trait.Runtime.html" title="Runtime"><code>Runtime</code></a> wrapper around wry.</p>
+</div></div></div><h2 id="attributes" class="small-section-header"><a href="#attributes">Attribute Macros</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="attr" href="attr.command.html" title="tauri::command attr">command</a></div><div class="item-right docblock-short"><p>Mark a function as a command handler. It creates a wrapper function with the necessary glue code.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="tauri" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
+</body></html>

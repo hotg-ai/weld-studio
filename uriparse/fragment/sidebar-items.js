@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["FragmentError","An error representing an invalid fragment."]],"struct":[["Fragment","The fragment component as defined in [RFC3986, Section 3.5]."]]});

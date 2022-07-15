@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ParseWapmUriError",""],["ReadError",""]],"struct":[["Cached",""],["DefaultAssetLoader","An [`AssetLoader`] that loads assets using the basic solution."],["WapmUri","A URI which represents a WebAssembly module on WAPM."]],"trait":[["AssetLoader","Something that can load external resources using a URI."]]});

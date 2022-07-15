@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CoroutineTrapHandler","Helper type to force a trapping coroutine to return from a trap handler."],["TrapHandlerRegs","Registers which must be updated upon return from a trap handler."]]});

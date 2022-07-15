@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["URIError","An error representing an invalid URI."]],"struct":[["URI","A Uniform Resource Identifier (URI) as defined in RFC3986."],["URIBuilder","A builder type for [`URI]`."]]});

@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Wry is a Cross-platform WebView rendering library."><meta name="keywords" content="rust, rustlang, rust-lang, wry"><title>wry - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../wry/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../wry/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate wry</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.19.0</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#enums">Enums</a></li><li><a href="#types">Type Definitions</a></li></ul></div></section><div id="sidebar-vars" data-name="wry" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../wry/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">wry</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/wry/lib.rs.html#5-183">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Wry is a Cross-platform WebView rendering library.</p>
+<p>To build a Window with WebView embedded, we could use <a href="application/index.html" title="application"><code>application</code></a> module to create
+<a href="application/event_loop/struct.EventLoop.html"><code>EventLoop</code></a> and the window. It’s a module that re-exports APIs from <a href="https://crates.io/crates/tao">tao</a>. Then
+use <a href="webview/struct.WebView.html"><code>webview</code></a> module to create the <a href="webview/struct.WebView.html"><code>WebView</code></a> from the <a href="application/window/struct.Window.html"><code>Window</code></a>. Here’s a minimum example
+showing how to create a hello world window and load the url to Tauri website.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">wry::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+  <span class="kw">use</span> <span class="ident">wry</span>::{
+    <span class="ident">application</span>::{
+      <span class="ident">event</span>::{<span class="ident">Event</span>, <span class="ident">StartCause</span>, <span class="ident">WindowEvent</span>},
+      <span class="ident">event_loop</span>::{<span class="ident">ControlFlow</span>, <span class="ident">EventLoop</span>},
+      <span class="ident">window::WindowBuilder</span>,
+    },
+    <span class="ident">webview::WebViewBuilder</span>,
+  };
+
+  <span class="kw">let</span> <span class="ident">event_loop</span> <span class="op">=</span> <span class="ident">EventLoop::new</span>();
+  <span class="kw">let</span> <span class="ident">window</span> <span class="op">=</span> <span class="ident">WindowBuilder::new</span>()
+    .<span class="ident">with_title</span>(<span class="string">&quot;Hello World&quot;</span>)
+    .<span class="ident">build</span>(<span class="kw-2">&amp;</span><span class="ident">event_loop</span>)<span class="question-mark">?</span>;
+  <span class="kw">let</span> <span class="ident">_webview</span> <span class="op">=</span> <span class="ident">WebViewBuilder::new</span>(<span class="ident">window</span>)<span class="question-mark">?</span>
+    .<span class="ident">with_url</span>(<span class="string">&quot;https://tauri.studio&quot;</span>)<span class="question-mark">?</span>
+    .<span class="ident">build</span>()<span class="question-mark">?</span>;
+
+  <span class="ident">event_loop</span>.<span class="ident">run</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">event</span>, <span class="kw">_</span>, <span class="ident">control_flow</span><span class="op">|</span> {
+    <span class="kw-2">*</span><span class="ident">control_flow</span> <span class="op">=</span> <span class="ident">ControlFlow::Wait</span>;
+
+    <span class="kw">match</span> <span class="ident">event</span> {
+      <span class="ident">Event::NewEvents</span>(<span class="ident">StartCause::Init</span>) =&gt; <span class="macro">println!</span>(<span class="string">&quot;Wry has started!&quot;</span>),
+      <span class="ident">Event::WindowEvent</span> {
+        <span class="ident">event</span>: <span class="ident">WindowEvent::CloseRequested</span>,
+        ..
+      } =&gt; <span class="kw-2">*</span><span class="ident">control_flow</span> <span class="op">=</span> <span class="ident">ControlFlow::Exit</span>,
+      <span class="kw">_</span> =&gt; (),
+    }
+  });
+}</code></pre></div>
+<h3 id="feature-flags"><a href="#feature-flags">Feature flags</a></h3>
+<p>Wry uses a set of feature flags to toggle several advanced features. <code>file-drop</code>, <code>protocol</code>,
+and <code>tray</code> are enabled by default.</p>
+<ul>
+<li><code>file-drop</code>: Enables <a href="crate::webview::WebView::with_file_drop_handler"><code>with_file_drop_handler</code></a> to control the behaviour when there are files
+interacting with the window. Enabled by default.</li>
+<li><code>protocol</code>: Enables <a href="crate::webview::WebView::with_custom_protocol"><code>with_custom_protocol</code></a> to define custom URL scheme for handling tasks like
+loading assets. Enabled by default.</li>
+<li><code>tray</code>: Enables system tray and more menu item variants on <strong>Linux</strong>.
+This feature requires either <code>libayatana-appindicator</code> or <code>libappindicator</code> package installed.
+You can still create those types if you disable it. They just don’t create the actual objects.</li>
+<li><code>devtools</code>: Enables devtools on release builds. Devtools are always enabled in debug builds.
+On <strong>macOS</strong>, enabling devtools, reuires calling private apis so you should enabling this flag in release
+build if your app needs to publish to App Store.</li>
+<li><code>transparent</code>: Transparent background on <strong>macOS</strong> requires calling private functions.
+Avoid this in release build if your app needs to publish to App Store.</li>
+<li><code>fullscreen</code>: Fullscreen video and other media on <strong>macOS</strong> requires calling private functions.
+Avoid this in release build if your app needs to publish to App Store.</li>
+<li><code>dox</code>: Enables this in <code>package.metadata.docs.rs</code> section to skip linking some <strong>Linux</strong>
+libraries and prevent from building documentation on doc.rs fails.</li>
+</ul>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="application/index.html" title="wry::application mod">application</a></div><div class="item-right docblock-short"><p>Re-exported Tao APIs</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="http/index.html" title="wry::http mod">http</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="webview/index.html" title="wry::webview mod">webview</a></div><div class="item-right docblock-short"><p><a href="webview/struct.WebView.html" title="WebView"><code>WebView</code></a> struct and associated types.</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Error.html" title="wry::Error enum">Error</a></div><div class="item-right docblock-short"><p>Errors returned by wry.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Value.html" title="wry::Value enum">Value</a></div><div class="item-right docblock-short"><p>Represents any valid JSON value.</p>
+</div></div></div><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="type" href="type.Result.html" title="wry::Result type">Result</a></div><div class="item-right docblock-short"><p>Convenient type alias of Result type for wry.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="wry" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
+</body></html>

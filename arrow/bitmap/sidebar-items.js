@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Bitmap","Defines a bitmap, which is used to track which values in an Arrow array are null."]]});

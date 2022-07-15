@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["substring","Returns an [`ArrayRef`] with substrings of all the elements in `array`."],["substring_by_char","Arguments"]]});

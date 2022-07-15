@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Program","Program to use on the [`open()`] call."]],"fn":[["open","Opens path or URL with the program specified in `with`, or system default if `None`."]]});

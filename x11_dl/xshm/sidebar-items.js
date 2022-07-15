@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["XShmCompletionEvent",""],["Xext",""],["XshmSegmentInfo",""]],"type":[["ShmSeg",""]]});

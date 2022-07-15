@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["RelativeReferenceError","An error representing an invalid relative reference."]],"struct":[["RelativeReference","A relative reference as defined in [RFC3986, Section 4.1]."],["RelativeReferenceBuilder","A builder type for [`RelativeReference]`."]]});

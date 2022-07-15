@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PathError","An error representing an invalid path."]],"struct":[["Path","The path component as defined in [RFC3986, Section 3.3]."],["Segment","A segment of a path."]]});

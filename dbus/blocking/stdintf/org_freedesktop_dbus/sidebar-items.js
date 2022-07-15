@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["EmitsChangedSignal",""],["ReleaseNameReply",""],["RequestNameReply",""]],"struct":[["ObjectManagerInterfacesAdded",""],["ObjectManagerInterfacesRemoved",""],["PropertiesPropertiesChanged",""]],"trait":[["Introspectable",""],["ObjectManager",""],["Peer",""],["Properties",""]]});

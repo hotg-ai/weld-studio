@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Direction","This is the direction from the user’s perspective. Are we importing functions to call, or defining functions and exporting them to be called?"]],"fn":[["load",""]],"struct":[["Files",""],["Ns",""],["Source",""],["TypeInfo",""],["Types",""]],"trait":[["Generator",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["compile",""],["configure",""],["create_dataset","Create a new dataset based on a SQL query."],["known_proc_blocks",""]],"mod":[["runtime",""],["shared","Types that are shared between the backend and frontend."]],"struct":[["AppState",""],["Database",""],["DatasetInfo",""]]});

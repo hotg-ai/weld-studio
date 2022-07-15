@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Builder","Builds a [`TauriPlugin`]."],["TauriPlugin","Plugin struct that is returned by the [`Builder`]. Should only be constructed through the builder."]],"trait":[["Plugin","The plugin interface."]],"type":[["Result","The result type of Tauri plugin module."]]});

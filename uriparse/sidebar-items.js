@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["authority","Authority Component"],["fragment","Fragment Component"],["path","Path Component"],["query","Query Component"],["relative_reference",""],["scheme","Scheme Component"],["uri","URIs, Relative References, and URI References"],["uri_reference",""]]});

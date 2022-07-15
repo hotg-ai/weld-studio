@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Monitor","Monitor descriptor."]]});

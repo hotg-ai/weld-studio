@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["URIReferenceError","An error representing an invalid URI reference."]],"struct":[["URIReference","A URI reference as defined in [RFC3986, Section 4.1]."],["URIReferenceBuilder","A builder type for [`URIReference]`."]]});

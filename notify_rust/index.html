@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Desktop Notifications for Rust."><meta name="keywords" content="rust, rustlang, rust-lang, notify_rust"><title>notify_rust - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../notify_rust/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../notify_rust/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate notify_rust</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 4.5.8</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div></section><div id="sidebar-vars" data-name="notify_rust" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../notify_rust/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">notify_rust</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/notify_rust/lib.rs.html#1-211">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Desktop Notifications for Rust.</p>
+<p>Desktop notifications are popup messages generated to notify the user of certain events.</p>
+<h3 id="platform-support"><a href="#platform-support">Platform Support</a></h3>
+<p>This library was originally conceived with the <a href="https://en.wikipedia.org/wiki/XDG">XDG</a> notification specification in mind.
+Since version 3.3 this crate also builds on macOS, however the semantics of the <a href="https://en.wikipedia.org/wiki/XDG">XDG</a> specification and macOS <code>NSNotifications</code>
+are quite different.
+Therefore only a very small subset of functions is supported on macOS.
+Certain methods don’t have any effect there, others will explicitly fail to compile,
+in these cases you will have to add platform specific toggles to your code.
+For more see <a href="#platform-differences">platform differences</a></p>
+<h2 id="examples"><a href="#examples">Examples</a></h2><h3 id="example-1-simple-notification"><a href="#example-1-simple-notification">Example 1: Simple Notification</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="ident">Notification::new</span>()
+    .<span class="ident">summary</span>(<span class="string">&quot;Firefox News&quot;</span>)
+    .<span class="ident">body</span>(<span class="string">&quot;This will almost look like a real firefox notification.&quot;</span>)
+    .<span class="ident">icon</span>(<span class="string">&quot;firefox&quot;</span>)
+    .<span class="ident">timeout</span>(<span class="ident">Timeout::Milliseconds</span>(<span class="number">6000</span>)) <span class="comment">//milliseconds</span>
+    .<span class="ident">show</span>().<span class="ident">unwrap</span>();</code></pre></div>
+<h3 id="example-2-persistent-notification"><a href="#example-2-persistent-notification">Example 2: Persistent Notification</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="ident">Notification::new</span>()
+    .<span class="ident">summary</span>(<span class="string">&quot;Category:email&quot;</span>)
+    .<span class="ident">body</span>(<span class="string">&quot;This has nothing to do with emails.\nIt should not go away until you acknowledge it.&quot;</span>)
+    .<span class="ident">icon</span>(<span class="string">&quot;thunderbird&quot;</span>)
+    .<span class="ident">appname</span>(<span class="string">&quot;thunderbird&quot;</span>)
+    .<span class="ident">hint</span>(<span class="ident">Hint::Category</span>(<span class="string">&quot;email&quot;</span>.<span class="ident">to_owned</span>()))
+    .<span class="ident">hint</span>(<span class="ident">Hint::Resident</span>(<span class="bool-val">true</span>)) <span class="comment">// this is not supported by all implementations</span>
+    .<span class="ident">timeout</span>(<span class="ident">Timeout::Never</span>) <span class="comment">// this however is</span>
+    .<span class="ident">show</span>().<span class="ident">unwrap</span>();</code></pre></div>
+<p>Careful! There are no checks whether you use hints twice.
+It is possible to set <code>urgency=Low</code> AND <code>urgency=Critical</code>, in which case the behavior of the server is undefined.</p>
+<h3 id="example-3-ask-the-user-to-do-something"><a href="#example-3-ask-the-user-to-do-something">Example 3: Ask the user to do something</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="ident">Notification::new</span>().<span class="ident">summary</span>(<span class="string">&quot;click me&quot;</span>)
+                   .<span class="ident">action</span>(<span class="string">&quot;default&quot;</span>, <span class="string">&quot;default&quot;</span>)
+                   .<span class="ident">action</span>(<span class="string">&quot;clicked&quot;</span>, <span class="string">&quot;click here&quot;</span>)
+                   .<span class="ident">hint</span>(<span class="ident">Hint::Resident</span>(<span class="bool-val">true</span>))
+                   .<span class="ident">show</span>()
+                   .<span class="ident">unwrap</span>()
+                   .<span class="ident">wait_for_action</span>(<span class="op">|</span><span class="ident">action</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">action</span> {
+                                        <span class="string">&quot;default&quot;</span> =&gt; <span class="macro">println!</span>(<span class="string">&quot;you clicked \&quot;default\&quot;&quot;</span>),
+                                        <span class="string">&quot;clicked&quot;</span> =&gt; <span class="macro">println!</span>(<span class="string">&quot;that was correct&quot;</span>),
+                                        <span class="comment">// here &quot;__closed&quot; is a hard coded keyword</span>
+                                        <span class="string">&quot;__closed&quot;</span> =&gt; <span class="macro">println!</span>(<span class="string">&quot;the notification was closed&quot;</span>),
+                                        <span class="kw">_</span> =&gt; ()
+                                    });</code></pre></div>
+<h3 id="minimal-example"><a href="#minimal-example">Minimal Example</a></h3>
+<p>You can omit almost everything</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="ident">Notification::new</span>().<span class="ident">show</span>();</code></pre></div>
+<p>more <a href="https://github.com/hoodie/notify-rust/tree/main/examples">examples</a> in the repository.</p>
+<h2 id="platform-differences"><a href="#platform-differences">Platform Differences</a></h2><details>
+✔︎ = works <br/>
+❌ = will not compile
+<h3 id="notification"><a href="#notification"><code>Notification</code></a></h3><div><table><thead><tr><th>method</th><th>XDG</th><th>macOS</th><th>windows</th></tr></thead><tbody>
+<tr><td><code>fn appname(...)</code></td><td>✔︎</td><td></td><td></td></tr>
+<tr><td><code>fn summary(...)</code></td><td>✔︎</td><td>✔︎</td><td>✔︎</td></tr>
+<tr><td><code>fn subtitle(...)</code></td><td></td><td>✔︎</td><td>✔︎</td></tr>
+<tr><td><code>fn body(...)</code></td><td>✔︎</td><td>✔︎</td><td>✔︎</td></tr>
+<tr><td><code>fn icon(...)</code></td><td>✔︎</td><td></td><td></td></tr>
+<tr><td><code>fn auto_icon(...)</code></td><td>✔︎</td><td></td><td></td></tr>
+<tr><td><code>fn hint(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn timeout(...)</code></td><td>✔︎</td><td></td><td>✔︎</td></tr>
+<tr><td><code>fn urgency(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn action(...)</code></td><td>✔︎</td><td></td><td></td></tr>
+<tr><td><code>fn id(...)</code></td><td>✔︎</td><td></td><td></td></tr>
+<tr><td><code>fn finalize(...)</code></td><td>✔︎</td><td>✔︎</td><td>✔︎</td></tr>
+<tr><td><code>fn show(...)</code></td><td>✔︎</td><td>✔︎</td><td>✔︎</td></tr>
+</tbody></table>
+</div><h3 id="notificationhandle"><a href="#notificationhandle"><code>NotificationHandle</code></a></h3><div><table><thead><tr><th>method</th><th>XDG</th><th>macOS</th><th>windows</th></tr></thead><tbody>
+<tr><td><code>fn wait_for_action(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn close(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn on_close(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn update(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn id(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+</tbody></table>
+</div><h3 id="functions"><a href="#functions">Functions</a></h3><div><table><thead><tr><th></th><th>XDG</th><th>macOS</th><th>windows</th></tr></thead><tbody>
+<tr><td><code>fn get_capabilities(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn get_server_information(...)</code></td><td>✔︎</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>fn set_application(...)</code></td><td>❌</td><td>✔︎</td><td>❌</td></tr>
+<tr><td><code>fn get_bundle_identifier_or_default(...)</code></td><td>❌</td><td>✔︎</td><td>❌</td></tr>
+</tbody></table>
+</div><h4 id="toggles"><a href="#toggles">Toggles</a></h4>
+<p>Please use <code>target_os</code> toggles if you plan on using methods labeled with ❌.</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;macos&quot;</span>)]</span>
+<span class="comment">// or</span>
+<span class="comment">// #### #[cfg(all(unix, not(target_os = &quot;macos&quot;)))]</span></code></pre></div>
+</details>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="error/index.html" title="notify_rust::error mod">error</a></div><div class="item-right docblock-short"></div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Notification.html" title="notify_rust::Notification struct">Notification</a></div><div class="item-right docblock-short"><p>Desktop notification.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.NotificationHandle.html" title="notify_rust::NotificationHandle struct">NotificationHandle</a></div><div class="item-right docblock-short"><p>A handle to a shown notification.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.ServerInformation.html" title="notify_rust::ServerInformation struct">ServerInformation</a></div><div class="item-right docblock-short"><p>Return value of <code>get_server_information()</code>.</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.ActionResponse.html" title="notify_rust::ActionResponse enum">ActionResponse</a></div><div class="item-right docblock-short"><p>Response to an action</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.CloseReason.html" title="notify_rust::CloseReason enum">CloseReason</a></div><div class="item-right docblock-short"><p>Reased passed to <code>NotificationClosed</code> Signal</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.DbusStack.html" title="notify_rust::DbusStack enum">DbusStack</a></div><div class="item-right docblock-short"><p>Which Dbus implementation are we using?</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Hint.html" title="notify_rust::Hint enum">Hint</a></div><div class="item-right docblock-short"><p><code>Hints</code> allow you to pass extra information to the server.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Timeout.html" title="notify_rust::Timeout enum">Timeout</a></div><div class="item-right docblock-short"><p>Describes the timeout of a notification</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Urgency.html" title="notify_rust::Urgency enum">Urgency</a></div><div class="item-right docblock-short"><p>Levels of Urgency.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.CloseHandler.html" title="notify_rust::CloseHandler trait">CloseHandler</a></div><div class="item-right docblock-short"><p>Your handy callback for the <code>Close</code> signal of your Notification.</p>
+</div></div></div><h2 id="functions-1" class="small-section-header"><a href="#functions-1">Functions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.dbus_stack.html" title="notify_rust::dbus_stack fn">dbus_stack</a></div><div class="item-right docblock-short"><p>Get the currently dsed <a href="enum.DbusStack.html" title="DbusStack"><code>DbusStack</code></a></p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.get_capabilities.html" title="notify_rust::get_capabilities fn">get_capabilities</a></div><div class="item-right docblock-short"><p>Get list of all capabilities of the running notification server.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.get_server_information.html" title="notify_rust::get_server_information fn">get_server_information</a></div><div class="item-right docblock-short"><p>Returns a struct containing <code>ServerInformation</code>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.handle_action.html" title="notify_rust::handle_action fn">handle_action</a></div><div class="item-right docblock-short"><p>Listens for the <code>ActionInvoked(UInt32, String)</code> Signal.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="notify_rust" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
+</body></html>

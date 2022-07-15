@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Decimal128","Represents a decimal value with precision and scale. The decimal value could represented by a signed 128-bit integer."],["Decimal256","Represents a decimal value with precision and scale. The decimal value could be represented by a signed 256-bit integer."]],"trait":[["BasicDecimal",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Colorspace",""],["InterpType",""],["PixbufAlphaMode",""],["PixbufError",""],["PixbufRotation",""]],"mod":[["prelude","Traits intended for blanket imports."]],"struct":[["Pixbuf",""],["PixbufAnimation",""],["PixbufAnimationIter",""],["PixbufFormat",""],["PixbufFormatFlags",""],["PixbufLoader",""],["PixbufNonAnim",""],["PixbufSimpleAnim",""]]});

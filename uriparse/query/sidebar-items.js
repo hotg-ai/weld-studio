@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["QueryError","An error representing an invalid query."]],"struct":[["Query","The query component as defined in [RFC3986, Section 3.4]."]]});

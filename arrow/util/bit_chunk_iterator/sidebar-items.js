@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BitChunkIterator",""],["BitChunks","Iterates over an arbitrarily aligned byte buffer"],["UnalignedBitChunk","Iterates over an arbitrarily aligned byte buffer"]]});

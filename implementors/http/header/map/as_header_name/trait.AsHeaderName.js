@@ -1,0 +1,9 @@
+(function() {var implementors = {};
+implementors["attohttpc"] = [];
+implementors["http"] = [];
+implementors["hyper"] = [];
+implementors["reqwest"] = [];
+implementors["tauri"] = [];
+implementors["tauri_runtime"] = [];
+implementors["wry"] = [];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

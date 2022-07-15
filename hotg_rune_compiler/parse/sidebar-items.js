@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ItemType",""]],"mod":[["yaml","Definitions for the Runefile’s YAML format."]],"struct":[["FrontendStorage","Representative struct for the query group."],["NotFound",""],["ParseFailed",""],["WrongItemType",""]],"trait":[["Frontend","The Rune compiler’s YAML frontend."]]});

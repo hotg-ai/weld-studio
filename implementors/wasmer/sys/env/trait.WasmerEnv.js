@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["hotg_rune_runtime"] = [{"text":"impl <a class=\"trait\" href=\"wasmer/sys/env/trait.WasmerEnv.html\" title=\"trait wasmer::sys::env::WasmerEnv\">WasmerEnv</a> for <a class=\"struct\" href=\"hotg_rune_runtime/zune/proc_block_v1/struct.ProcBlockV1Data.html\" title=\"struct hotg_rune_runtime::zune::proc_block_v1::ProcBlockV1Data\">ProcBlockV1Data</a>","synthetic":false,"types":["hotg_rune_runtime::zune::proc_block_v1::ProcBlockV1Data"]}];
+implementors["wasmer"] = [];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

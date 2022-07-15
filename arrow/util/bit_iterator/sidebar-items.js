@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BitIndexIterator","An iterator of `usize` whose index in a provided bitmask is true"],["BitSliceIterator","Iterator of contiguous ranges of set bits within a provided packed bitmask"]]});

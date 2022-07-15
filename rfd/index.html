@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Rusty File Dialogs is a cross platform library for using native file open/save dialogs. It provides both asynchronous and synchronous APIs. Supported platforms:"><meta name="keywords" content="rust, rustlang, rust-lang, rfd"><title>rfd - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rfd/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../rfd/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate rfd</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.9.1</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li></ul></div></section><div id="sidebar-vars" data-name="rfd" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rfd/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">rfd</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rfd/lib.rs.html#1-158">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Rusty File Dialogs is a cross platform library for using native file open/save dialogs.
+It provides both asynchronous and synchronous APIs. Supported platforms:</p>
+<ul>
+<li>Windows</li>
+<li>macOS</li>
+<li>Linux &amp; BSDs (GTK3 or XDG Desktop Portal)</li>
+<li>WASM32 (async only)</li>
+</ul>
+<h2 id="examples"><a href="#examples">Examples</a></h2><h3 id="synchronous"><a href="#synchronous">Synchronous</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">rfd::FileDialog</span>;
+
+<span class="kw">let</span> <span class="ident">files</span> <span class="op">=</span> <span class="ident">FileDialog::new</span>()
+    .<span class="ident">add_filter</span>(<span class="string">&quot;text&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;txt&quot;</span>, <span class="string">&quot;rs&quot;</span>])
+    .<span class="ident">add_filter</span>(<span class="string">&quot;rust&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;rs&quot;</span>, <span class="string">&quot;toml&quot;</span>])
+    .<span class="ident">set_directory</span>(<span class="string">&quot;/&quot;</span>)
+    .<span class="ident">pick_file</span>();</code></pre></div>
+<h3 id="asynchronous"><a href="#asynchronous">Asynchronous</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">rfd::AsyncFileDialog</span>;
+
+<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="kw">async</span> {
+    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">AsyncFileDialog::new</span>()
+        .<span class="ident">add_filter</span>(<span class="string">&quot;text&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;txt&quot;</span>, <span class="string">&quot;rs&quot;</span>])
+        .<span class="ident">add_filter</span>(<span class="string">&quot;rust&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;rs&quot;</span>, <span class="string">&quot;toml&quot;</span>])
+        .<span class="ident">set_directory</span>(<span class="string">&quot;/&quot;</span>)
+        .<span class="ident">pick_file</span>()
+        .<span class="kw">await</span>;
+
+    <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">file</span>.<span class="ident">unwrap</span>().<span class="ident">read</span>().<span class="kw">await</span>;
+};</code></pre></div>
+<h2 id="linux--bsd-backends"><a href="#linux--bsd-backends">Linux &amp; BSD backends</a></h2>
+<p>On Linux &amp; BSDs, two backends are available, one using the <a href="https://gtk-rs.org/">GTK3 Rust bindings</a>
+and the other using the <a href="https://github.com/flatpak/xdg-desktop-portal">XDG Desktop Portal</a>
+D-Bus API through <a href="https://github.com/bilelmoussaoui/ashpd">ashpd</a> &amp;
+<a href="https://gitlab.freedesktop.org/dbus/zbus/">zbus</a>.</p>
+<h3 id="gtk-backend"><a href="#gtk-backend">GTK backend</a></h3>
+<p>The GTK backend is used with the <code>gtk3</code> Cargo feature which is enabled by default. The GTK3
+backend requires the C library and development headers to be installed to build RFD. The package
+names on various distributions are:</p>
+<div><table><thead><tr><th>Distribution</th><th>Installation Command</th></tr></thead><tbody>
+<tr><td>Fedora</td><td>dnf install gtk3-devel</td></tr>
+<tr><td>Arch</td><td>pacman -S gtk3</td></tr>
+<tr><td>Debian &amp; Ubuntu</td><td>apt install libgtk-3-dev</td></tr>
+</tbody></table>
+</div><h3 id="xdg-desktop-portal-backend"><a href="#xdg-desktop-portal-backend">XDG Desktop Portal backend</a></h3>
+<p>The XDG Desktop Portal backend is used when the <code>gtk3</code> feature is disabled with
+<a href="https://doc.rust-lang.org/cargo/reference/features.html#dependency-features"><code>default-features = false</code></a>, and <code>xdg-portal</code> is enabled instead. This backend will use either the GTK or KDE file dialog depending on the desktop environment
+in use at runtime. It does not have any non-Rust
+build dependencies, however it requires the user to have either the
+<a href="https://github.com/flatpak/xdg-desktop-portal-gtk">GTK</a>,
+<a href="https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome">GNOME</a>, or
+<a href="https://invent.kde.org/plasma/xdg-desktop-portal-kde/">KDE</a> XDG Desktop Portal backend installed
+at runtime. These are typically installed by the distribution together with the desktop environment.
+If you are packaging an application that uses RFD, ensure either one of these is installed
+with the package. The
+<a href="https://github.com/emersion/xdg-desktop-portal-wlr">wlroots portal backend</a> does not implement the
+D-Bus API that RFD requires (it does not interfere with the other portal implementations;
+they can all be installed simultaneously).</p>
+<p>The XDG Desktop Portal has no API for message dialogs, so the <a href="struct.MessageDialog.html" title="MessageDialog">MessageDialog</a> and
+<a href="struct.AsyncMessageDialog.html" title="AsyncMessageDialog">AsyncMessageDialog</a> structs will not build with this backend.</p>
+<h2 id="macos-non-windowed-applications-async-and-threading"><a href="#macos-non-windowed-applications-async-and-threading">macOS non-windowed applications, async, and threading</a></h2>
+<p>macOS async dialogs require an <code>NSApplication</code> instance, so the dialog is only truly async when
+opened in windowed environment like <code>winit</code> or <code>SDL2</code>. Otherwise, it will fallback to sync dialog.
+It is also recommended to spawn dialogs on your main thread. RFD can run dialogs from any thread
+but it is only possible in a windowed app and it adds a little bit of overhead. So it is recommended
+to <a href="https://github.com/PolyMeilex/rfd/blob/master/examples/async.rs">spawn on main and await in other thread</a>.
+Non-windowed apps will never be able to spawn async dialogs or from threads other than the main thread.</p>
+<h2 id="cargo-features"><a href="#cargo-features">Cargo features</a></h2>
+<ul>
+<li><code>gtk3</code>: Uses GTK for dialogs on Linux &amp; BSDs; has no effect on Windows and macOS</li>
+<li><code>xdg-portal</code>: Uses XDG Desktop Portal instead of GTK on Linux &amp; BSDs</li>
+</ul>
+<h2 id="state"><a href="#state">State</a></h2><div><table><thead><tr><th>API Stability</th></tr></thead><tbody>
+<tr><td>🚧</td></tr>
+</tbody></table>
+</div><div><table><thead><tr><th>Feature</th><th>Linux</th><th>Windows</th><th>MacOS</th><th>Wasm32</th></tr></thead><tbody>
+<tr><td>SingleFile</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>MultipleFile</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>PickFolder</td><td>✔</td><td>✔</td><td>✔</td><td>✖</td></tr>
+<tr><td>SaveFile</td><td>✔</td><td>✔</td><td>✔</td><td>✖</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Filters</td><td>✔ (<a href="https://github.com/PolyMeilex/rfd/issues/42">GTK only</a>)</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>StartingPath</td><td>✔</td><td>✔</td><td>✔</td><td>✖</td></tr>
+<tr><td>Async</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+</tbody></table>
+</div><h2 id="rfd-extras"><a href="#rfd-extras">rfd-extras</a></h2>
+<p>AKA features that are not file related</p>
+<div><table><thead><tr><th>Feature</th><th>Linux</th><th>Windows</th><th>MacOS</th><th>Wasm32</th></tr></thead><tbody>
+<tr><td>MessageDialog</td><td>✔ (GTK only)</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>PromptDialog</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>ColorPicker</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table>
+</div></div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.AsyncFileDialog.html" title="rfd::AsyncFileDialog struct">AsyncFileDialog</a></div><div class="item-right docblock-short"><p>Asynchronous File Dialog. Supported platforms:</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.AsyncMessageDialog.html" title="rfd::AsyncMessageDialog struct">AsyncMessageDialog</a></div><div class="item-right docblock-short"><p>Asynchronous Message Dialog. Supported platforms:</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.FileDialog.html" title="rfd::FileDialog struct">FileDialog</a></div><div class="item-right docblock-short"><p>Synchronous File Dialog. Supported platforms:</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.FileHandle.html" title="rfd::FileHandle struct">FileHandle</a></div><div class="item-right docblock-short"><p>FileHandle is a way of abstracting over a file returned by a dialog</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.MessageDialog.html" title="rfd::MessageDialog struct">MessageDialog</a></div><div class="item-right docblock-short"><p>Synchronous Message Dialog. Supported platforms:</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.MessageButtons.html" title="rfd::MessageButtons enum">MessageButtons</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.MessageLevel.html" title="rfd::MessageLevel enum">MessageLevel</a></div><div class="item-right docblock-short"></div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rfd" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
+</body></html>

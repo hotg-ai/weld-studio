@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A complete, safe, native Rust implementation of Apache Arrow, a cross-language development platform for in-memory data."><meta name="keywords" content="rust, rustlang, rust-lang, arrow"><title>arrow - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../arrow/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../arrow/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate arrow</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 17.0.0</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#modules">Modules</a></li></ul></div></section><div id="sidebar-vars" data-name="arrow" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../arrow/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">arrow</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/arrow/lib.rs.html#18-251">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A complete, safe, native Rust implementation of <a href="https://arrow.apache.org">Apache Arrow</a>, a cross-language
+development platform for in-memory data.</p>
+<h2 id="columnar-format"><a href="#columnar-format">Columnar Format</a></h2>
+<p>The <a href="array/index.html"><code>array</code></a> module provides statically typed implementations of all the array
+types as defined by the <a href="https://arrow.apache.org/docs/format/Columnar.html">Arrow Columnar Format</a>.</p>
+<p>For example, an <a href="array/type.Int32Array.html"><code>Int32Array</code></a> represents a nullable array of <code>i32</code></p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">Int32Array::from</span>(<span class="macro">vec!</span>[<span class="prelude-val">Some</span>(<span class="number">1</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>)]);
+<span class="macro">assert_eq!</span>(<span class="ident">array</span>.<span class="ident">len</span>(), <span class="number">3</span>);
+<span class="macro">assert_eq!</span>(<span class="ident">array</span>.<span class="ident">value</span>(<span class="number">0</span>), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(<span class="ident">array</span>.<span class="ident">is_null</span>(<span class="number">1</span>), <span class="bool-val">true</span>);
+
+<span class="kw">let</span> <span class="ident">collected</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">array</span>.<span class="ident">iter</span>().<span class="ident">collect</span>();
+<span class="macro">assert_eq!</span>(<span class="ident">collected</span>, <span class="macro">vec!</span>[<span class="prelude-val">Some</span>(<span class="number">1</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>)]);
+<span class="macro">assert_eq!</span>(<span class="ident">array</span>.<span class="ident">values</span>(), [<span class="number">1</span>, <span class="number">0</span>, <span class="number">3</span>])</code></pre></div>
+<p>It is also possible to write generic code. For example, the following is generic over
+all primitively typed arrays:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn</span> <span class="ident">sum</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ArrowPrimitiveType</span><span class="op">&gt;</span>(<span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="ident">PrimitiveArray</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">T::Native</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">ArrowPrimitiveType</span>,
+    <span class="ident">T::Native</span>: <span class="ident">Sum</span>
+{
+    <span class="ident">array</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">unwrap_or_default</span>()).<span class="ident">sum</span>()
+}
+
+<span class="macro">assert_eq!</span>(<span class="ident">sum</span>(<span class="kw-2">&amp;</span><span class="ident">Float32Array::from</span>(<span class="macro">vec!</span>[<span class="number">1.1</span>, <span class="number">2.9</span>, <span class="number">3.</span>])), <span class="number">7.</span>);
+<span class="macro">assert_eq!</span>(<span class="ident">sum</span>(<span class="kw-2">&amp;</span><span class="ident">TimestampNanosecondArray::from</span>(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])), <span class="number">6</span>);</code></pre></div>
+<p>For more examples, consult the <a href="array/index.html"><code>array</code></a> docs.</p>
+<h2 id="type-erasure--trait-objects"><a href="#type-erasure--trait-objects">Type Erasure / Trait Objects</a></h2>
+<p>It is often the case that code wishes to handle any type of array, without necessarily knowing
+its concrete type. This use-case is catered for by a combination of <a href="array/index.html"><code>Array</code></a>
+and <a href="datatypes/enum.DataType.html"><code>DataType</code></a>, with the former providing a type-erased container for
+the array, and the latter identifying the concrete type of array.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn</span> <span class="ident">impl_string</span>(<span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="ident">StringArray</span>) {}
+<span class="kw">fn</span> <span class="ident">impl_f32</span>(<span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="ident">Float32Array</span>) {}
+
+<span class="kw">fn</span> <span class="ident">impl_dyn</span>(<span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Array</span>) {
+    <span class="kw">match</span> <span class="ident">array</span>.<span class="ident">data_type</span>() {
+        <span class="ident">DataType::Utf8</span> =&gt; <span class="ident">impl_string</span>(<span class="ident">array</span>.<span class="ident">as_any</span>().<span class="ident">downcast_ref</span>().<span class="ident">unwrap</span>()),
+        <span class="ident">DataType::Float32</span> =&gt; <span class="ident">impl_f32</span>(<span class="ident">array</span>.<span class="ident">as_any</span>().<span class="ident">downcast_ref</span>().<span class="ident">unwrap</span>()),
+        <span class="kw">_</span> =&gt; <span class="macro">unimplemented!</span>()
+    }
+}</code></pre></div>
+<p>It is also common to want to write a function that returns one of a number of possible
+array implementations. <a href="array/type.ArrayRef.html"><code>ArrayRef</code></a> is a type-alias for <a href="array/trait.Array.html"><code>Arc&lt;dyn Array&gt;</code></a>
+which is frequently used for this purpose</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn</span> <span class="ident">parse_to_primitive</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="ident">PrimitiveArray</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">ArrowPrimitiveType</span>,
+    <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span>,
+{
+    <span class="ident">PrimitiveArray::from_iter</span>(<span class="ident">iter</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">T::Native::from_str</span>(<span class="ident">val</span>).<span class="ident">ok</span>()))
+}
+
+<span class="kw">fn</span> <span class="ident">parse_strings</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>, <span class="ident">to_data_type</span>: <span class="ident">DataType</span>) -&gt; <span class="ident">ArrayRef</span>
+<span class="kw">where</span>
+    <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span>,
+{
+   <span class="kw">match</span> <span class="ident">to_data_type</span> {
+       <span class="ident">DataType::Int32</span> =&gt; <span class="ident">Arc::new</span>(<span class="ident">parse_to_primitive</span>::<span class="op">&lt;</span><span class="ident">Int32Type</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">iter</span>)) <span class="kw">as</span> <span class="kw">_</span>,
+       <span class="ident">DataType::UInt32</span> =&gt; <span class="ident">Arc::new</span>(<span class="ident">parse_to_primitive</span>::<span class="op">&lt;</span><span class="ident">UInt32Type</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">iter</span>)) <span class="kw">as</span> <span class="kw">_</span>,
+       <span class="kw">_</span> =&gt; <span class="macro">unimplemented!</span>()
+   }
+}
+
+<span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">parse_strings</span>([<span class="string">&quot;1&quot;</span>, <span class="string">&quot;2&quot;</span>, <span class="string">&quot;3&quot;</span>], <span class="ident">DataType::Int32</span>);
+<span class="kw">let</span> <span class="ident">integers</span> <span class="op">=</span> <span class="ident">array</span>.<span class="ident">as_any</span>().<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">Int32Array</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
+<span class="macro">assert_eq!</span>(<span class="ident">integers</span>.<span class="ident">values</span>(), [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</code></pre></div>
+<h2 id="compute-kernels"><a href="#compute-kernels">Compute Kernels</a></h2>
+<p>The <a href="compute/index.html"><code>compute</code></a> module provides optimised implementations of many common operations,
+for example the <code>parse_strings</code> operation above could also be implemented as follows:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn</span> <span class="ident">parse_strings</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>, <span class="ident">to_data_type</span>: <span class="kw-2">&amp;</span><span class="ident">DataType</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ArrayRef</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span>,
+{
+    <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">StringArray::from_iter</span>(<span class="ident">iter</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="prelude-val">Some</span>))) <span class="kw">as</span> <span class="kw">_</span>;
+    <span class="ident">arrow::compute::cast</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>, <span class="ident">to_data_type</span>)
+}
+
+<span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">parse_strings</span>([<span class="string">&quot;1&quot;</span>, <span class="string">&quot;2&quot;</span>, <span class="string">&quot;3&quot;</span>], <span class="kw-2">&amp;</span><span class="ident">DataType::UInt32</span>).<span class="ident">unwrap</span>();
+<span class="kw">let</span> <span class="ident">integers</span> <span class="op">=</span> <span class="ident">array</span>.<span class="ident">as_any</span>().<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">UInt32Array</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
+<span class="macro">assert_eq!</span>(<span class="ident">integers</span>.<span class="ident">values</span>(), [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</code></pre></div>
+<p>This module also implements many common vertical operations:</p>
+<ul>
+<li>All mathematical binary operators, such as <a href="compute/kernels/arithmetic/fn.subtract.html"><code>subtract</code></a></li>
+<li>All boolean binary operators such as <a href="compute/kernels/comparison/fn.eq.html"><code>equality</code></a></li>
+<li><a href="compute/kernels/cast/fn.cast.html"><code>cast</code></a></li>
+<li><a href="compute/kernels/filter/fn.filter.html"><code>filter</code></a></li>
+<li><a href="compute/kernels/take/fn.take.html"><code>take</code></a> and <a href="compute/kernels/limit/fn.limit.html"><code>limit</code></a></li>
+<li><a href="compute/kernels/sort/fn.sort.html"><code>sort</code></a></li>
+<li>some string operators such as <a href="compute/kernels/substring/fn.substring.html"><code>substring</code></a> and <a href="compute/kernels/length/fn.length.html"><code>length</code></a></li>
+</ul>
+<p>As well as some horizontal operations, such as:</p>
+<ul>
+<li><a href="compute/kernels/aggregate/fn.min.html"><code>min</code></a> and <a href="compute/kernels/aggregate/fn.max.html"><code>max</code></a></li>
+<li><a href="compute/kernels/aggregate/fn.sum.html"><code>sum</code></a></li>
+</ul>
+<h2 id="tabular-representation"><a href="#tabular-representation">Tabular Representation</a></h2>
+<p>It is common to want to group one or more columns together into a tabular representation. This
+is provided by <a href="record_batch/struct.RecordBatch.html"><code>RecordBatch</code></a> which combines a <a href="datatypes/struct.Schema.html"><code>Schema</code></a>
+and a corresponding list of <a href="array/type.ArrayRef.html"><code>ArrayRef</code></a>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let</span> <span class="ident">col_1</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">Int32Array::from_iter</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])) <span class="kw">as</span> <span class="kw">_</span>;
+<span class="kw">let</span> <span class="ident">col_2</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">Float32Array::from_iter</span>([<span class="number">1.</span>, <span class="number">6.3</span>, <span class="number">4.</span>])) <span class="kw">as</span> <span class="kw">_</span>;
+
+<span class="kw">let</span> <span class="ident">batch</span> <span class="op">=</span> <span class="ident">RecordBatch::try_from_iter</span>([(<span class="string">&quot;col1&quot;</span>, <span class="ident">col_1</span>), (<span class="string">&quot;col_2&quot;</span>, <span class="ident">col_2</span>)]).<span class="ident">unwrap</span>();</code></pre></div>
+<h2 id="io"><a href="#io">IO</a></h2>
+<p>This crate provides readers and writers for various formats to/from <a href="record_batch/struct.RecordBatch.html"><code>RecordBatch</code></a></p>
+<ul>
+<li>JSON: <a href="json/reader/struct.Reader.html"><code>Reader</code></a> and <a href="json/writer/struct.Writer.html"><code>Writer</code></a></li>
+<li>CSV: <a href="csv/reader/struct.Reader.html"><code>Reader</code></a> and <a href="csv/writer/struct.Writer.html"><code>Writer</code></a></li>
+<li>IPC: <a href="ipc/reader/struct.StreamReader.html"><code>Reader</code></a> and <a href="ipc/writer/struct.FileWriter.html"><code>Writer</code></a></li>
+</ul>
+<p>Parquet is published as a <a href="https://crates.io/crates/parquet">separate crate</a></p>
+<h2 id="memory-and-buffers"><a href="#memory-and-buffers">Memory and Buffers</a></h2>
+<p>Advanced users may wish to interact with the underlying buffers of an <a href="array/index.html"><code>Array</code></a>, for example,
+for FFI or high-performance conversion from other formats. This interface is provided by
+<a href="array/struct.ArrayData.html"><code>ArrayData</code></a> which stores the <a href="buffer/struct.Buffer.html"><code>Buffer</code></a> comprising an <a href="array/index.html"><code>Array</code></a>, and can be accessed
+with <a href="array/trait.Array.html#tymethod.data"><code>Array::data</code></a></p>
+<p>The APIs for constructing <a href="array/struct.ArrayData.html"><code>ArrayData</code></a> come in safe, and unsafe variants, with the former
+performing extensive, but potentially expensive validation to ensure the buffers are well-formed.</p>
+<p>An <a href="array/type.ArrayRef.html"><code>ArrayRef</code></a> can be cheaply created from an <a href="array/struct.ArrayData.html"><code>ArrayData</code></a> using <a href="array/fn.make_array.html"><code>make_array</code></a>,
+or by using the appropriate <a href="https://doc.rust-lang.org/1.62.0/core/convert/trait.From.html" title="From"><code>From</code></a> conversion on the concrete <a href="array/index.html"><code>Array</code></a> implementation.</p>
+<h2 id="safety-and-security"><a href="#safety-and-security">Safety and Security</a></h2>
+<p>Like many crates, this crate makes use of unsafe where prudent. However, it endeavours to be
+sound. Specifically, <strong>it should not be possible to trigger undefined behaviour using safe APIs.</strong></p>
+<p>If you think you have found an instance where this is possible, please file
+a ticket in our <a href="https://github.com/apache/arrow-rs/issues">issue tracker</a> and it will be triaged and fixed. For more information on
+arrow’s use of unsafe, see <a href="https://github.com/apache/arrow-rs/tree/master/arrow#safety">here</a>.</p>
+<h2 id="higher-level-processing"><a href="#higher-level-processing">Higher-level Processing</a></h2>
+<p>This crate aims to provide reusable, low-level primitives for operating on columnar data. For
+more sophisticated query processing workloads, consider checking out <a href="https://github.com/apache/arrow-datafusion">DataFusion</a>. This
+orchestrates the primitives exported by this crate into an embeddable query engine, with
+SQL and DataFrame frontends, and heavily influences this crate’s roadmap.</p>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="alloc/index.html" title="arrow::alloc mod">alloc</a></div><div class="item-right docblock-short"><p>Defines memory-related functions, such as allocate/deallocate/reallocate memory
+regions, cache and allocation alignments.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="array/index.html" title="arrow::array mod">array</a></div><div class="item-right docblock-short"><p>The central type in Apache Arrow are arrays, which are a known-length sequence of values
+all having the same type. This module provides concrete implementations of each type, as
+well as an <a href="array/trait.Array.html" title="Array"><code>Array</code></a> trait that can be used for type-erasure.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="bitmap/index.html" title="arrow::bitmap mod">bitmap</a></div><div class="item-right docblock-short"><p>Defines <a href="bitmap/struct.Bitmap.html" title="Bitmap">Bitmap</a> for tracking validity bitmaps</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="buffer/index.html" title="arrow::buffer mod">buffer</a></div><div class="item-right docblock-short"><p>This module contains two main structs: <a href="buffer/struct.Buffer.html" title="Buffer">Buffer</a> and <a href="buffer/struct.MutableBuffer.html" title="MutableBuffer">MutableBuffer</a>. A buffer represents
+a contiguous memory region that can be shared via <code>offsets</code>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="compute/index.html" title="arrow::compute mod">compute</a></div><div class="item-right docblock-short"><p>Computation kernels on Arrow Arrays</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="csv/index.html" title="arrow::csv mod">csv</a></div><div class="item-right docblock-short"><p>Transfer data between the Arrow memory format and CSV (comma-separated values).</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="datatypes/index.html" title="arrow::datatypes mod">datatypes</a></div><div class="item-right docblock-short"><p>Defines the logical data types of Arrow arrays.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="error/index.html" title="arrow::error mod">error</a></div><div class="item-right docblock-short"><p>Defines <code>ArrowError</code> for representing failures in various Arrow operations.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="ffi/index.html" title="arrow::ffi mod">ffi</a></div><div class="item-right docblock-short"><p>Contains declarations to bind to the <a href="https://arrow.apache.org/docs/format/CDataInterface.html">C Data Interface</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="ffi_stream/index.html" title="arrow::ffi_stream mod">ffi_stream</a></div><div class="item-right docblock-short"><p>Contains declarations to bind to the <a href="https://arrow.apache.org/docs/format/CStreamInterface.html">C Stream Interface</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="ipc/index.html" title="arrow::ipc mod">ipc</a></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="json/index.html" title="arrow::json mod">json</a></div><div class="item-right docblock-short"><p>Transfer data between the Arrow memory format and JSON
+line-delimited records. See the module level documentation for the
+<a href="json/reader/index.html" title="reader"><code>reader</code></a> and <a href="json/writer/index.html" title="writer"><code>writer</code></a> for usage examples.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="record_batch/index.html" title="arrow::record_batch mod">record_batch</a></div><div class="item-right docblock-short"><p>A two-dimensional batch of column-oriented data with a defined
+<a href="datatypes/struct.Schema.html">schema</a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="temporal_conversions/index.html" title="arrow::temporal_conversions mod">temporal_conversions</a></div><div class="item-right docblock-short"><p>Conversion methods for dates and times.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="tensor/index.html" title="arrow::tensor mod">tensor</a></div><div class="item-right docblock-short"><p>Arrow Tensor Type, defined in
+<a href="https://github.com/apache/arrow/blob/master/format/Tensor.fbs"><code>format/Tensor.fbs</code></a>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="util/index.html" title="arrow::util mod">util</a></div><div class="item-right docblock-short"></div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="arrow" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
+</body></html>

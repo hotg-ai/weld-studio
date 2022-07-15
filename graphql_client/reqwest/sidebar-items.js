@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["post_graphql","Use the provided reqwest::Client to post a GraphQL request."],["post_graphql_blocking","Use the provided reqwest::Client to post a GraphQL request."]]});

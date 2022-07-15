@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["duckdb"] = [{"text":"impl&lt;'stmt&gt; <a class=\"trait\" href=\"fallible_streaming_iterator/trait.FallibleStreamingIterator.html\" title=\"trait fallible_streaming_iterator::FallibleStreamingIterator\">FallibleStreamingIterator</a> for <a class=\"struct\" href=\"duckdb/struct.Rows.html\" title=\"struct duckdb::Rows\">Rows</a>&lt;'stmt&gt;","synthetic":false,"types":["duckdb::row::Rows"]}];
+implementors["fallible_streaming_iterator"] = [];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

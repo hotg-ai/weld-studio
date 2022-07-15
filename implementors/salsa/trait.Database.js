@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["weld"] = [{"text":"impl <a class=\"trait\" href=\"salsa/trait.Database.html\" title=\"trait salsa::Database\">Database</a> for <a class=\"struct\" href=\"weld/struct.Database.html\" title=\"struct weld::Database\">Database</a>","synthetic":false,"types":["weld::compiler::Database"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

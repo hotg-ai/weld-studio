@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ShortcutManagerError","An error whose cause the `ShortcutManager` to fail."]],"struct":[["GlobalShortcut","Describes a global keyboard shortcut."],["ShortcutManager","Object that allows you to manage a `GlobalShortcut`."]]});

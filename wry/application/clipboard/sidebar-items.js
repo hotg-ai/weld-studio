@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Clipboard","Object that allows you to access the `Clipboard` instance."]]});

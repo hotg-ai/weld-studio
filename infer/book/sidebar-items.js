@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["is_epub","Returns whether a buffer is an ePub."],["is_mobi","Returns whether a buffer is a mobi."]]});
