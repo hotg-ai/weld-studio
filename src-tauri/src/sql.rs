@@ -17,7 +17,7 @@ use crate::{shared::SerializableError, AppState};
 pub async fn validate_sql(
     app: tauri::State<'_, AppState>,
     sql: &str,
-    _max_rows: usize,
+    //_max_rows: usize,
 ) -> Result<ValidationResponse, SerializableError<ValidationFailed>> {
     let db = app.db().await;
     let mut stmt = db.prepare(sql).map_err(ValidationFailed::from)?;
