@@ -58,9 +58,9 @@ jobs:
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
-            })
+            });
 
-            return data.id
+            return data.id;
 
   upload-installers:
     name: Upload Installers
@@ -118,10 +118,63 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
+  # To make a build that is compatible with MacOS Catalina, we SSH into a
+  # dedicated build machine.
+  upload-installers-catalina:
+    name: Upload Installers (Catalina)
+    runs-on: [self-hosted, catalina]
+    needs: [create-release]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rust Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: JavaScript Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+      - name: Install Frontend Dependencies
+        run: yarn
+      - name: Customise package name to avoid collisions
+        run: |
+          sed -i 's/"productName": "weld"/"productName": "weld-catalina"/' ./src-tauri/tauri.conf.json
+      - name: Build Frontend
+        run: yarn build
+      - name: Build and upload artifacts
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+
   publish-release:
     name: Make the release public
     runs-on: ubuntu-latest
-    needs: [create-release, upload-installers]
+    needs: [create-release, upload-installers, upload-installers-catalina]
     steps:
       - name: publish release
         id: publish-release
