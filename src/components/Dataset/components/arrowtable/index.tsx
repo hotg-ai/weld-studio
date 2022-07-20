@@ -96,10 +96,11 @@ export function VTable({
           })}
           className="tr"
         >
+          
           {row.cells.map((cell) => {
             return (
               <div style={style} {...cell.getCellProps()} className="td">
-                {cell.render("Cell")}
+                {cell.value}
               </div>
             );
           })}
@@ -112,33 +113,9 @@ export function VTable({
   // Render the UI for your table
   return (
     <div {...getTableProps()} className="table">
-      <div className="tableHeader">
-        {headerGroups.map((headerGroup) => (
-          <div {...headerGroup.getHeaderGroupProps()} className="tr">
-            {headerGroup.headers.map((column) => (
-              <div {...column.getHeaderProps()} className="th">
-                {column.render("Header")}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-
-      <div {...getTableBodyProps()}>
-        {/* <FixedSizeList
-          height={400}
-          itemCount={page.length}
-          itemSize={35}
-          width={totalColumnsWidth + scrollBarSize}
-        > */}
-          {page.map((row) => {
-            { RenderRow({row: row, style: {}}) }
-          })}
-        {/* </FixedSizeList> */}
-      </div>
-      <div className="pagination">
+      <div className="pagination" style={{ position: "fixed", zIndex: "1000", bottom: "35%", left: "15px" }}>
         <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
+          {'First'}
         </button>{' '}
         <button onClick={() => previousPage()} disabled={!canPreviousPage}>
           {'<'}
@@ -147,7 +124,7 @@ export function VTable({
           {'>'}
         </button>{' '}
         <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
+          {'Last'}
         </button>{' '}
         <span>
           Page{' '}
@@ -180,6 +157,31 @@ export function VTable({
           ))}
         </select>
       </div>
+      <div className="tableHeader">
+        {headerGroups.map((headerGroup) => (
+          <div {...headerGroup.getHeaderGroupProps()} className="tr">
+            {headerGroup.headers.map((column) => (
+              <div {...column.getHeaderProps()} className="th">
+                {column.render("Header")}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {/* <FixedSizeList
+          height={400}
+          itemCount={page.length}
+          itemSize={35}
+          width={totalColumnsWidth + scrollBarSize}
+        > */}
+      <div {...getTableBodyProps()}>
+
+          {page.map((row) => {
+            return RenderRow({row: row, style: {}})
+          })}
+
+      </div>
+      {/* </FixedSizeList> */}
     </div>
   );
 }
