@@ -170,7 +170,7 @@ const Dataset = ({
     }
   }, [debounceNameChange])
 
-  const handleDatasetNameChange = async (v: string) => {
+  const handleDatasetNameChange = async (v: React.ChangeEvent<HTMLInputElement>) => {
     debounceNameChange(v);
   }
 
