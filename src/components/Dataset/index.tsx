@@ -18,7 +18,8 @@ import { open } from "@tauri-apps/api/dialog";
 import { downloadDir, join } from "@tauri-apps/api/path";
 import { loadProcBlocks } from "./procBlocks";
 import ArrowTable from "./components/arrowtable";
-import { isArray } from "lodash";
+import { debounce, isArray } from "lodash";
+import React from "react";
 
 type IntegerColumnType = {
   type: "INTEGER";
@@ -157,6 +158,22 @@ const Dataset = ({
     else groups[group].push(t);
   });
 
+  const debounceNameChange = React.useRef(
+    debounce(async (c) => {
+      setDatasetName(c.target.value)
+    }, 300)
+  ).current;
+
+  React.useEffect(() => {
+    return () => {
+      debounceNameChange.cancel();
+    }
+  }, [debounceNameChange])
+
+  const handleDatasetNameChange = async (v: string) => {
+    debounceNameChange(v);
+  }
+
   return (
     <div className="dataset_page">
       <div
@@ -251,7 +268,7 @@ const Dataset = ({
                   <input
                     className="code__container-datasetname-input"
                     type="text"
-                    onChange={(c) => setDatasetName(c.target.value)}
+                    onChange={(c) => handleDatasetNameChange(c)}
                     value={datasetName}
                   />
                 </span>

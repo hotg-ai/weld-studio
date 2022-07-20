@@ -1,5 +1,6 @@
 import React from "react";
 import Editor from "@monaco-editor/react";
+import { debounce } from "lodash"
 
 const CodeEditor = ({
   setSql,
@@ -8,6 +9,23 @@ const CodeEditor = ({
   setSql: (v: string | undefined) => void;
   sql: string | undefined;
 }) => {
+
+  const debouncedQuery = React.useRef(
+    debounce(async (v) => {
+    setSql(v);
+    }, 500)
+  ).current;
+
+  React.useEffect(() => {
+    return () => {
+      debouncedQuery.cancel();
+    };
+  }, [debouncedQuery]);
+
+  const handleChange = async (v: string) => {
+    debouncedQuery(v);
+  };
+
   return (
     <Editor
       height="100%"
@@ -18,7 +36,7 @@ const CodeEditor = ({
         fontSize: 15
       }}
       value={sql}
-      onChange={(v) => setSql(v)}
+      onChange={(v) => handleChange(v)}
     />
   );
 };
