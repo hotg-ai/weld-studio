@@ -40,10 +40,11 @@ export async function log_message(message: string): Promise<void> {
  * Rapidly check whether a SQL query is valid.
  *
  * @param sql The SQL query.
- * @param maxRows Limit the number of records in the preview.
+ * @param _pageIndex The current index of the page
+ * @param _rowPerPage Limit the number of records in the current preview page.
  * @returns
  */
-export async function validate_sql(sql: string, _maxRows: number = 10): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
+export async function validate_sql(sql: string, _pageIndex: number = 0, _rowPerPage: number = 10): Promise<Result<ValidationResponse, SerializableError<ValidationFailed>>> {
 
     try {
         const {row_count, preview}: RawValidationResponse = await invoke("validate_sql", { sql });
