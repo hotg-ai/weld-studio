@@ -159,9 +159,9 @@ const Dataset = ({
   });
 
   const debounceNameChange = React.useRef(
-    debounce(async (c) => {
-      setDatasetName(c.target.value)
-    }, 300)
+    debounce((c) => {
+      setDatasetName(c)
+    }, 100)
   ).current;
 
   React.useEffect(() => {
@@ -171,7 +171,7 @@ const Dataset = ({
   }, [debounceNameChange])
 
   const handleDatasetNameChange = async (v: React.ChangeEvent<HTMLInputElement>) => {
-    debounceNameChange(v);
+    debounceNameChange(v.target.value);
   }
 
   return (
@@ -268,7 +268,7 @@ const Dataset = ({
                   <input
                     className="code__container-datasetname-input"
                     type="text"
-                    onChange={(c) => handleDatasetNameChange(c)}
+                    onChange={(c) => { handleDatasetNameChange(c) }}
                     value={datasetName}
                   />
                 </span>
