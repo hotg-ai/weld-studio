@@ -1,10 +1,21 @@
 import "./table.css";
 import moment from "moment";
 import React, { useRef, useState, useEffect } from "react";
-import { useTable, useBlockLayout, Column, usePagination } from "react-table";
 import { FixedSizeList } from "react-window";
 import scrollbarWidth from "./scrollbarwidth";
 import { StructRowProxy } from "apache-arrow";
+import {
+  Column,
+  Table as ReactTable,
+  PaginationState,
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  ColumnDef,
+  OnChangeFn,
+  flexRender
+} from '@tanstack/react-table';
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -35,119 +46,72 @@ export function VTable({
   columns,
   data,
 }: {
-  columns: Column<any>[];
+  columns: ColumnDef<any>[];
   data: any[];
 }) {
-  // Use the state and functions returned from useTable to build your UI
   const { width } = useWindowDimensions();
-
   const defaultColumn = React.useMemo(
     () => ({
       width: width / columns.length < 100 ? 100 : width / columns.length,
     }),
     [columns.length, width]
   );
+  const table = useReactTable({
+    data,
+    columns,
+    // Pipeline
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    //
+    debugTable: true,
+    defaultColumn: {
+      minSize: defaultColumn.width,
+      size: defaultColumn.width,
+      maxSize: defaultColumn.width,
+      
 
-  const scrollBarSize = React.useMemo(() => scrollbarWidth(), []);
+    }
+  })
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    totalColumnsWidth,
-    prepareRow,
-    page, // Instead of using 'rows', we'll use page,
-    // which has only the rows for the active page
-
-    // The rest of these things are super handy, too ;)
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
-    state: { pageIndex, pageSize },
-  } = useTable(
-    {
-      columns,
-      data,
-      defaultColumn,
-      initialState: { pageIndex: 0 }
-    },
-    useBlockLayout,
-    usePagination
-  );
-
-  const RenderRow = React.useCallback(
-    ({
-      row,
-      style,
-    }: {
-      row: any;
-      style: React.CSSProperties | undefined;
-    }) => {
-      prepareRow(row);
-      return (
-        <div
-          {...row.getRowProps({
-            style,
-          })}
-          className="tr"
-        >
-          
-          {row.cells.map((cell) => {
-            return (
-              <div style={style} {...cell.getCellProps()} className="td">
-                {cell.value}
-              </div>
-            );
-          })}
-        </div>
-      );
-    },
-    [prepareRow, page]
-  );
-
-  // Render the UI for your table
   return (
-    <div {...getTableProps()} className="table">
+    <div>
       <div className="pagination" style={{ position: "fixed", zIndex: "1000", bottom: "35%", left: "15px" }}>
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+        <button onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
           {'First'}
         </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+        <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
           {'<'}
         </button>{' '}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
+        <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
           {'>'}
         </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+        <button onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
           {'Last'}
         </button>{' '}
         <span>
           Page{' '}
           <strong>
-            {pageIndex + 1} of {pageOptions.length}
+            {table.getState().pagination.pageIndex + 1} of{' '}
+            {table.getPageCount()}
           </strong>{' '}
         </span>
         <span>
           | Go to page:{' '}
           <input
             type="number"
-            defaultValue={pageIndex + 1}
+            defaultValue={table.getState().pagination.pageIndex + 1}
             onChange={e => {
               const page = e.target.value ? Number(e.target.value) - 1 : 0
-              gotoPage(page)
+              table.setPageIndex(page)
             }}
             style={{ width: '100px' }}
           />
         </span>{' '}
         <select
-          value={pageSize}
+          value={table.getState().pagination.pageSize}
           onChange={e => {
-            setPageSize(Number(e.target.value))
+            table.setPageSize(Number(e.target.value))
           }}
         >
           {[10, 20, 30, 40, 50].map(pageSize => (
@@ -157,43 +121,52 @@ export function VTable({
           ))}
         </select>
       </div>
-      <div className="tableHeader">
-        {headerGroups.map((headerGroup) => (
-          <div {...headerGroup.getHeaderGroupProps()} className="tr">
-            {headerGroup.headers.map((column) => (
-              <div {...column.getHeaderProps()} className="th">
-                {column.render("Header")}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-      {/* <FixedSizeList
-          height={400}
-          itemCount={page.length}
-          itemSize={35}
-          width={totalColumnsWidth + scrollBarSize}
-        > */}
-      <div {...getTableBodyProps()}>
 
-          {page.map((row) => {
-            return RenderRow({row: row, style: {}})
+      <table className="table">
+        <thead className="tableHeader">
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id} className="tr">
+              {headerGroup.headers.map(header => {
+                return (
+                  <th key={header.id} >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                )
+              })}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map(row => {
+            return (
+              <tr key={row.id} className="tr">
+                {row.getVisibleCells().map(cell => {
+                  return (
+                    <td key={cell.id} className="td">
+                      {cell.renderValue()}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
           })}
-
-      </div>
-      {/* </FixedSizeList> */}
+        </tbody>
+      </table>
     </div>
   );
 }
 
 // declare type Column = { Header: string; accessor: string  };
 
-export const computeColumns = (header: string[]): Column<any>[] => {
-  let columns: Column<any>[] = [];
+export const computeColumns = (header: string[]): ColumnDef<any>[] => {
+  let columns: ColumnDef<any>[] = [];
   header.forEach((head) => {
     columns.push({
-      Header: head,
-      accessor: (hexad: StructRowProxy | any) => {
+      accessorKey: head,
+      cell: (hexad: StructRowProxy | any) => {
         try {
           if (hexad !== null && typeof hexad.toJSON === "function") {
             let res = hexad.toJSON()[head];
